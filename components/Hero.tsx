@@ -49,7 +49,7 @@ const Hero = ({ featuredUsers = [] }: HeroProps) => {
   }, []);
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden text-white">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden text-white">
       {/* Background Video */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/75 to-black/85 z-10"></div>
