@@ -16,6 +16,7 @@ import { FriendRequestProvider } from "@/contexts/FriendRequestContext";
 import PresenceTracker from "./PresenceTracker";
 import SuggestionBox from "./SuggestionBox";
 import IncompleteProfileBanner from "./IncompleteProfileBanner";
+import CapacitorInitializer from "./CapacitorInitializer";
 
 // Crisp customer chat support:
 // This component is separated from ClientLayout because it needs to be wrapped with <SessionProvider> to use useSession() hook
@@ -99,6 +100,9 @@ const ClientLayout = ({ children, initialLocale }: { children: ReactNode; initia
             
             {/* Track user presence (online/offline) */}
             <PresenceTracker />
+            
+            {/* Initialize Capacitor and push notifications (mobile app only) */}
+            <CapacitorInitializer />
             
             {/* Suggestion Box - Floating button for user feedback (only visible on dashboard) */}
             {isDashboardPage && <SuggestionBox />}

@@ -1,6 +1,7 @@
 import connectMongo from "@/libs/mongoose";
 import Notification from "@/models/Notification";
 import User from "@/models/User";
+import { sendPushToUser, createNotificationPayload } from "./push-notifications";
 
 /**
  * Send notifications to a user's followers (ONLY for new music releases)
@@ -65,6 +66,7 @@ export async function notifyUser(
   try {
     await connectMongo();
 
+    // 1. Create in-app notification
     const notification = await Notification.create({
       recipient: recipientId,
       type,
@@ -73,7 +75,33 @@ export async function notifyUser(
       isRead: false,
     });
 
-    console.log(`✅ Sent notification to user ${recipientId}`);
+    console.log(`✅ Sent in-app notification to user ${recipientId}`);
+
+    // 2. Send push notification (if user has app installed)
+    if (senderId && ['friend_request', 'friend_accepted', 'profile_liked', 'new_follower'].includes(type)) {
+      try {
+        // Get sender's name for push notification
+        const sender = await User.findById(senderId).select('name username').lean() as any;
+        const senderName = sender?.name || sender?.username || 'Someone';
+
+        // Create push notification payload
+        const pushPayload = createNotificationPayload(
+          type as any,
+          senderName,
+          {
+            senderId: senderId,
+            ...data,
+          }
+        );
+
+        // Send push notification
+        await sendPushToUser(recipientId, pushPayload);
+        console.log(`📱 Sent push notification to user ${recipientId}`);
+      } catch (pushError) {
+        // Don't fail the whole operation if push fails
+        console.error('Error sending push notification:', pushError);
+      }
+    }
 
     return {
       success: true,

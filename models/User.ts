@@ -388,7 +388,35 @@ const userSchema = new mongoose.Schema(
         type: Boolean,
         default: true, // Enabled by default
       },
+      // Push notification settings (for mobile app)
+      pushNotifications: {
+        type: Boolean,
+        default: true, // Enabled by default
+      },
     },
+    // Push notification tokens (for mobile app)
+    pushTokens: [{
+      token: {
+        type: String,
+        required: true,
+      },
+      platform: {
+        type: String,
+        enum: ['ios', 'android', 'web'],
+        required: true,
+      },
+      deviceInfo: {
+        type: String,
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+      lastUsed: {
+        type: Date,
+        default: Date.now,
+      },
+    }],
     // Profile view tracking
     profileViews: [
       {

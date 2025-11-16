@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "103665212390",
+    "firebase_url": "https://dancecircle-a3c90-default-rtdb.firebaseio.com",
+    "project_id": "dancecircle-a3c90",
+    "storage_bucket": "dancecircle-a3c90.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:103665212390:android:2865bcaa5ecc669d8dd427",
+        "android_client_info": {
+          "package_name": "co.dancecircle.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJW4knCEFKfr8DtsE-jW8HooK0AmO--_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
