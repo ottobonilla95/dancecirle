@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:103665212390:android:2865bcaa5ecc669d8dd427",
+        "mobilesdk_app_id": "1:103665212390:android:ba1d6f48550882408dd427",
         "android_client_info": {
-          "package_name": "co.dancecircle.app"
+          "package_name": "com.dancecircle.app"
         }
       },
       "oauth_client": [],

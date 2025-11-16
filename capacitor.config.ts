@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'co.dancecircle.app',
+  appId: 'com.dancecircle.app',
   appName: 'DanceCircle',
   webDir: 'www', // Not used when server.url is set
   server: {
