@@ -60,6 +60,7 @@ export default function AdminUsersPage() {
   const [showOnlyIncomplete, setShowOnlyIncomplete] = useState(false);
   const [showOnlyComplete, setShowOnlyComplete] = useState(false);
   const [filterCity, setFilterCity] = useState<string>(""); // City ID filter
+  const [showInstagramWithImage, setShowInstagramWithImage] = useState(false);
   const [cities, setCities] = useState<City[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -102,7 +103,7 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     fetchUsers();
-  }, [page, searchTerm, filterShared, showOnlyIncomplete, showOnlyComplete, filterCity]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [page, searchTerm, filterShared, showOnlyIncomplete, showOnlyComplete, filterCity, showInstagramWithImage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -130,6 +131,11 @@ export default function AdminUsersPage() {
       // Add city filter
       if (filterCity) {
         params.append("filterCity", filterCity);
+      }
+
+      // Add Instagram + custom image filter
+      if (showInstagramWithImage) {
+        params.append("filterInstagramWithImage", "true");
       }
 
       const res = await fetch(`/api/admin/users?${params}`);
@@ -510,6 +516,24 @@ export default function AdminUsersPage() {
               />
               <span className="label-text font-medium">
                 Show only users with incomplete profiles
+              </span>
+            </label>
+          </div>
+
+          <div className="form-control">
+            <label className="label cursor-pointer justify-start gap-3">
+              <input
+                type="checkbox"
+                checked={showInstagramWithImage}
+                onChange={(e) => {
+                  setShowInstagramWithImage(e.target.checked);
+                  setPage(1);
+                }}
+                className="checkbox checkbox-primary"
+              />
+              <span className="label-text font-medium flex items-center gap-2">
+                <FaInstagram className="text-pink-600" />
+                Show only users with Instagram + custom image
               </span>
             </label>
           </div>

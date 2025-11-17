@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
     const filterProfileComplete = searchParams.get("filterProfileComplete"); // "true", "false", or null (all)
     const filterCity = searchParams.get("filterCity"); // City ID or null (all)
     const isFeaturedProfessional = searchParams.get("isFeaturedProfessional"); // "true" or null
+    const filterInstagramWithImage = searchParams.get("filterInstagramWithImage"); // "true" or null
 
     // Build search query
     const query: any = {};
@@ -67,6 +68,16 @@ export async function GET(req: NextRequest) {
     // Filter by featured professional status (superstar users)
     if (isFeaturedProfessional === "true") {
       query.isFeaturedProfessional = true;
+    }
+
+    // Filter by Instagram + custom image (not Google image)
+    if (filterInstagramWithImage === "true") {
+      query['socialMedia.instagram'] = { $exists: true, $ne: "" };
+      query.image = { 
+        $exists: true, 
+        $ne: "", 
+        $not: { $regex: "googleusercontent.com" } // Exclude Google profile images
+      };
     }
 
     const [users, total] = await Promise.all([
