@@ -14,38 +14,6 @@ import { sendEmail } from "@/libs/resend";
 import config from "@/config";
 import { fetchAllSnapshots } from "@/utils/leaderboard-snapshot-optimized";
 
-// 🚫 TEMPORARY: Emails to exclude during testing (already received digest)
-const EXCLUDED_EMAILS = [
-  "supinyat7677@gmail.com",
-  "jaroldchristopherortiaga@gmail.com",
-  "wojciechowskil@outlook.fr",
-  "covaci_alexia@yahoo.com",
-  "juliette.cazabat@gmail.com",
-  "irinaxgeorgiana@gmail.com",
-  "christina.jander@gmail.com",
-  "ayesharazashoaib@gmail.com",
-  "camillepouget.nc@gmail.com",
-  "t.sandalova1998@gmail.com",
-  "anniecartwright123@gmail.com",
-  "raulmaciel346@gmail.com",
-  "omar4795@gmail.com",
-  "mariipilv@gmail.com",
-  "perfectionista66@gmail.com",
-  "jennyma3222@gmail.com",
-  "alalboti@gmail.com",
-  "caio.guima@outlook.com",
-  "silpochova.nikolka@seznam.cz",
-  "m.verges@outlook.com",
-  "rafaeldavilasosa@hotmail.com",
-  "clem03101997@icloud.com",
-  "kratosrock@hotmail.it",
-  "francoacunaaguilera@gmail.com",
-  "lorenzo.kes@hotmail.it",
-  "hugo.abrantes.soares@gmail.com",
-  "elianamaceiras@hotmail.com",
-  "michellbrunofar@gmail.com",
-];
-
 async function main() {
   console.log('🚀 Starting weekly digest send...\n');
   const startTime = Date.now();
@@ -89,13 +57,6 @@ async function main() {
 
         if (!digestData) {
           emailsSkipped++;
-          continue;
-        }
-
-        // 🚫 Skip excluded emails (testing)
-        if (EXCLUDED_EMAILS.includes(digestData.user.email)) {
-          emailsSkipped++;
-          console.log(`   ⏭️  Skipped ${digestData.user.name} (already received)`);
           continue;
         }
 
@@ -147,7 +108,7 @@ async function main() {
     console.log(`📊 Final Results:`);
     console.log(`   Total users processed: ${activeUserIds.length}`);
     console.log(`   ✅ Emails sent: ${emailsSent}`);
-    console.log(`   ⏭️  Skipped (no activity or excluded): ${emailsSkipped}`);
+    console.log(`   ⏭️  Skipped (no activity or disabled): ${emailsSkipped}`);
     console.log(`   ❌ Failed: ${emailsFailed}`);
     console.log(`   ⏱️  Total time: ${totalDuration} seconds`);
     
