@@ -106,14 +106,34 @@ const emailTranslations = {
 };
 
 /**
+ * Generate unsubscribe footer HTML
+ */
+function getUnsubscribeFooter(userId: string, type: string, locale: Locale = 'en') {
+  const unsubscribeUrl = `https://${config.domainName}/api/unsubscribe?userId=${userId}&type=${type}`;
+  const unsubscribeAllUrl = `https://${config.domainName}/api/unsubscribe?userId=${userId}&type=all`;
+  const settingsUrl = `https://${config.domainName}/settings`;
+  
+  const text = locale === 'es' 
+    ? `<a href="${unsubscribeUrl}" style="color: #999; text-decoration: underline;">Cancelar este tipo de notificaciones</a> | <a href="${unsubscribeAllUrl}" style="color: #999; text-decoration: underline;">Cancelar todas las notificaciones</a> | <a href="${settingsUrl}" style="color: #667eea;">Gestionar preferencias</a>`
+    : `<a href="${unsubscribeUrl}" style="color: #999; text-decoration: underline;">Unsubscribe from this type</a> | <a href="${unsubscribeAllUrl}" style="color: #999; text-decoration: underline;">Unsubscribe from all</a> | <a href="${settingsUrl}" style="color: #667eea;">Manage preferences</a>`;
+  
+  return text;
+}
+
+/**
  * Friend Request Received Email
  */
 export function friendRequestReceivedEmail(sender: UserData, recipient: UserData, locale: Locale = 'en') {
   const t = emailTranslations[locale].friendRequest;
+  const recipientId = (recipient as any)?._id || '';
   
   return {
     subject: t.subject(sender.name || 'Someone'),
     text: `${t.greeting(recipient.name || 'there')} ${sender.name || 'A dancer'} ${t.wantsToConnect}`,
+    headers: recipientId ? {
+      'List-Unsubscribe': `<https://${config.domainName}/api/unsubscribe?userId=${recipientId}&type=friendRequest>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    } : undefined,
     html: `
       <!DOCTYPE html>
       <html>
@@ -156,7 +176,7 @@ export function friendRequestReceivedEmail(sender: UserData, recipient: UserData
             </div>
             <div class="footer">
               <p>${t.footer2(config.appName)}</p>
-              <p><a href="https://${config.domainName}/profile?settings=notifications" style="color: #667eea;">${t.managePrefs}</a></p>
+              <p style="margin-top: 10px;">${recipientId ? getUnsubscribeFooter(recipientId, 'friendRequest', locale) : `<a href="https://${config.domainName}/settings" style="color: #667eea;">${t.managePrefs}</a>`}</p>
             </div>
           </div>
         </body>
@@ -170,10 +190,15 @@ export function friendRequestReceivedEmail(sender: UserData, recipient: UserData
  */
 export function friendRequestAcceptedEmail(accepter: UserData, sender: UserData, locale: Locale = 'en') {
   const t = emailTranslations[locale].friendAccepted;
+  const senderId = sender._id || '';
   
   return {
     subject: t.subject(accepter.name || 'Someone'),
     text: `${t.greeting(sender.name || 'there')} ${accepter.name || 'A dancer'} accepted your friend request on ${config.appName}.`,
+    headers: senderId ? {
+      'List-Unsubscribe': `<https://${config.domainName}/api/unsubscribe?userId=${senderId}&type=friendRequest>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    } : undefined,
     html: `
       <!DOCTYPE html>
       <html>
@@ -216,7 +241,7 @@ export function friendRequestAcceptedEmail(accepter: UserData, sender: UserData,
             </div>
             <div class="footer">
               <p>${t.footer2(config.appName)}</p>
-              <p><a href="https://${config.domainName}/profile?settings=notifications" style="color: #667eea;">${t.managePrefs}</a></p>
+              <p style="margin-top: 10px;">${senderId ? getUnsubscribeFooter(senderId, 'friendRequest', locale) : `<a href="https://${config.domainName}/settings" style="color: #667eea;">${t.managePrefs}</a>`}</p>
             </div>
           </div>
         </body>
@@ -237,10 +262,15 @@ export function messageReceivedEmail(
 ) {
   const t = emailTranslations[locale].messageReceived;
   const messageSnippet = messagePreview.length > 100 ? messagePreview.substring(0, 100) + '...' : messagePreview;
+  const recipientId = (recipient as any)?._id || '';
   
   return {
     subject: t.subject(sender.name || 'Someone'),
     text: `${t.greeting(recipient.name || 'there')} ${sender.name || 'A dancer'} ${t.sentMessage} "${messageSnippet}"`,
+    headers: recipientId ? {
+      'List-Unsubscribe': `<https://${config.domainName}/api/unsubscribe?userId=${recipientId}&type=message>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    } : undefined,
     html: `
       <!DOCTYPE html>
       <html>
@@ -287,7 +317,7 @@ export function messageReceivedEmail(
             </div>
             <div class="footer">
               <p>${t.footer2(config.appName)}</p>
-              <p><a href="https://${config.domainName}/profile?settings=notifications" style="color: #667eea;">${t.managePrefs}</a></p>
+              <p style="margin-top: 10px;">${recipientId ? getUnsubscribeFooter(recipientId, 'message', locale) : `<a href="https://${config.domainName}/settings" style="color: #667eea;">${t.managePrefs}</a>`}</p>
             </div>
           </div>
         </body>
@@ -301,10 +331,15 @@ export function messageReceivedEmail(
  */
 export function profileLikedEmail(liker: UserData, recipient: UserData, locale: Locale = 'en') {
   const t = emailTranslations[locale].profileLiked;
+  const recipientId = (recipient as any)?._id || '';
   
   return {
     subject: t.subject(liker.name || 'Someone'),
     text: `${t.greeting(recipient.name || 'there')} ${liker.name || 'A dancer'} ${t.likedProfile}`,
+    headers: recipientId ? {
+      'List-Unsubscribe': `<https://${config.domainName}/api/unsubscribe?userId=${recipientId}&type=profileLiked>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    } : undefined,
     html: `
       <!DOCTYPE html>
       <html>
@@ -349,7 +384,7 @@ export function profileLikedEmail(liker: UserData, recipient: UserData, locale: 
             </div>
             <div class="footer">
               <p>${t.footer2(config.appName)}</p>
-              <p><a href="https://${config.domainName}/profile?settings=notifications" style="color: #667eea;">${t.managePrefs}</a></p>
+              <p style="margin-top: 10px;">${recipientId ? getUnsubscribeFooter(recipientId, 'profileLiked', locale) : `<a href="https://${config.domainName}/settings" style="color: #667eea;">${t.managePrefs}</a>`}</p>
             </div>
           </div>
         </body>

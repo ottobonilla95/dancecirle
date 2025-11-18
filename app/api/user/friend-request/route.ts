@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
         ) {
           const emailTemplate = friendRequestReceivedEmail(
             { name: currentUser.name, username: currentUser.username, image: currentUser.image },
-            { name: targetUser.name, email: targetUser.email },
+            { name: targetUser.name, email: targetUser.email, _id: targetUserId },
             targetUser.preferredLanguage || 'en'
           );
           sendEmail({
@@ -171,7 +171,7 @@ export async function POST(req: NextRequest) {
         ) {
           const emailTemplate = friendRequestAcceptedEmail(
             { name: currentUser.name, username: currentUser.username, image: currentUser.image, _id: currentUserId },
-            { name: targetUser.name, email: targetUser.email },
+            { name: targetUser.name, email: targetUser.email, _id: targetUserId },
             targetUser.preferredLanguage || 'en'
           );
           sendEmail({

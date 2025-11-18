@@ -166,6 +166,7 @@ export async function POST(
               {
                 name: recipient.name,
                 email: recipient.email,
+                _id: recipientId,
               },
               text.trim(),
               params.conversationId,
