@@ -297,7 +297,7 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
               This is your weekly digest from ${config.appName}. You're receiving this because you're an active member of our dance community.
             </p>
             <p style="margin: 15px 0 0 0; font-size: 11px;">
-              ${getWeeklyDigestUnsubscribeFooter(user._id)}
+              ${getWeeklyDigestUnsubscribeFooter(user.id)}
             </p>
           </div>
         </div>
