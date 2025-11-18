@@ -29,9 +29,10 @@ interface FriendTrip {
 
 interface TripOverlap {
   _id: string;
+  type: 'trip_overlap' | 'visiting_home';
   city: any;
   friend: any;
-  yourTrip: any;
+  yourTrip: any | null;
   friendTrip: any;
   overlap: any;
 }

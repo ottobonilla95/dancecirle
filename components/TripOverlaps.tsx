@@ -6,13 +6,13 @@ import { useTranslation } from "./I18nProvider";
 
 interface TripOverlap {
   _id: string;
+  type: 'trip_overlap' | 'visiting_home';
   city: {
     _id: string;
     name: string;
     image?: string;
     country: {
       name: string;
-      code: string;
     };
   };
   friend: {
@@ -24,7 +24,7 @@ interface TripOverlap {
   yourTrip: {
     startDate: Date;
     endDate: Date;
-  };
+  } | null;
   friendTrip: {
     startDate: Date;
     endDate: Date;
@@ -120,20 +120,42 @@ export default function TripOverlaps({ overlaps = [], isPreview = false }: TripO
                 {/* Overlap Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-1 flex-wrap text-sm">
-                    <span className="font-medium">{t('trips.youAnd') || 'You and'}</span>
-                    <Link
-                      href={`/dancer/${overlap.friend._id}`}
-                      className="font-semibold text-primary hover:underline"
-                    >
-                      {overlap.friend.name}
-                    </Link>
-                    <FaPlane className="text-primary text-xs" />
-                    <Link
-                      href={`/city/${overlap.city._id}`}
-                      className="font-semibold hover:underline"
-                    >
-                      {overlap.city.name}
-                    </Link>
+                    {overlap.type === 'visiting_home' ? (
+                      <>
+                        <Link
+                          href={`/dancer/${overlap.friend._id}`}
+                          className="font-semibold text-primary hover:underline"
+                        >
+                          {overlap.friend.name}
+                        </Link>
+                        <span className="font-medium">{t('trips.isVisiting') || 'is visiting'}</span>
+                        <span className="font-medium">{t('trips.yourCity') || 'your city'}</span>
+                        <FaPlane className="text-primary text-xs" />
+                        <Link
+                          href={`/city/${overlap.city._id}`}
+                          className="font-semibold hover:underline"
+                        >
+                          {overlap.city.name}
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <span className="font-medium">{t('trips.youAnd') || 'You and'}</span>
+                        <Link
+                          href={`/dancer/${overlap.friend._id}`}
+                          className="font-semibold text-primary hover:underline"
+                        >
+                          {overlap.friend.name}
+                        </Link>
+                        <FaPlane className="text-primary text-xs" />
+                        <Link
+                          href={`/city/${overlap.city._id}`}
+                          className="font-semibold hover:underline"
+                        >
+                          {overlap.city.name}
+                        </Link>
+                      </>
+                    )}
                   </div>
 
                   {/* Overlap Details */}
