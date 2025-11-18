@@ -3,7 +3,7 @@
  * Migrates user profile pictures from Cloudinary to ImageKit
  * 
  * Usage:
- *   npm run ts-node scripts/migrate-images-to-imagekit.ts
+ *   npx tsx scripts/migrate-images-to-imagekit.ts
  * 
  * Features:
  *   - Migrates in batches (safe for production)
@@ -13,18 +13,33 @@
  *   - Handles errors gracefully
  */
 
+// Load environment variables from .env.local
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.join(process.cwd(), '.env.local') });
+
 import mongoose from 'mongoose';
 import User from '../models/User';
-import crypto from 'crypto';
-import FormData from 'form-data'; // Node.js FormData
+import ImageKit from 'imagekit'; // ImageKit Node.js SDK
 
 // Configuration
 const BATCH_SIZE = 10; // Images per batch
 const DELAY_BETWEEN_BATCHES = 60000; // 1 minute (stay under API limits)
-const DRY_RUN = true; // Set to false to actually migrate
+const DRY_RUN = false; // Set to false to actually migrate
+
+// TEST MODE: Set a user ID to test with just one user
+const TEST_USER_ID = null
 
 const IMAGEKIT_PRIVATE_KEY = process.env.IMAGEKIT_PRIVATE_KEY;
 const IMAGEKIT_PUBLIC_KEY = process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY;
+const IMAGEKIT_URL_ENDPOINT = process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT;
+
+// Initialize ImageKit SDK
+const imagekit = new ImageKit({
+  publicKey: IMAGEKIT_PUBLIC_KEY!,
+  privateKey: IMAGEKIT_PRIVATE_KEY!,
+  urlEndpoint: IMAGEKIT_URL_ENDPOINT!,
+});
 
 interface MigrationStats {
   total: number;
@@ -36,61 +51,38 @@ interface MigrationStats {
 }
 
 /**
- * Generate ImageKit authentication parameters
- */
-function generateImageKitAuth() {
-  const token = crypto.randomUUID();
-  const expire = Math.floor(Date.now() / 1000) + 60 * 30; // 30 minutes
-  const signature = crypto
-    .createHmac('sha1', IMAGEKIT_PRIVATE_KEY!)
-    .update(token + expire)
-    .digest('hex');
-
-  return { token, expire, signature, publicKey: IMAGEKIT_PUBLIC_KEY };
-}
-
-/**
- * Upload image to ImageKit from URL
+ * Upload image to ImageKit from URL (using official SDK)
  */
 async function uploadToImageKit(imageUrl: string, userId: string): Promise<string | null> {
   try {
-    const auth = generateImageKitAuth();
+    console.log('  📥 Downloading image from Cloudinary...');
     
-    // Create FormData for Node.js
-    const formData = new FormData();
-    formData.append('file', imageUrl); // ImageKit can fetch from URL!
-    formData.append('fileName', `profile-${userId}-${Date.now()}.jpg`);
-    formData.append('folder', '/dancecircle/profile-pics');
-    formData.append('useUniqueFileName', 'false');
-    formData.append('transformation', JSON.stringify({
-      pre: 'w-800,h-800,c-at_max,fo-face',
-    }));
-    
-    // Add auth params
-    formData.append('token', auth.token);
-    formData.append('signature', auth.signature);
-    formData.append('expire', auth.expire.toString());
-    formData.append('publicKey', auth.publicKey!);
-
-    const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${Buffer.from(IMAGEKIT_PRIVATE_KEY + ':').toString('base64')}`,
-        ...formData.getHeaders(), // Important for Node.js FormData!
-      },
-      body: formData as any,
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      console.error('ImageKit upload failed:', error);
+    // Download the image from Cloudinary
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) {
+      console.error('  ❌ Failed to download image from Cloudinary');
       return null;
     }
+    
+    const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+    const base64Image = imageBuffer.toString('base64');
+    
+    console.log('  ✅ Downloaded image:', Math.round(imageBuffer.length / 1024), 'KB');
+    console.log('  📤 Uploading to ImageKit using SDK...');
+    
+    // Upload using ImageKit SDK (proper way!)
+    const result = await imagekit.upload({
+      file: base64Image, // Base64 string
+      fileName: `profile-${userId}-${Date.now()}.jpg`,
+      folder: '/dancecircle/profile-pics',
+      useUniqueFileName: false,
+    });
 
-    const result = await response.json();
+    console.log('  ✅ Upload successful!');
+    console.log('  New URL:', result.url.substring(0, 60) + '...');
     return result.url;
-  } catch (error) {
-    console.error('Error uploading to ImageKit:', error);
+  } catch (error: any) {
+    console.error('  ❌ ImageKit upload failed:', error.message || error);
     return null;
   }
 }
@@ -204,11 +196,18 @@ async function migrateImages() {
     console.log('─'.repeat(50));
 
     // Get users with Cloudinary images
-    const users = await User.find({
+    let query: any = {
       image: /^https:\/\/res\.cloudinary\.com/
-    })
-      .limit(BATCH_SIZE)
-      .lean();
+    };
+
+    // TEST MODE: If TEST_USER_ID is set, only process that user
+    if (TEST_USER_ID) {
+      console.log(`🧪 TEST MODE: Only processing user ${TEST_USER_ID}`);
+      query._id = TEST_USER_ID;
+    }
+
+    const users = await User.find(query)
+      .limit(BATCH_SIZE); // Removed .lean() so we can use .save()
 
     if (users.length === 0) {
       console.log('\n✓ No more images to migrate!');
