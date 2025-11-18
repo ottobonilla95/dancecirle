@@ -221,3 +221,38 @@ export async function notifyFriendAccepted(userId: string, accepterId: string, a
   return notifyUser(userId, "friend_accepted", accepterId, { actionUrl });
 }
 
+/**
+ * Create a notification (generic helper)
+ */
+export async function createNotification({
+  recipientId,
+  senderId,
+  type,
+  message,
+  relatedId,
+}: {
+  recipientId: string;
+  senderId?: string;
+  type: "comment" | "like" | "new_music" | "friend_request" | "friend_accepted" | "profile_liked" | "new_follower" | "message";
+  message: string;
+  relatedId?: string;
+}) {
+  try {
+    await connectMongo();
+
+    const notification = await Notification.create({
+      recipient: recipientId,
+      sender: senderId,
+      type,
+      data: { message, relatedId },
+      isRead: false,
+    });
+
+    console.log(`✅ Notification created for user ${recipientId}: ${type}`);
+
+    return { success: true, notification };
+  } catch (error) {
+    console.error("Error creating notification:", error);
+    throw error;
+  }
+}

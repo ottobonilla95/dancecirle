@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/libs/next-auth";
 import connectDB from "@/libs/mongoose";
 import User from "@/models/User";
+import City from "@/models/City";
+import { createTripPost, shouldAutoPost } from "@/utils/auto-posts";
 
 // GET - Get user's trips
 export async function GET(req: NextRequest) {
@@ -99,6 +101,24 @@ export async function POST(req: NextRequest) {
       },
       { new: true }
     ).select("trips");
+
+    // Create auto-post for trip if user has auto-posting enabled
+    if (await shouldAutoPost(session.user.id)) {
+      try {
+        // Get city name for the post
+        const city = await City.findById(cityId).select("name");
+        if (city) {
+          await createTripPost(session.user.id, {
+            city: city.name,
+            startDate: start,
+            endDate: end,
+          });
+        }
+      } catch (error) {
+        console.error("Error creating trip post:", error);
+        // Don't fail the request if post creation fails
+      }
+    }
 
     return NextResponse.json({ success: true, trips: user?.trips });
   } catch (error) {

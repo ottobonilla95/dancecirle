@@ -14,6 +14,8 @@
     "profileLiked": "{name} le gustó tu perfil",
     "newFollower": "{name} comenzó a seguirte",
     "message": "{name} te envió un mensaje",
+    "comment": "{name} comentó en tu publicación",
+    "like": "A {name} le gustó tu publicación",
     "justNow": "Justo ahora",
     "minutesAgo": "hace {count}m",
     "hoursAgo": "hace {count}h",
@@ -910,6 +912,36 @@
     "reviews": "reseñas",
     "review": "reseña",
     "seeAll": "Ver Todos"
+  },
+  "feed": {
+    "title": "Qué Está Pasando",
+    "goingOut": "¿Sales?",
+    "noActivity": "Sin actividad aún",
+    "shareWhereGoing": "¡Comparte dónde vas esta noche!",
+    "whereAreYouGoing": "¿A Dónde Vas?",
+    "createPostModal": {
+      "title": "¿Quién Viene Conmigo?",
+      "subtitle": "¡Avísale a tus amigos dónde vas a bailar y encuentra gente para ir contigo!",
+      "whereLabel": "¿A dónde vas?",
+      "wherePlaceholder": "ej., Salsa Republic, La Factoría, The Dance Studio",
+      "messageLabel": "Di algo (opcional)",
+      "messagePlaceholder": "ej., ¿Quién se anima? ¡Principiantes bienvenidos! Vamos a practicar pasos nuevos 🕺💃",
+      "cancel": "Cancelar",
+      "shareWithFriends": "Compartir con Amigos",
+      "posting": "Publicando...",
+      "enterVenue": "Por favor ingresa el nombre del lugar"
+    },
+    "postTypes": {
+      "goingTo": "¿Quién viene a",
+      "justJoined": "Acaba de unirse a",
+      "justMoved": "Se mudó a",
+      "addedTrip": "Agregó viaje a",
+      "newSong": "Nueva canción favorita",
+      "startedDancing": "Comenzó a bailar",
+      "competed": "Compitió en",
+      "newRelease": "Nuevo lanzamiento",
+      "viewReleaseDetails": "Ver Detalles del Lanzamiento"
+    }
   }
 }
 

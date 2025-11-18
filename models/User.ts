@@ -88,10 +88,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    // User's bio/tagline (80 characters)
+    // User's bio/tagline (200 characters)
     bio: {
       type: String,
-      maxlength: 80,
+      maxlength: 200,
       trim: true,
     },
     // Year when user started dancing

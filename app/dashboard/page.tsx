@@ -11,13 +11,12 @@ import { City as CityType } from "@/types";
 import { DanceStyle as DanceStyleType } from "@/types/dance-style";
 import DiscoveryFeed from "@/components/DiscoveryFeed";
 import CityList from "@/components/organisims/CityList";
-import HotDanceStyles from "@/components/HotDanceStyles";
+// import HotDanceStyles from "@/components/HotDanceStyles";
 import StatsPreview from "@/components/StatsPreview";
 import TrendyMusicPreview from "@/components/TrendyMusicPreview";
 import FriendsTripsPreview from "@/components/FriendsTripsPreview";
-import TrendyCountries from "@/components/TrendyCountries";
+// import TrendyCountries from "@/components/TrendyCountries";
 import TripOverlaps from "@/components/TripOverlaps";
-import DiscoverySettings from "@/components/DiscoverySettings";
 import YourCityPreview from "@/components/YourCityPreview";
 import InviteFriendsBanner from "@/components/InviteFriendsBanner";
 import InstallAppDashboardBanner from "@/components/InstallAppDashboardBanner";
@@ -26,6 +25,9 @@ import { getMessages, getTranslation } from "@/lib/i18n";
 import { unstable_cache } from "next/cache";
 import LeaderboardBadges from "@/components/LeaderboardBadges";
 import { getUserLeaderboardBadges } from "@/utils/leaderboard-badges";
+import ActivityFeed from "@/components/ActivityFeed";
+import { getFeedPosts } from "@/utils/get-feed-posts";
+import DashboardPostSection from "@/components/DashboardPostButton";
 
 export const dynamic = "force-dynamic";
 
@@ -130,72 +132,72 @@ const getDanceStyles = unstable_cache(
 );
 
 // Cached: Hot styles change when users update their profiles
-const getHotDanceStyles = unstable_cache(
-  async (): Promise<(DanceStyleType & { userCount: number })[]> => {
-    try {
-      await connectMongo();
+// const getHotDanceStyles = unstable_cache(
+//   async (): Promise<(DanceStyleType & { userCount: number })[]> => {
+//     try {
+//       await connectMongo();
 
-      // Aggregate to count users per dance style
-      const hotStyles = await User.aggregate([
-        // Only count users with complete profiles
-        { $match: { isProfileComplete: true } },
-        // Unwind the danceStyles array to get individual style documents
-        { $unwind: "$danceStyles" },
-        // Group by dance style and count users
-        {
-          $group: {
-            _id: "$danceStyles.danceStyle",
-            userCount: { $sum: 1 },
-          },
-        },
-        // Sort by user count (most popular first)
-        { $sort: { userCount: -1 } },
-        // Limit to top 4
-        { $limit: 4 },
-        // Lookup dance style details
-        {
-          $lookup: {
-            from: "dancestyles",
-            localField: "_id",
-            foreignField: "_id",
-            as: "styleDetails",
-          },
-        },
-        // Unwind style details
-        { $unwind: "$styleDetails" },
-        // Only include active styles
-        { $match: { "styleDetails.isActive": true } },
-        // Project final structure
-        {
-          $project: {
-            _id: "$styleDetails._id",
-            name: "$styleDetails.name",
-            category: "$styleDetails.category",
-            isActive: "$styleDetails.isActive",
-            userCount: 1,
-          },
-        },
-      ]);
+//       // Aggregate to count users per dance style
+//       const hotStyles = await User.aggregate([
+//         // Only count users with complete profiles
+//         { $match: { isProfileComplete: true } },
+//         // Unwind the danceStyles array to get individual style documents
+//         { $unwind: "$danceStyles" },
+//         // Group by dance style and count users
+//         {
+//           $group: {
+//             _id: "$danceStyles.danceStyle",
+//             userCount: { $sum: 1 },
+//           },
+//         },
+//         // Sort by user count (most popular first)
+//         { $sort: { userCount: -1 } },
+//         // Limit to top 4
+//         { $limit: 4 },
+//         // Lookup dance style details
+//         {
+//           $lookup: {
+//             from: "dancestyles",
+//             localField: "_id",
+//             foreignField: "_id",
+//             as: "styleDetails",
+//           },
+//         },
+//         // Unwind style details
+//         { $unwind: "$styleDetails" },
+//         // Only include active styles
+//         { $match: { "styleDetails.isActive": true } },
+//         // Project final structure
+//         {
+//           $project: {
+//             _id: "$styleDetails._id",
+//             name: "$styleDetails.name",
+//             category: "$styleDetails.category",
+//             isActive: "$styleDetails.isActive",
+//             userCount: 1,
+//           },
+//         },
+//       ]);
 
-      const result = hotStyles.map((style: any) => ({
-        ...style,
-        _id: style._id.toString(),
-        id: style._id.toString(),
-      }));
+//       const result = hotStyles.map((style: any) => ({
+//         ...style,
+//         _id: style._id.toString(),
+//         id: style._id.toString(),
+//       }));
 
-      if (result.length === 0) {
-        console.warn("⚠️ getHotDanceStyles returned empty - check database");
-      }
+//       if (result.length === 0) {
+//         console.warn("⚠️ getHotDanceStyles returned empty - check database");
+//       }
 
-      return result;
-    } catch (error) {
-      console.error("Error fetching hot dance styles:", error);
-      return [];
-    }
-  },
-  ["hot-dance-styles"],
-  { revalidate: 300, tags: ["hot-dance-styles"] } // Reduced to 5 minutes for safety
-);
+//       return result;
+//     } catch (error) {
+//       console.error("Error fetching hot dance styles:", error);
+//       return [];
+//     }
+//   },
+//   ["hot-dance-styles"],
+//   { revalidate: 300, tags: ["hot-dance-styles"] } // Reduced to 5 minutes for safety
+// );
 
 // Cached: Community stats are expensive aggregations that change slowly
 const getCommunityStats = unstable_cache(
@@ -204,166 +206,172 @@ const getCommunityStats = unstable_cache(
       await connectMongo();
 
       // Get total dancers
-      const totalDancers = await User.countDocuments({ isProfileComplete: true });
+      const totalDancers = await User.countDocuments({
+        isProfileComplete: true,
+      });
 
-    // Get unique countries count
-    const countries = await User.aggregate([
-      { $match: { isProfileComplete: true, city: { $exists: true } } },
-      {
-        $lookup: {
-          from: "cities",
-          localField: "city",
-          foreignField: "_id",
-          as: "cityData",
+      // Get unique countries count
+      const countries = await User.aggregate([
+        { $match: { isProfileComplete: true, city: { $exists: true } } },
+        {
+          $lookup: {
+            from: "cities",
+            localField: "city",
+            foreignField: "_id",
+            as: "cityData",
+          },
         },
-      },
-      { $unwind: "$cityData" },
-      {
-        $lookup: {
-          from: "countries",
-          localField: "cityData.country",
-          foreignField: "_id",
-          as: "countryData",
+        { $unwind: "$cityData" },
+        {
+          $lookup: {
+            from: "countries",
+            localField: "cityData.country",
+            foreignField: "_id",
+            as: "countryData",
+          },
         },
-      },
-      { $unwind: "$countryData" },
-      { $group: { _id: "$countryData._id" } },
-      { $count: "totalCountries" },
-    ]);
+        { $unwind: "$countryData" },
+        { $group: { _id: "$countryData._id" } },
+        { $count: "totalCountries" },
+      ]);
 
-    // Get unique cities count
-    const cities = await User.aggregate([
-      { $match: { isProfileComplete: true, city: { $exists: true } } },
-      { $group: { _id: "$city" } },
-      { $count: "totalCities" },
-    ]);
+      // Get unique cities count
+      const cities = await User.aggregate([
+        { $match: { isProfileComplete: true, city: { $exists: true } } },
+        { $group: { _id: "$city" } },
+        { $count: "totalCities" },
+      ]);
 
-    // Get top dance style
-    const topStyle = await User.aggregate([
-      { $match: { isProfileComplete: true } },
-      { $unwind: "$danceStyles" },
-      { $group: { _id: "$danceStyles.danceStyle", count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-      { $limit: 1 },
-      {
-        $lookup: {
-          from: "dancestyles",
-          localField: "_id",
-          foreignField: "_id",
-          as: "styleDetails",
+      // Get top dance style
+      const topStyle = await User.aggregate([
+        { $match: { isProfileComplete: true } },
+        { $unwind: "$danceStyles" },
+        { $group: { _id: "$danceStyles.danceStyle", count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 1 },
+        {
+          $lookup: {
+            from: "dancestyles",
+            localField: "_id",
+            foreignField: "_id",
+            as: "styleDetails",
+          },
         },
-      },
-      { $unwind: "$styleDetails" },
-    ]);
+        { $unwind: "$styleDetails" },
+      ]);
 
-    // Get leader/follower ratio - simplified query
-    const roleStats = await User.aggregate([
-      { $match: { isProfileComplete: true } },
-      { $group: { _id: "$danceRole", count: { $sum: 1 } } },
-    ]);
+      // Get leader/follower ratio - simplified query
+      const roleStats = await User.aggregate([
+        { $match: { isProfileComplete: true } },
+        { $group: { _id: "$danceRole", count: { $sum: 1 } } },
+      ]);
 
-    // Process role stats with correct mapping
-    const roleData = { leaders: 0, followers: 0, both: 0 };
-    roleStats.forEach((role: any) => {
-      console.log("Processing role:", role); // Debug each role
-      if (role._id === "leader") {
-        roleData.leaders = role.count;
-      } else if (role._id === "follower") {
-        roleData.followers = role.count;
-      } else if (role._id === "both") {
-        roleData.both = role.count;
+      // Process role stats with correct mapping
+      const roleData = { leaders: 0, followers: 0, both: 0 };
+      roleStats.forEach((role: any) => {
+        console.log("Processing role:", role); // Debug each role
+        if (role._id === "leader") {
+          roleData.leaders = role.count;
+        } else if (role._id === "follower") {
+          roleData.followers = role.count;
+        } else if (role._id === "both") {
+          roleData.both = role.count;
+        }
+      });
+
+      // Debug log
+      console.log("Role stats debug:", {
+        roleStats,
+        roleData,
+        totalUsers: totalDancers,
+      });
+
+      // Get category emoji for top style
+      const getCategoryEmoji = (category: string) => {
+        switch (category) {
+          case "latin":
+            return "🌶️";
+          case "ballroom":
+            return "👑";
+          case "street":
+            return "🏙️";
+          case "contemporary":
+            return "🎨";
+          case "traditional":
+            return "🏛️";
+          default:
+            return "💃";
+        }
+      };
+
+      // Get country breakdown for map
+      const countryBreakdown = await User.aggregate([
+        { $match: { isProfileComplete: true, city: { $exists: true } } },
+        {
+          $lookup: {
+            from: "cities",
+            localField: "city",
+            foreignField: "_id",
+            as: "cityData",
+          },
+        },
+        { $unwind: "$cityData" },
+        {
+          $lookup: {
+            from: "countries",
+            localField: "cityData.country",
+            foreignField: "_id",
+            as: "countryData",
+          },
+        },
+        { $unwind: "$countryData" },
+        {
+          $group: {
+            _id: "$countryData._id",
+            name: { $first: "$countryData.name" },
+            code: { $first: "$countryData.code" },
+            dancerCount: { $sum: 1 },
+          },
+        },
+        { $sort: { dancerCount: -1 } },
+      ]);
+
+      const stats = {
+        totalDancers,
+        totalCountries: countries[0]?.totalCountries || 0,
+        totalCities: cities[0]?.totalCities || 0,
+        topDanceStyle: {
+          name: topStyle[0]?.styleDetails?.name || "Bachata",
+          count: topStyle[0]?.count || 0,
+          emoji: getCategoryEmoji(
+            topStyle[0]?.styleDetails?.category || "latin"
+          ),
+        },
+        leaderFollowerRatio: roleData,
+        countryData: countryBreakdown,
+      };
+
+      if (stats.totalDancers === 0) {
+        console.warn(
+          "⚠️ getCommunityStats returned 0 dancers - check database"
+        );
       }
-    });
 
-    // Debug log
-    console.log("Role stats debug:", {
-      roleStats,
-      roleData,
-      totalUsers: totalDancers,
-    });
-
-    // Get category emoji for top style
-    const getCategoryEmoji = (category: string) => {
-      switch (category) {
-        case "latin":
-          return "🌶️";
-        case "ballroom":
-          return "👑";
-        case "street":
-          return "🏙️";
-        case "contemporary":
-          return "🎨";
-        case "traditional":
-          return "🏛️";
-        default:
-          return "💃";
-      }
-    };
-
-    // Get country breakdown for map
-    const countryBreakdown = await User.aggregate([
-      { $match: { isProfileComplete: true, city: { $exists: true } } },
-      {
-        $lookup: {
-          from: "cities",
-          localField: "city",
-          foreignField: "_id",
-          as: "cityData",
-        },
-      },
-      { $unwind: "$cityData" },
-      {
-        $lookup: {
-          from: "countries",
-          localField: "cityData.country",
-          foreignField: "_id",
-          as: "countryData",
-        },
-      },
-      { $unwind: "$countryData" },
-      {
-        $group: {
-          _id: "$countryData._id",
-          name: { $first: "$countryData.name" },
-          code: { $first: "$countryData.code" },
-          dancerCount: { $sum: 1 },
-        },
-      },
-      { $sort: { dancerCount: -1 } },
-    ]);
-
-    const stats = {
-      totalDancers,
-      totalCountries: countries[0]?.totalCountries || 0,
-      totalCities: cities[0]?.totalCities || 0,
-      topDanceStyle: {
-        name: topStyle[0]?.styleDetails?.name || "Bachata",
-        count: topStyle[0]?.count || 0,
-        emoji: getCategoryEmoji(topStyle[0]?.styleDetails?.category || "latin"),
-      },
-      leaderFollowerRatio: roleData,
-      countryData: countryBreakdown,
-    };
-
-    if (stats.totalDancers === 0) {
-      console.warn("⚠️ getCommunityStats returned 0 dancers - check database");
+      return stats;
+    } catch (error) {
+      console.error("Error fetching community stats:", error);
+      return {
+        totalDancers: 0,
+        totalCountries: 0,
+        totalCities: 0,
+        topDanceStyle: { name: "Bachata", count: 0, emoji: "🌶️" },
+        leaderFollowerRatio: { leaders: 0, followers: 0, both: 0 },
+        countryData: [],
+      };
     }
-
-    return stats;
-  } catch (error) {
-    console.error("Error fetching community stats:", error);
-    return {
-      totalDancers: 0,
-      totalCountries: 0,
-      totalCities: 0,
-      topDanceStyle: { name: "Bachata", count: 0, emoji: "🌶️" },
-      leaderFollowerRatio: { leaders: 0, followers: 0, both: 0 },
-      countryData: [],
-    };
-  }
-},
+  },
   ["community-stats"],
-{ revalidate: 120, tags: ["community-stats"] } // 2 minutes cache for safety
+  { revalidate: 120, tags: ["community-stats"] } // 2 minutes cache for safety
 );
 
 // Extract Spotify track ID from URL
@@ -408,18 +416,24 @@ const getTrendingSongs = unstable_cache(
         .lean();
 
       // Count occurrences of each song by Spotify track ID (ignore YouTube)
-      const songData: { [trackId: string]: { count: number; url: string; users: any[] } } = {};
-      
+      const songData: {
+        [trackId: string]: { count: number; url: string; users: any[] };
+      } = {};
+
       users.forEach((user: any) => {
         if (user.anthem?.url) {
           const platform = detectPlatform(user.anthem.url);
-          
+
           // Only count Spotify songs
           if (platform === "spotify") {
             const trackId = extractSpotifyTrackId(user.anthem.url);
             if (trackId) {
               if (!songData[trackId]) {
-                songData[trackId] = { count: 0, url: user.anthem.url, users: [] };
+                songData[trackId] = {
+                  count: 0,
+                  url: user.anthem.url,
+                  users: [],
+                };
               }
               songData[trackId].count += 1;
               songData[trackId].users.push({
@@ -447,7 +461,7 @@ const getTrendingSongs = unstable_cache(
 
       // Additional deduplication check by track ID (case-insensitive)
       const seenTrackIds = new Set<string>();
-      const deduplicated = trendingSongs.filter(song => {
+      const deduplicated = trendingSongs.filter((song) => {
         const normalizedId = song.spotifyTrackId.toLowerCase();
         if (seenTrackIds.has(normalizedId)) {
           return false;
@@ -459,7 +473,9 @@ const getTrendingSongs = unstable_cache(
       const finalSongs = deduplicated.slice(0, 10); // Top 10
 
       if (finalSongs.length === 0) {
-        console.warn("⚠️ getTrendingSongs returned empty - users may not have anthems set");
+        console.warn(
+          "⚠️ getTrendingSongs returned empty - users may not have anthems set"
+        );
       }
 
       return finalSongs;
@@ -488,7 +504,11 @@ async function getTripOverlaps(userId: string) {
 
     const now = new Date();
     // Set to start of today to include trips ending today
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
 
     // Get current user with their trips, friends, and home city
     const user: any = await User.findById(userId)
@@ -542,9 +562,10 @@ async function getTripOverlaps(userId: string) {
     const overlaps: any[] = [];
 
     // Only consider user's future trips (including trips ending today)
-    const userUpcomingTrips = user.trips?.filter(
-      (trip: any) => new Date(trip.endDate) >= startOfToday
-    ) || [];
+    const userUpcomingTrips =
+      user.trips?.filter(
+        (trip: any) => new Date(trip.endDate) >= startOfToday
+      ) || [];
 
     // TYPE 1: Trip vs Trip matching (existing logic)
     userUpcomingTrips.forEach((userTrip: any) => {
@@ -563,7 +584,14 @@ async function getTripOverlaps(userId: string) {
             const friendTripEnd = new Date(friendTrip.endDate);
 
             // Check if dates overlap
-            if (datesOverlap(userTripStart, userTripEnd, friendTripStart, friendTripEnd)) {
+            if (
+              datesOverlap(
+                userTripStart,
+                userTripEnd,
+                friendTripStart,
+                friendTripEnd
+              )
+            ) {
               // Calculate overlap period
               const overlapStart = new Date(
                 Math.max(userTripStart.getTime(), friendTripStart.getTime())
@@ -581,7 +609,7 @@ async function getTripOverlaps(userId: string) {
 
               overlaps.push({
                 _id: `trip-${userTrip._id}-${friendTrip._id}`,
-                type: 'trip_overlap', // Both traveling
+                type: "trip_overlap", // Both traveling
                 city: {
                   _id: userTrip.city._id.toString(),
                   name: userTrip.city.name,
@@ -629,14 +657,16 @@ async function getTripOverlaps(userId: string) {
             const friendTripStart = new Date(friendTrip.startDate);
 
             // Check if user has any conflicting trips during friend's visit
-            const hasConflictingTrip = userUpcomingTrips.some((userTrip: any) => {
-              return datesOverlap(
-                new Date(userTrip.startDate),
-                new Date(userTrip.endDate),
-                friendTripStart,
-                friendTripEnd
-              );
-            });
+            const hasConflictingTrip = userUpcomingTrips.some(
+              (userTrip: any) => {
+                return datesOverlap(
+                  new Date(userTrip.startDate),
+                  new Date(userTrip.endDate),
+                  friendTripStart,
+                  friendTripEnd
+                );
+              }
+            );
 
             // Only add if user will be available (no conflicting trips)
             if (!hasConflictingTrip) {
@@ -649,7 +679,7 @@ async function getTripOverlaps(userId: string) {
 
               overlaps.push({
                 _id: `home-${userId}-${friendTrip._id}`,
-                type: 'visiting_home', // Friend visiting your city
+                type: "visiting_home", // Friend visiting your city
                 city: {
                   _id: user.city._id.toString(),
                   name: user.city.name,
@@ -769,127 +799,127 @@ async function getFriendsTrips(userId: string) {
 }
 
 // Cached: Trendy countries - expensive aggregation
-const getTrendyCountries = unstable_cache(
-  async () => {
-    try {
-      await connectMongo();
+// const getTrendyCountries = unstable_cache(
+//   async () => {
+//     try {
+//       await connectMongo();
 
-      // Calculate everything in real-time for accuracy
-      const trendyCountries = await Country.aggregate([
-      // Get all active countries
-      { $match: { isActive: true } },
-      // Lookup ALL users in each country
-      {
-        $lookup: {
-          from: "users",
-          let: { countryId: "$_id" },
-          pipeline: [
-            { $match: { isProfileComplete: true } },
-            // Lookup city
-            {
-              $lookup: {
-                from: "cities",
-                localField: "city",
-                foreignField: "_id",
-                as: "cityData",
-              },
-            },
-            { $unwind: "$cityData" },
-            // Match country
-            {
-              $match: {
-                $expr: { $eq: ["$cityData.country", "$$countryId"] },
-              },
-            },
-            // Project only what we need
-            { $project: { _id: 1, updatedAt: 1 } },
-          ],
-          as: "dancers",
-        },
-      },
-      // Filter out countries with no dancers
-      { $match: { "dancers.0": { $exists: true } } },
-      // Calculate metrics
-      {
-        $addFields: {
-          totalDancers: { $size: "$dancers" },
-          recentlyActive: {
-            $size: {
-              $filter: {
-                input: "$dancers",
-                as: "dancer",
-                cond: {
-                  $gte: [
-                    "$$dancer.updatedAt",
-                    new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-                  ],
-                },
-              },
-            },
-          },
-        },
-      },
-      // Calculate trending score: totalDancers + (recentlyActive * 2)
-      {
-        $addFields: {
-          trendingScore: {
-            $add: ["$totalDancers", { $multiply: ["$recentlyActive", 2] }],
-          },
-        },
-      },
-      // Sort by trending score
-      { $sort: { trendingScore: -1 } },
-      // Limit to top 6
-      { $limit: 6 },
-      // Lookup continent
-      {
-        $lookup: {
-          from: "continents",
-          localField: "continent",
-          foreignField: "_id",
-          as: "continentData",
-        },
-      },
-      // Project final structure
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          code: 1,
-          totalDancers: 1,
-          recentlyActive: 1,
-          trendingScore: 1,
-          continent: {
-            $arrayElemAt: ["$continentData", 0],
-          },
-        },
-      },
-    ]);
+//       // Calculate everything in real-time for accuracy
+//       const trendyCountries = await Country.aggregate([
+//       // Get all active countries
+//       { $match: { isActive: true } },
+//       // Lookup ALL users in each country
+//       {
+//         $lookup: {
+//           from: "users",
+//           let: { countryId: "$_id" },
+//           pipeline: [
+//             { $match: { isProfileComplete: true } },
+//             // Lookup city
+//             {
+//               $lookup: {
+//                 from: "cities",
+//                 localField: "city",
+//                 foreignField: "_id",
+//                 as: "cityData",
+//               },
+//             },
+//             { $unwind: "$cityData" },
+//             // Match country
+//             {
+//               $match: {
+//                 $expr: { $eq: ["$cityData.country", "$$countryId"] },
+//               },
+//             },
+//             // Project only what we need
+//             { $project: { _id: 1, updatedAt: 1 } },
+//           ],
+//           as: "dancers",
+//         },
+//       },
+//       // Filter out countries with no dancers
+//       { $match: { "dancers.0": { $exists: true } } },
+//       // Calculate metrics
+//       {
+//         $addFields: {
+//           totalDancers: { $size: "$dancers" },
+//           recentlyActive: {
+//             $size: {
+//               $filter: {
+//                 input: "$dancers",
+//                 as: "dancer",
+//                 cond: {
+//                   $gte: [
+//                     "$$dancer.updatedAt",
+//                     new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+//                   ],
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       },
+//       // Calculate trending score: totalDancers + (recentlyActive * 2)
+//       {
+//         $addFields: {
+//           trendingScore: {
+//             $add: ["$totalDancers", { $multiply: ["$recentlyActive", 2] }],
+//           },
+//         },
+//       },
+//       // Sort by trending score
+//       { $sort: { trendingScore: -1 } },
+//       // Limit to top 6
+//       { $limit: 6 },
+//       // Lookup continent
+//       {
+//         $lookup: {
+//           from: "continents",
+//           localField: "continent",
+//           foreignField: "_id",
+//           as: "continentData",
+//         },
+//       },
+//       // Project final structure
+//       {
+//         $project: {
+//           _id: 1,
+//           name: 1,
+//           code: 1,
+//           totalDancers: 1,
+//           recentlyActive: 1,
+//           trendingScore: 1,
+//           continent: {
+//             $arrayElemAt: ["$continentData", 0],
+//           },
+//         },
+//       },
+//     ]);
 
-    const result = trendyCountries.map((country: any) => ({
-      ...country,
-      _id: country._id.toString(),
-      continent: country.continent
-        ? {
-            _id: country.continent._id?.toString(),
-            name: country.continent.name || "",
-          }
-        : null,
-    }));
+//     const result = trendyCountries.map((country: any) => ({
+//       ...country,
+//       _id: country._id.toString(),
+//       continent: country.continent
+//         ? {
+//             _id: country.continent._id?.toString(),
+//             name: country.continent.name || "",
+//           }
+//         : null,
+//     }));
 
-    if (result.length === 0) {
-      console.warn("⚠️ getTrendyCountries returned empty - check database");
-    }
+//     if (result.length === 0) {
+//       console.warn("⚠️ getTrendyCountries returned empty - check database");
+//     }
 
-    return result;
-  } catch (error) {
-    console.error("Error fetching trendy countries:", error);
-    return [];
-  }
-},
-["trendy-countries"],
-{ revalidate: 120, tags: ["trendy-countries"] } // 2 minutes cache for safety
-);
+//     return result;
+//   } catch (error) {
+//     console.error("Error fetching trendy countries:", error);
+//     return [];
+//   }
+// },
+// ["trendy-countries"],
+// { revalidate: 120, tags: ["trendy-countries"] } // 2 minutes cache for safety
+// );
 
 // Cached: Cities list changes when dancer counts change
 // Note: Shared with landing page - we cache top 10, dashboard uses first 8
@@ -909,7 +939,10 @@ const getCitiesCached = unstable_cache(
       const result = cities.map((doc: any) => ({
         ...doc,
         _id: doc._id.toString(),
-        country: { name: doc.country?.name || "", code: doc.country?.code || "" },
+        country: {
+          name: doc.country?.name || "",
+          code: doc.country?.code || "",
+        },
         continent: { name: doc.continent?.name || "" },
       }));
 
@@ -946,55 +979,22 @@ async function getUserFriendsCount(userId: string): Promise<number> {
   }
 }
 
-// Get user preferences for discovery settings
-async function getUserPreferences(userId: string) {
-  try {
-    await connectMongo();
-    const user: any = await User.findById(userId)
-      .populate({ path: "activeCity", model: City, populate: { path: "country", model: Country, select: "name code" } })
-      .populate({ path: "city", model: City, populate: { path: "country", model: Country, select: "name code" } })
-      .select("activeCity city openToMeetTravelers lookingForPracticePartners")
-      .lean();
-
-    if (!user) return null;
-
-    // Transform to plain object with serializable data
-    const activeCity = user.activeCity || user.city;
-    
-    return {
-      activeCity: activeCity ? {
-        _id: activeCity._id.toString(),
-        id: activeCity._id.toString(),
-        name: activeCity.name,
-        country: activeCity.country ? {
-          name: activeCity.country.name,
-          code: activeCity.country.code,
-        } : null,
-      } : null,
-      openToMeetTravelers: user.openToMeetTravelers || false,
-      lookingForPracticePartners: user.lookingForPracticePartners || false,
-    };
-  } catch (error) {
-    console.error("Error fetching user preferences:", error);
-    return null;
-  }
-}
 
 // Get stats about the user's home city
 async function getUserCityStats(userId: string) {
   try {
     await connectMongo();
-    
+
     // Get user's city
     const user: any = await User.findById(userId)
-      .populate({ 
-        path: "city", 
+      .populate({
+        path: "city",
         model: City,
-        populate: { 
-          path: "country", 
-          model: Country, 
-          select: "name code" 
-        }
+        populate: {
+          path: "country",
+          model: Country,
+          select: "name code",
+        },
       })
       .select("city")
       .lean();
@@ -1088,30 +1088,30 @@ export default async function Dashboard() {
     initialDancers,
     danceStyles,
     cities,
-    hotDanceStyles,
+    // hotDanceStyles,
     communityStats,
     trendingSongs,
-    trendyCountries,
+    // trendyCountries,
     tripOverlaps,
     friendsTrips,
-    userPreferences,
     userCityStats,
     friendsCount,
     leaderboardBadges,
+    feedPosts,
   ] = await Promise.all([
     getInitialDancers(session.user.id),
     getDanceStyles(),
     getCities(),
-    getHotDanceStyles(),
+    // getHotDanceStyles(),
     getCommunityStats(),
     getTrendingSongs(),
-    getTrendyCountries(),
+    // getTrendyCountries(),
     getTripOverlaps(session.user.id),
     getFriendsTrips(session.user.id),
-    getUserPreferences(session.user.id),
     getUserCityStats(session.user.id),
     getUserFriendsCount(session.user.id),
     getUserLeaderboardBadges(session.user.id),
+    getFeedPosts(session.user.id, { limit: 4 }), // Only 4 for preview
   ]);
 
   return (
@@ -1144,24 +1144,17 @@ export default async function Dashboard() {
           <Link href="/cities" className="btn btn-outline btn-sm md:btn-md">
             {t("dashboard.viewAllCities")}
           </Link>
-        </div>   
-        
+        </div>
         {/* Your City Preview */}
         <div className="mt-8">
           <YourCityPreview cityStats={userCityStats} />
         </div>
+        {/* Activity Feed Preview */}
 
-
-        {/* Discovery Settings */}
         <div className="mt-8">
-          <DiscoverySettings
-            initialActiveCity={userPreferences?.activeCity}
-            initialTravelMode={userPreferences?.openToMeetTravelers || false}
-            initialOpenToPractice={userPreferences?.lookingForPracticePartners || false}
-          />
+          <DashboardPostSection initialPosts={feedPosts} />
         </div>
 
-     
         {/* Trip Overlaps - Meetup Opportunities */}
         <TripOverlaps overlaps={tripOverlaps} isPreview={true} />
 
@@ -1178,9 +1171,9 @@ export default async function Dashboard() {
         </div> */}
 
         {/* Hot Dance Styles Section */}
-        <div className="mt-12">
+        {/* <div className="mt-12">
           <HotDanceStyles danceStyles={hotDanceStyles} />
-        </div>
+        </div> */}
 
         {/* Trendy Music Section */}
         <TrendyMusicPreview songs={trendingSongs} />

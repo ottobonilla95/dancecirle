@@ -1,13 +1,17 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { authOptions } from "@/libs/next-auth";
 import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
-import DanceStyle from "@/models/DanceStyle";
-import { createAutoPostsForProfileUpdate, shouldAutoPost } from "@/utils/auto-posts";
 import { revalidateTag } from "next/cache";
 
-export async function PATCH(req: Request) {
+export const dynamic = 'force-dynamic';
+
+// PATCH /api/admin/users/[userId]/update - Admin edits user profile
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { userId: string } }
+) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -17,12 +21,22 @@ export async function PATCH(req: Request) {
   try {
     await connectMongo();
 
-    const body = await req.json();
-    const userId = session.user.id;
+    // Check if user is admin
+    const config = await import("@/config");
+    const isAdmin = session.user.email === config.default.admin.email;
 
-    // Allowed fields for post-onboarding updates
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: "Unauthorized - admin only" },
+        { status: 403 }
+      );
+    }
+
+    const { userId } = params;
+    const body = await req.json();
+
+    // Allowed fields for admin edits
     const allowedUpdates = [
-      // Profile fields
       'bio',
       'image',
       'anthem',
@@ -32,9 +46,7 @@ export async function PATCH(req: Request) {
       'relationshipStatus',
       'dancingStartYear',
       'citiesVisited',
-      // Competitions & achievements
       'jackAndJillCompetitions',
-      // Settings/preferences
       'openToMeetTravelers',
       'lookingForPracticePartners',
     ];
@@ -56,13 +68,11 @@ export async function PATCH(req: Request) {
       );
     }
 
-    // Get user and old data for comparison (for auto-posts)
+    // Get user
     const user = await User.findById(userId);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-
-    const oldUserData = user.toObject();
 
     // Apply updates
     Object.keys(updateData).forEach(key => {
@@ -76,33 +86,16 @@ export async function PATCH(req: Request) {
 
     await user.save();
 
-    // Create auto-posts if user has auto-posting enabled and profile is complete
-    if (user.isProfileComplete && await shouldAutoPost(userId)) {
-      try {
-        await createAutoPostsForProfileUpdate({
-          userId,
-          oldData: oldUserData,
-          newData: user.toObject(),
-        });
-      } catch (error) {
-        console.error("Error creating auto-posts:", error);
-        // Don't fail the request if post creation fails
-      }
-    }
-
-    // Populate for response
-    await user.populate({
-      path: "jackAndJillCompetitions.danceStyle",
-      model: DanceStyle,
-      select: "name",
-    });
+    // Note: NO auto-posts for admin edits
+    // Admins editing user profiles shouldn't trigger activity posts
 
     return NextResponse.json({
       success: true,
+      message: "User profile updated successfully",
       user: user.toObject(),
     });
   } catch (error: any) {
-    console.error("Error updating user:", error);
+    console.error("Error updating user profile (admin):", error);
     return NextResponse.json(
       { error: error.message || "Failed to update user" },
       { status: 500 }

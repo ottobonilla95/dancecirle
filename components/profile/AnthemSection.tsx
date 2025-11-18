@@ -32,17 +32,14 @@ export default function AnthemSection({ initialAnthem }: AnthemSectionProps) {
       // Only Spotify is supported
       const platform = "spotify";
       
-      const response = await fetch("/api/user/profile", {
-        method: "PUT",
+      const response = await fetch("/api/user/update", {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          step: "anthem", 
-          data: { 
-            anthem: {
-              ...anthem,
-              platform
-            }
-          } 
+          anthem: {
+            ...anthem,
+            platform
+          }
         }),
       });
 

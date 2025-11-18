@@ -48,10 +48,10 @@ export default function ProfilePictureSection({ initialImage, userName }: Profil
       const imageUrl = uploadResponse.url;
 
       // Update user profile with new image URL
-      const updateResponse = await fetch("/api/user/profile", {
-        method: "PUT",
+      const updateResponse = await fetch("/api/user/update", {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ step: "profilePicture", data: { image: imageUrl } }),
+        body: JSON.stringify({ image: imageUrl }),
       });
 
       if (!updateResponse.ok) {

@@ -28,10 +28,10 @@ export default function RelationshipStatusSection({ initialRelationshipStatus }:
     setError("");
 
     try {
-      const response = await fetch("/api/user/profile", {
-        method: "PUT",
+      const response = await fetch("/api/user/update", {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ step: "relationshipStatus", data: { relationshipStatus } }),
+        body: JSON.stringify({ relationshipStatus }),
       });
 
       if (!response.ok) {

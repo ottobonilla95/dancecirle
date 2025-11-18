@@ -35,6 +35,7 @@ import LeaderboardBadges from "@/components/LeaderboardBadges";
 import { getUserLeaderboardBadges } from "@/utils/leaderboard-badges";
 import ProducerReleases from "@/components/ProducerReleases";
 import VerifiedBadge from "@/components/VerifiedBadge";
+import DiscoverySettings from "@/components/DiscoverySettings";
 
 interface ProfileProps {
   searchParams: { welcome?: string };
@@ -56,7 +57,7 @@ export default async function Profile({ searchParams }: ProfileProps) {
 
   const user = await User.findById(session.user.id)
     .select(
-      "name firstName lastName username email image dateOfBirth hideAge bio dancingStartYear city citiesVisited trips danceStyles anthem socialMedia danceRole gender nationality relationshipStatus isTeacher isDJ isPhotographer isEventOrganizer isProducer teacherProfile djProfile photographerProfile eventOrganizerProfile producerProfile professionalContact friends likedBy jackAndJillCompetitions createdAt isFeaturedProfessional followers following userType"
+      "name firstName lastName username email image dateOfBirth hideAge bio dancingStartYear city citiesVisited trips danceStyles anthem socialMedia danceRole gender nationality relationshipStatus isTeacher isDJ isPhotographer isEventOrganizer isProducer teacherProfile djProfile photographerProfile eventOrganizerProfile producerProfile professionalContact friends likedBy jackAndJillCompetitions createdAt isFeaturedProfessional followers following userType activeCity openToMeetTravelers lookingForPracticePartners"
     )
     .populate({
       path: "city",
@@ -74,6 +75,16 @@ export default async function Profile({ searchParams }: ProfileProps) {
           select: "name code",
         },
       ],
+    })
+    .populate({
+      path: "activeCity",
+      model: City,
+      select: "name country",
+      populate: {
+        path: "country",
+        model: Country,
+        select: "name code",
+      },
     })
     .populate({
       path: "citiesVisited",
@@ -768,6 +779,17 @@ export default async function Profile({ searchParams }: ProfileProps) {
             <div className="card bg-base-200 shadow-xl">
               <div className="card-body">
                 <UpcomingTrips editable={true} />
+              </div>
+            </div>
+
+            {/* Discovery Settings */}
+            <div className="card bg-base-200 shadow-xl">
+              <div className="card-body">
+                <DiscoverySettings
+                  initialActiveCity={userData.activeCity || userData.city}
+                  initialTravelMode={userData.openToMeetTravelers || false}
+                  initialOpenToPractice={userData.lookingForPracticePartners || false}
+                />
               </div>
             </div>
 

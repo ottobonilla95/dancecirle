@@ -23,10 +23,10 @@ export default function SocialMediaSection({ initialSocialMedia }: SocialMediaSe
   const handleSave = async () => {
     setSaving(true);
     try {
-      const response = await fetch("/api/user/profile", {
-        method: "PUT",
+      const response = await fetch("/api/user/update", {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ step: "socialMedia", data: { socialMedia } }),
+        body: JSON.stringify({ socialMedia }),
       });
 
       if (!response.ok) throw new Error("Failed to update social media");

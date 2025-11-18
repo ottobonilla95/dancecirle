@@ -25,13 +25,11 @@ export default function AdminSocialMediaEdit({ userId, initialSocialMedia }: Adm
     setSaving(true);
 
     try {
-      const res = await fetch(`/api/user/profile`, {
+      const res = await fetch(`/api/admin/users/${userId}/update`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId,
-          field: "socialMedia",
-          data: {
+          socialMedia: {
             instagram: instagram.trim(),
             tiktok: tiktok.trim(),
             youtube: youtube.trim(),

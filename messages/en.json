@@ -14,6 +14,8 @@
     "profileLiked": "{name} liked your profile",
     "newFollower": "{name} started following you",
     "message": "{name} sent you a message",
+    "comment": "{name} commented on your post",
+    "like": "{name} liked your post",
     "justNow": "Just now",
     "minutesAgo": "{count}m ago",
     "hoursAgo": "{count}h ago",
@@ -910,6 +912,36 @@
     "reviews": "reviews",
     "review": "review",
     "seeAll": "See All"
+  },
+  "feed": {
+    "title": "What's Happening",
+    "goingOut": "Going Out?",
+    "noActivity": "No activity yet",
+    "shareWhereGoing": "Share where you're going tonight!",
+    "whereAreYouGoing": "Where Are You Going?",
+    "createPostModal": {
+      "title": "Who's Coming With Me?",
+      "subtitle": "Let your friends know where you're going dancing and find people to join you!",
+      "whereLabel": "Where are you going?",
+      "wherePlaceholder": "e.g., Salsa Republic, La Factoria, The Dance Studio",
+      "messageLabel": "Say something (optional)",
+      "messagePlaceholder": "e.g., Who's in? Beginners welcome! Let's practice some new moves 🕺💃",
+      "cancel": "Cancel",
+      "shareWithFriends": "Share with Friends",
+      "posting": "Posting...",
+      "enterVenue": "Please enter a venue name"
+    },
+    "postTypes": {
+      "goingTo": "Who's coming to",
+      "justJoined": "Just joined",
+      "justMoved": "Just moved to",
+      "addedTrip": "Added trip to",
+      "newSong": "New favorite song",
+      "startedDancing": "Started dancing",
+      "competed": "Competed in",
+      "newRelease": "New release",
+      "viewReleaseDetails": "View Release Details"
+    }
   }
 }
 

@@ -20,6 +20,8 @@ const notificationSchema = new mongoose.Schema(
         "profile_liked",       // Someone liked profile
         "new_follower",        // Someone followed you
         "message",             // New direct message
+        "comment",             // Someone commented on your post
+        "like",                // Someone liked your post
       ],
       required: true,
       index: true,
