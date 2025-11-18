@@ -159,7 +159,7 @@ You may NOT:
 
 DanceCircle integrates with third-party services, including:
 • Stripe: Payment processing
-• Cloudinary: Image hosting
+• ImageKit: Image and video hosting
 • Spotify: Music links
 • Social media platforms (Instagram, TikTok, YouTube)
 • Google Maps/Mapbox: Location services

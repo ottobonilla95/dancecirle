@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ImageCropPicker from "@/components/ImageCropPicker";
 import { FaCamera } from "react-icons/fa";
+import { upload } from "@imagekit/next";
 
 interface ProfilePictureSectionProps {
   initialImage?: string;
@@ -19,21 +20,32 @@ export default function ProfilePictureSection({ initialImage, userName }: Profil
     setError("");
 
     try {
-      // Upload to Cloudinary
-      const formData = new FormData();
-      formData.append("profilePicture", file);
-
-      const uploadResponse = await fetch("/api/upload-profile-pic", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload image");
+      // Get authentication parameters from server
+      const authResponse = await fetch("/api/imagekit-auth");
+      if (!authResponse.ok) {
+        throw new Error("Failed to authenticate upload");
       }
 
-      const uploadData = await uploadResponse.json();
-      const imageUrl = uploadData.imageUrl;
+      const { token, signature, expire, publicKey } = await authResponse.json();
+
+      // Upload using ImageKit SDK
+      const uploadResponse = await upload({
+        file,
+        fileName: `profile-${Date.now()}.${file.name.split('.').pop()}`,
+        token,
+        signature,
+        expire,
+        publicKey,
+        folder: "/dancecircle/profile-pics",
+        useUniqueFileName: false,
+        // Simplified transformation - resize to 800x800 with high quality
+        // ImageKit will auto-optimize format and quality
+        transformation: {
+          pre: "w-800,h-800,c-at_max,fo-face",
+        },
+      });
+
+      const imageUrl = uploadResponse.url;
 
       // Update user profile with new image URL
       const updateResponse = await fetch("/api/user/profile", {

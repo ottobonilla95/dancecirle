@@ -49,7 +49,60 @@ export default function ImageCropPicker({
     setCompletedCrop(pixelCrop);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Resize large images before cropping (for iPhone photos, etc.)
+  const resizeImageIfNeeded = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          // Max dimensions for crop UI (larger images slow down the UI)
+          const MAX_DIMENSION = 2400;
+          
+          // If image is small enough, use as-is
+          if (img.width <= MAX_DIMENSION && img.height <= MAX_DIMENSION) {
+            resolve(e.target?.result as string);
+            return;
+          }
+
+          // Calculate new dimensions maintaining aspect ratio
+          let newWidth = img.width;
+          let newHeight = img.height;
+          
+          if (img.width > img.height) {
+            if (img.width > MAX_DIMENSION) {
+              newWidth = MAX_DIMENSION;
+              newHeight = (img.height * MAX_DIMENSION) / img.width;
+            }
+          } else {
+            if (img.height > MAX_DIMENSION) {
+              newHeight = MAX_DIMENSION;
+              newWidth = (img.width * MAX_DIMENSION) / img.height;
+            }
+          }
+
+          // Resize using canvas
+          const canvas = document.createElement('canvas');
+          canvas.width = newWidth;
+          canvas.height = newHeight;
+          const ctx = canvas.getContext('2d');
+          
+          if (ctx) {
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, newWidth, newHeight);
+            resolve(canvas.toDataURL('image/jpeg', 0.92));
+          } else {
+            resolve(e.target?.result as string);
+          }
+        };
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
@@ -59,22 +112,14 @@ export default function ImageCropPicker({
         return;
       }
 
-      // Validate file size (10MB max)
-      const maxSize = 10 * 1024 * 1024; // 10MB
-      if (file.size > maxSize) {
-        alert("Image size must be less than 10MB");
-        return;
-      }
+      // Note: We removed the 10MB limit - large images will be auto-resized
+      // This allows iPhone photos and other high-res images
 
-      // Create preview for cropping
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImgSrc(e.target?.result as string);
-        setShowCropModal(true);
-        // Reset completedCrop when new image is loaded
-        setCompletedCrop(undefined);
-      };
-      reader.readAsDataURL(file);
+      // Resize if needed, then show crop modal
+      const resizedImage = await resizeImageIfNeeded(file);
+      setImgSrc(resizedImage);
+      setShowCropModal(true);
+      setCompletedCrop(undefined);
     }
   };
 
@@ -92,19 +137,41 @@ export default function ImageCropPicker({
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
 
-    canvas.width = crop.width;
-    canvas.height = crop.height;
+    // Calculate the actual crop dimensions from the natural (full resolution) image
+    const cropWidth = crop.width * scaleX;
+    const cropHeight = crop.height * scaleY;
 
+    // Target output size - maintain high resolution (1200px max for quality)
+    const MAX_OUTPUT_SIZE = 1200;
+    let outputWidth = cropWidth;
+    let outputHeight = cropHeight;
+
+    // Only scale down if the crop is larger than our max size
+    if (cropWidth > MAX_OUTPUT_SIZE || cropHeight > MAX_OUTPUT_SIZE) {
+      const scale = Math.min(MAX_OUTPUT_SIZE / cropWidth, MAX_OUTPUT_SIZE / cropHeight);
+      outputWidth = cropWidth * scale;
+      outputHeight = cropHeight * scale;
+    }
+
+    // Set canvas to high-res output size (not just crop size)
+    canvas.width = outputWidth;
+    canvas.height = outputHeight;
+
+    // Enable image smoothing for better quality
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    // Draw the cropped portion at full/high resolution
     ctx.drawImage(
       image,
       crop.x * scaleX,
       crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
+      cropWidth,
+      cropHeight,
       0,
       0,
-      crop.width,
-      crop.height
+      outputWidth,
+      outputHeight
     );
 
     return new Promise((resolve) => {
@@ -115,7 +182,7 @@ export default function ImageCropPicker({
           }
         },
         "image/jpeg",
-        0.9
+        0.95  // Increased quality from 0.9 to 0.95
       );
     });
   };

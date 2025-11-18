@@ -130,7 +130,7 @@ You can manage some privacy settings in your profile.
 3.3 Service Providers
 
 We share data with trusted third-party service providers who assist us:
-• Cloudinary: Image hosting and delivery
+• ImageKit: Image and video hosting and delivery
 • Stripe: Payment processing
 • MongoDB Atlas: Database hosting
 • Vercel: Platform hosting
