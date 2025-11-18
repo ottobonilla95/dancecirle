@@ -28,7 +28,7 @@ const DELAY_BETWEEN_BATCHES = 60000; // 1 minute (stay under API limits)
 const DRY_RUN = false; // Set to false to actually migrate
 
 // TEST MODE: Set a user ID to test with just one user
-const TEST_USER_ID = null
+const TEST_USER_ID: string | null = null
 
 const IMAGEKIT_PRIVATE_KEY = process.env.IMAGEKIT_PRIVATE_KEY;
 const IMAGEKIT_PUBLIC_KEY = process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY;
