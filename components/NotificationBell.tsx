@@ -89,6 +89,10 @@ export default function NotificationBell({ notifications = [], unreadCount = 0 }
         return <FaUserPlus className="text-info" />;
       case "message":
         return <FaComment className="text-primary" />;
+      case "comment":
+        return <FaComment className="text-info" />;
+      case "like":
+        return <FaHeart className="text-error" />;
       default:
         return <FaBell />;
     }
@@ -140,6 +144,16 @@ export default function NotificationBell({ notifications = [], unreadCount = 0 }
         return {
           text: t("notifications.message").replace("{name}", senderName),
           link: `/messages/${notification.data.conversationId}`,
+        };
+      case "comment":
+        return {
+          text: `${senderName} ${notification.data.message || "commented on your post"}`,
+          link: "/feed",
+        };
+      case "like":
+        return {
+          text: `${senderName} ${notification.data.message || "liked your post"}`,
+          link: "/feed",
         };
       default:
         return {

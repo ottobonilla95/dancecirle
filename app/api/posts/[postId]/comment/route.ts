@@ -75,6 +75,37 @@ export async function POST(
         }
       });
 
+      // Get post type context for notification
+      let postContext = "a post";
+      switch (post.type) {
+        case "going_out":
+          postContext = `a "Going Out" post`;
+          break;
+        case "trip_added":
+          postContext = `a trip to ${post.content?.destination || "a city"}`;
+          break;
+        case "new_song":
+          postContext = "a new song post";
+          break;
+        case "new_dance_style":
+          postContext = `a new dance style post`;
+          break;
+        case "jack_and_jill":
+          postContext = "a J&J competition post";
+          break;
+        case "new_music":
+          postContext = "a music release";
+          break;
+        case "just_joined":
+          postContext = "a welcome post";
+          break;
+        case "just_moved":
+          postContext = `a move to ${post.content?.city || "a new city"}`;
+          break;
+        default:
+          postContext = "a post";
+      }
+
       // Send notifications to all unique users
       await Promise.all(
         Array.from(usersToNotify).map((recipientId) =>
@@ -82,7 +113,7 @@ export async function POST(
             recipientId,
             senderId: userId,
             type: "comment",
-            message: `commented on a post`,
+            message: `commented on ${postContext}`,
             relatedId: postId,
           })
         )

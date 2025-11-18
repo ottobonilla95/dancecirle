@@ -45,11 +45,42 @@ export async function POST(
     // Create notification only when LIKING (not unliking) and not liking own post
     if (isLiking && post.author._id.toString() !== userId) {
       try {
+        // Get post type context for notification
+        let postContext = "your post";
+        switch (post.type) {
+          case "going_out":
+            postContext = `your "Going Out" post`;
+            break;
+          case "trip_added":
+            postContext = `your trip to ${post.content?.destination || "a city"}`;
+            break;
+          case "new_song":
+            postContext = "your new song";
+            break;
+          case "new_dance_style":
+            postContext = `your new dance style`;
+            break;
+          case "jack_and_jill":
+            postContext = "your J&J competition";
+            break;
+          case "new_music":
+            postContext = "your music release";
+            break;
+          case "just_joined":
+            postContext = "your profile";
+            break;
+          case "just_moved":
+            postContext = `your move to ${post.content?.city || "a new city"}`;
+            break;
+          default:
+            postContext = "your post";
+        }
+
         await createNotification({
           recipientId: post.author._id.toString(),
           senderId: userId,
           type: "like",
-          message: `liked your post`,
+          message: `liked ${postContext}`,
           relatedId: postId,
         });
       } catch (error) {
