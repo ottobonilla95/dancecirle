@@ -14,6 +14,7 @@ export const sendEmail = async ({
   html,
   replyTo,
   from,
+  headers,
 }: {
   to: string | string[];
   subject: string;
@@ -21,6 +22,7 @@ export const sendEmail = async ({
   html: string;
   replyTo?: string | string[];
   from?: string;
+  headers?: Record<string, string>;
 }) => {
   const { data, error } = await resend.emails.send({
     from: from || config.resend.fromAdmin,
@@ -29,6 +31,7 @@ export const sendEmail = async ({
     text,
     html,
     ...(replyTo && { replyTo }),
+    ...(headers && { headers }),
   });
 
   if (error) {

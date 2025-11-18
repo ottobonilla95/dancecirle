@@ -135,13 +135,17 @@ export async function POST(
       `<li style="margin: 8px 0; font-size: 16px;">❌ ${step.label}</li>`
     ).join('');
 
-    // Send reminder email
+    // Send reminder email with unsubscribe headers
     try {
       await sendEmail({
         to: user.email,
         from: config.resend.fromAdmin,
         subject: t.subject,
         text: `${t.greeting} ${t.message.replace('{{percentage}}', completionPercentage.toString())} ${t.completeMessage}`,
+        headers: {
+          'List-Unsubscribe': `<https://${config.domainName}/api/unsubscribe?userId=${userId}&type=all>`,
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        },
         html: `
           <!DOCTYPE html>
           <html>
@@ -207,6 +211,10 @@ export async function POST(
                 </div>
                 <div class="footer">
                   <p>${t.footerReason}</p>
+                  <p style="margin-top: 10px; font-size: 11px;">
+                    <a href="https://${config.domainName}/api/unsubscribe?userId=${userId}&type=all" style="color: #999; text-decoration: underline;">Unsubscribe from all</a> | 
+                    <a href="https://${config.domainName}/settings" style="color: #667eea; text-decoration: none;">Manage preferences</a>
+                  </p>
                   <p>${t.copyright}</p>
                 </div>
               </div>

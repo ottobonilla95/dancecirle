@@ -77,12 +77,16 @@ async function main() {
         const html = generateWeeklyDigestHTML(digestData);
         const text = generateWeeklyDigestText(digestData);
 
-        // Send email
+        // Send email with unsubscribe headers
         await sendEmail({
           to: digestData.user.email,
           subject: `💃 Your Week on ${config.appName}`,
           html,
           text,
+          headers: {
+            'List-Unsubscribe': `<https://${config.domainName}/api/unsubscribe?userId=${userId}&type=weeklyDigest>`,
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          },
         });
 
         emailsSent++;

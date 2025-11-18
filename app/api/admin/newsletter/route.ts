@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     const users = await User.find({
       email: { $exists: true, $ne: null },
       "notificationSettings.emailNotifications": { $ne: false },
-    }).select("email name");
+    }).select("email name _id");
 
     if (users.length === 0) {
       return NextResponse.json({
@@ -41,8 +41,8 @@ export async function POST(req: NextRequest) {
 
     // In test mode, only send to admin
     const recipients = testMode
-      ? [{ email: session.user.email, name: session.user.name }]
-      : users.map((u) => ({ email: u.email, name: u.name }));
+      ? [{ email: session.user.email, name: session.user.name, _id: session.user.id }]
+      : users.map((u) => ({ email: u.email, name: u.name, _id: u._id.toString() }));
 
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -65,10 +65,9 @@ export async function POST(req: NextRequest) {
 
           <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0; text-align: center; color: #999; font-size: 12px;">
             <p>You received this email because you have an account at ${config.appName}</p>
-            <p>
-              <a href="https://dancecircle.ai/settings" style="color: #667eea; text-decoration: none;">
-                Update your notification preferences
-              </a>
+            <p style="margin-top: 10px; font-size: 11px;">
+              <a href="https://${config.domainName}/api/unsubscribe?userId={{USER_ID}}&type=all" style="color: #999; text-decoration: underline;">Unsubscribe from all</a> | 
+              <a href="https://${config.domainName}/settings" style="color: #667eea; text-decoration: none;">Manage preferences</a>
             </p>
           </div>
         </div>
@@ -84,14 +83,21 @@ export async function POST(req: NextRequest) {
       const batch = recipients.slice(i, i + batchSize);
 
       const results = await Promise.allSettled(
-        batch.map((recipient) =>
-          sendEmail({
+        batch.map((recipient) => {
+          // Replace {{USER_ID}} placeholder with actual user ID
+          const personalizedHtml = emailHtml.replace(/\{\{USER_ID\}\}/g, recipient._id);
+          
+          return sendEmail({
             to: recipient.email,
             subject: `📢 ${subject}`,
-            text: `${subject}\n\n${message}\n\n---\nVisit ${config.appName} at https://dancecircle.ai`,
-            html: emailHtml,
-          })
-        )
+            text: `${subject}\n\n${message}\n\n---\nVisit ${config.appName} at https://dancecircle.ai\n\nUnsubscribe: https://${config.domainName}/api/unsubscribe?userId=${recipient._id}&type=all`,
+            html: personalizedHtml,
+            headers: {
+              'List-Unsubscribe': `<https://${config.domainName}/api/unsubscribe?userId=${recipient._id}&type=all>`,
+              'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+            },
+          });
+        })
       );
 
       results.forEach((result) => {

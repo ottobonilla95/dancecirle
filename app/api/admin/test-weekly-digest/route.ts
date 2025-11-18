@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     const html = generateWeeklyDigestHTML(digestData);
     const text = generateWeeklyDigestText(digestData);
 
-    // Send test email
+    // Send test email with unsubscribe headers
     try {
       await sendEmail({
         to: config.admin.email,
@@ -48,6 +48,10 @@ export async function POST(req: NextRequest) {
         html,
         text,
         replyTo: config.resend.supportEmail,
+        headers: {
+          'List-Unsubscribe': `<https://${config.domainName}/api/unsubscribe?userId=${adminUser._id.toString()}&type=weeklyDigest>`,
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        },
       });
 
       console.log(`✅ Test digest sent successfully to ${config.admin.email}`);

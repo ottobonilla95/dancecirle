@@ -1,6 +1,17 @@
 import { WeeklyDigestData } from "../weekly-digest";
 import config from "@/config";
 
+/**
+ * Generate unsubscribe links for weekly digest
+ */
+function getWeeklyDigestUnsubscribeFooter(userId: string): string {
+  const unsubscribeUrl = `https://${config.domainName}/api/unsubscribe?userId=${userId}&type=weeklyDigest`;
+  const unsubscribeAllUrl = `https://${config.domainName}/api/unsubscribe?userId=${userId}&type=all`;
+  const settingsUrl = `https://${config.domainName}/settings`;
+  
+  return `<a href="${unsubscribeUrl}" style="color: #999; text-decoration: underline;">Unsubscribe from weekly digest</a> | <a href="${unsubscribeAllUrl}" style="color: #999; text-decoration: underline;">Unsubscribe from all</a> | <a href="${settingsUrl}" style="color: #667eea;">Manage preferences</a>`;
+}
+
 export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
   const { user, profileActivity, leaderboardChanges, friendActivity, tripActivity } = data;
 
@@ -238,8 +249,8 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
   const baseUrl = `https://${config.domainName}`;
   const dashboardUrl = `${baseUrl}/dashboard`;
   const profileUrl = user.username 
-    ? `${baseUrl}/dancer/${user.username}`
-    : `${baseUrl}/dashboard`;
+    ? `${baseUrl}/${user.username}`
+    : `${baseUrl}/profile`;
 
   return `
     <!DOCTYPE html>
@@ -284,6 +295,9 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
             </p>
             <p style="margin: 15px 0 0 0; font-size: 11px; color: #999;">
               This is your weekly digest from ${config.appName}. You're receiving this because you're an active member of our dance community.
+            </p>
+            <p style="margin: 15px 0 0 0; font-size: 11px;">
+              ${getWeeklyDigestUnsubscribeFooter(user._id)}
             </p>
           </div>
         </div>
