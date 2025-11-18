@@ -28,7 +28,8 @@ export async function GET() {
           name: 1,
           username: 1,
           image: 1,
-          likesCount: 1
+          likesCount: 1,
+          isFeaturedProfessional: 1
         }
       }
     ]);
@@ -60,7 +61,8 @@ export async function GET() {
           name: 1,
           username: 1,
           image: 1,
-          firstPlaces: 1
+          firstPlaces: 1,
+          isFeaturedProfessional: 1
         }
       }
     ]);
@@ -92,7 +94,8 @@ export async function GET() {
           name: 1,
           username: 1,
           image: 1,
-          podiumFinishes: 1
+          podiumFinishes: 1,
+          isFeaturedProfessional: 1
         }
       }
     ]);
@@ -116,7 +119,8 @@ export async function GET() {
           name: 1,
           username: 1,
           image: 1,
-          competitionsCount: 1
+          competitionsCount: 1,
+          isFeaturedProfessional: 1
         }
       }
     ]);
@@ -142,7 +146,8 @@ export async function GET() {
           name: 1,
           username: 1,
           image: 1,
-          likesCount: 1
+          likesCount: 1,
+          isFeaturedProfessional: 1
         }
       }
     ]);
@@ -168,7 +173,8 @@ export async function GET() {
           name: 1,
           username: 1,
           image: 1,
-          likesCount: 1
+          likesCount: 1,
+          isFeaturedProfessional: 1
         }
       }
     ]);
@@ -194,7 +200,8 @@ export async function GET() {
           name: 1,
           username: 1,
           image: 1,
-          likesCount: 1
+          likesCount: 1,
+          isFeaturedProfessional: 1
         }
       }
     ]);
@@ -220,7 +227,8 @@ export async function GET() {
           name: 1,
           username: 1,
           image: 1,
-          likesCount: 1
+          likesCount: 1,
+          isFeaturedProfessional: 1
         }
       }
     ]);

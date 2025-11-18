@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { FaHeart, FaTrophy, FaChalkboardTeacher, FaMusic, FaCamera } from "react-icons/fa";
 import { useTranslation } from "@/components/I18nProvider";
+import VerifiedBadge from "@/components/VerifiedBadge";
 
 type LeaderboardUser = {
   _id: string;
@@ -16,6 +17,7 @@ type LeaderboardUser = {
   firstPlaces?: number;
   podiumFinishes?: number;
   competitionsCount?: number;
+  isFeaturedProfessional?: boolean;
 };
 
 type LeaderboardData = {
@@ -224,10 +226,13 @@ export default function LeaderboardsPage() {
 
                   {/* Name & Username */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-lg truncate">
-                      {user.name}
+                    <h3 className="font-bold text-lg truncate flex items-center gap-2">
+                      <span>{user.name}</span>
+                      {user.isFeaturedProfessional && (
+                        <VerifiedBadge size="sm" />
+                      )}
                       {isCurrentUser && (
-                        <span className="ml-2 badge badge-primary badge-sm">You</span>
+                        <span className="badge badge-primary badge-sm">You</span>
                       )}
                     </h3>
                     {user.username && (
