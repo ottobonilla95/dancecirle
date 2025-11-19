@@ -366,14 +366,15 @@ export default function ActivityFeed({
     
     if (hasNoFriends) {
       return (
-        <div className="text-center py-8">
-          <p className="text-lg text-base-content/60 mb-2">
-            👋 No activity yet
+        <div className="text-center py-12">
+          <p className="text-2xl mb-2">👋</p>
+          <p className="text-lg text-base-content/70 mb-2 font-semibold">
+            No activity yet
           </p>
-          <p className="text-sm text-base-content/50 mb-4">
+          <p className="text-sm text-base-content/50 mb-6">
             Connect with dancers to see what's happening!
           </p>
-          <Link href="/discover" className="btn btn-primary gap-1">
+          <Link href="/discover" className="btn btn-primary gap-2">
             <span className="text-lg">🌍</span>
             Discover People
           </Link>
@@ -381,24 +382,20 @@ export default function ActivityFeed({
       );
     }
     
-    // Has friends but no posts - encourage posting
+    // Has friends but no posts yet
     return (
-      <div className="text-center py-8">
-        <p className="text-lg text-base-content/60 mb-2">
-          {t("feed.noActivity")} 🌙
+      <div className="text-center py-12">
+        <p className="text-2xl mb-2">🌙</p>
+        <p className="text-lg text-base-content/70 mb-2 font-semibold">
+          No activity yet
         </p>
-        <p className="text-sm text-base-content/50 mb-4">
-          {t("feed.shareWhereGoing")}
+        <p className="text-sm text-base-content/50 mb-6">
+          When your friends add trips, update their favorite songs, or join competitions, you'll see it here!
         </p>
-        {onCreatePost ? (
-          <button onClick={onCreatePost} className="btn btn-primary gap-1">
-            <span className="text-lg">🕺</span>
-            {t("feed.whereAreYouGoing")}
-          </button>
-        ) : (
-          <Link href="/feed" className="btn btn-primary gap-1">
-            <span className="text-lg">🕺</span>
-            {t("feed.whereAreYouGoing")}
+        {!isPreview && (
+          <Link href="/discover" className="btn btn-outline gap-2">
+            <span className="text-lg">🌍</span>
+            Discover More Dancers
           </Link>
         )}
       </div>
