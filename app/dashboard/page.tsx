@@ -1152,7 +1152,7 @@ export default async function Dashboard() {
         {/* Activity Feed Preview */}
 
         <div className="mt-16">
-          <DashboardPostSection initialPosts={feedPosts} />
+          <DashboardPostSection initialPosts={feedPosts} friendsCount={friendsCount} />
         </div>
 
         {/* Trip Overlaps - Meetup Opportunities */}

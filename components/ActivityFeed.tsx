@@ -88,12 +88,14 @@ interface ActivityFeedProps {
   isPreview?: boolean; // If true, show limited posts with "See All" button
   initialPosts?: Post[]; // Server-rendered initial posts
   onCreatePost?: () => void; // Optional callback to open post modal
+  friendsCount?: number; // Number of friends (for smart empty state)
 }
 
 export default function ActivityFeed({ 
   isPreview = false,
   initialPosts = [],
-  onCreatePost
+  onCreatePost,
+  friendsCount
 }: ActivityFeedProps) {
   const { t } = useTranslation();
   const [posts, setPosts] = useState<Post[]>(initialPosts);
@@ -359,6 +361,27 @@ export default function ActivityFeed({
   }
 
   if (posts.length === 0) {
+    // Smart empty state: encourage making friends if they have 0 friends
+    const hasNoFriends = friendsCount !== undefined && friendsCount === 0;
+    
+    if (hasNoFriends) {
+      return (
+        <div className="text-center py-8">
+          <p className="text-lg text-base-content/60 mb-2">
+            👋 No activity yet
+          </p>
+          <p className="text-sm text-base-content/50 mb-4">
+            Connect with dancers to see what's happening!
+          </p>
+          <Link href="/discover" className="btn btn-primary gap-1">
+            <span className="text-lg">🌍</span>
+            Discover People
+          </Link>
+        </div>
+      );
+    }
+    
+    // Has friends but no posts - encourage posting
     return (
       <div className="text-center py-8">
         <p className="text-lg text-base-content/60 mb-2">

@@ -7,9 +7,10 @@ import ActivityFeed from "./ActivityFeed";
 
 interface DashboardPostSectionProps {
   initialPosts: any[];
+  friendsCount: number;
 }
 
-export default function DashboardPostSection({ initialPosts }: DashboardPostSectionProps) {
+export default function DashboardPostSection({ initialPosts, friendsCount }: DashboardPostSectionProps) {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -38,6 +39,7 @@ export default function DashboardPostSection({ initialPosts }: DashboardPostSect
         isPreview={true} 
         initialPosts={initialPosts}
         onCreatePost={() => setIsModalOpen(true)}
+        friendsCount={friendsCount}
       />
 
       <CreatePostModal
