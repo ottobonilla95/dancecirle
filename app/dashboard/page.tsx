@@ -25,7 +25,6 @@ import { getMessages, getTranslation } from "@/lib/i18n";
 import { unstable_cache } from "next/cache";
 import LeaderboardBadges from "@/components/LeaderboardBadges";
 import { getUserLeaderboardBadges } from "@/utils/leaderboard-badges";
-import ActivityFeed from "@/components/ActivityFeed";
 import { getFeedPosts } from "@/utils/get-feed-posts";
 import DashboardPostSection from "@/components/DashboardPostButton";
 

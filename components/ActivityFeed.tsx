@@ -87,14 +87,12 @@ interface Post {
 interface ActivityFeedProps {
   isPreview?: boolean; // If true, show limited posts with "See All" button
   initialPosts?: Post[]; // Server-rendered initial posts
-  onCreatePost?: () => void; // Optional callback to open post modal
   friendsCount?: number; // Number of friends (for smart empty state)
 }
 
 export default function ActivityFeed({ 
   isPreview = false,
   initialPosts = [],
-  onCreatePost,
   friendsCount
 }: ActivityFeedProps) {
   const { t } = useTranslation();
@@ -372,7 +370,7 @@ export default function ActivityFeed({
             No activity yet
           </p>
           <p className="text-sm text-base-content/50 mb-6">
-            Connect with dancers to see what's happening!
+            Connect with dancers to see what&apos;s happening!
           </p>
           <Link href="/discover" className="btn btn-primary gap-2">
             <span className="text-lg">🌍</span>
@@ -389,9 +387,9 @@ export default function ActivityFeed({
         <p className="text-lg text-base-content/70 mb-2 font-semibold">
           No activity yet
         </p>
-        <p className="text-sm text-base-content/50 mb-6">
-          When your friends add trips, update their favorite songs, or join competitions, you'll see it here!
-        </p>
+          <p className="text-sm text-base-content/50 mb-6">
+            When your friends add trips, update their favorite songs, or join competitions, you&apos;ll see it here!
+          </p>
         {!isPreview && (
           <Link href="/discover" className="btn btn-outline gap-2">
             <span className="text-lg">🌍</span>
