@@ -16,7 +16,7 @@ export async function getFeedPosts(
 
     const { limit = 20 } = options;
 
-    const user = await User.findById(userId).select("city friends").populate("city", "name");
+    const user = await User.findById(userId).select("city friends following").populate("city", "name");
     if (!user) {
       return [];
     }
@@ -26,16 +26,22 @@ export async function getFeedPosts(
 
     // Smart feed:
     // - "going_out" posts: from ANYONE in user's city (find dance partners!)
-    // - Other posts: from FRIENDS + YOUR OWN POSTS (so you can see comments)
+    // - Other posts: from FRIENDS + FOLLOWING + YOUR OWN POSTS (so you can see comments and releases from producers you follow!)
     if (cityName) {
+      // Combine friends and following into one array for the query
+      const friendsAndFollowing = [
+        ...(user.friends || []),
+        ...(user.following || [])
+      ];
+      
       query = {
         $or: [
           // All "going out" posts in user's city
           { type: "going_out", city: cityName },
-          // Other post types from friends
+          // Other post types from friends and following
           { 
             type: { $ne: "going_out" }, 
-            author: { $in: user.friends || [] } 
+            author: { $in: friendsAndFollowing } 
           },
           // YOUR OWN posts (so you can see comments on them!)
           {
@@ -45,10 +51,15 @@ export async function getFeedPosts(
         ],
       };
     } else {
-      // If no city, show friends' posts + your own
+      // If no city, show friends' and following posts + your own
+      const friendsAndFollowing = [
+        ...(user.friends || []),
+        ...(user.following || [])
+      ];
+      
       query = { 
         $or: [
-          { author: { $in: user.friends || [] } },
+          { author: { $in: friendsAndFollowing } },
           { author: userId }
         ]
       };

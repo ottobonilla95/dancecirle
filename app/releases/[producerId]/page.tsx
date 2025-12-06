@@ -1,15 +1,60 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { Metadata } from "next";
 import connectMongo from "@/libs/mongoose";
 import Release from "@/models/Release";
 import User from "@/models/User";
 import { FaArrowLeft, FaSpotify, FaYoutube, FaExternalLinkAlt } from "react-icons/fa";
+import config from "@/config";
 
 interface ReleasesPageProps {
   params: {
     producerId: string;
   };
+}
+
+// Generate metadata for SEO
+export async function generateMetadata({ params }: ReleasesPageProps): Promise<Metadata> {
+  try {
+    await connectMongo();
+    
+    const producer = await User.findById(params.producerId)
+      .select("name username image isProducer")
+      .lean() as any;
+
+    if (!producer || !producer.isProducer) {
+      return {
+        title: "Producer Not Found | DanceCircle",
+      };
+    }
+
+    const releasesCount = await Release.countDocuments({ producer: params.producerId });
+    const title = `${producer.name}'s Releases | DanceCircle`;
+    const description = `Explore all music releases by ${producer.name}. ${releasesCount} ${releasesCount === 1 ? 'release' : 'releases'} available on DanceCircle.`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        type: "profile",
+        url: `${config.domainName}/releases/${params.producerId}`,
+        images: producer.image ? [producer.image] : [],
+      },
+      twitter: {
+        card: "summary",
+        title,
+        description,
+        images: producer.image ? [producer.image] : [],
+      },
+    };
+  } catch (error) {
+    return {
+      title: "Releases | DanceCircle",
+    };
+  }
 }
 
 export default async function ReleasesPage({ params }: ReleasesPageProps) {

@@ -1,15 +1,65 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { Metadata } from "next";
 import connectMongo from "@/libs/mongoose";
 import Release from "@/models/Release";
 import User from "@/models/User";
 import { FaArrowLeft, FaSpotify, FaYoutube, FaExternalLinkAlt } from "react-icons/fa";
+import config from "@/config";
 
 interface ReleasePageProps {
   params: {
     releaseId: string;
   };
+}
+
+// Generate metadata for SEO
+export async function generateMetadata({ params }: ReleasePageProps): Promise<Metadata> {
+  try {
+    await connectMongo();
+    
+    const release = await Release.findById(params.releaseId)
+      .populate({
+        path: "producer",
+        select: "name username image",
+      })
+      .lean() as any;
+
+    if (!release) {
+      return {
+        title: "Release Not Found | DanceCircle",
+      };
+    }
+
+    const producer = release.producer;
+    const title = `${release.title} by ${producer.name} | DanceCircle`;
+    const description = release.description 
+      ? `${release.description.substring(0, 155)}...` 
+      : `Listen to ${release.title} by ${producer.name} on ${release.platform === 'spotify' ? 'Spotify' : 'YouTube'}`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        type: "music.song",
+        url: `${config.domainName}/release/${params.releaseId}`,
+        images: producer.image ? [producer.image] : [],
+      },
+      twitter: {
+        card: "summary",
+        title,
+        description,
+        images: producer.image ? [producer.image] : [],
+      },
+    };
+  } catch (error) {
+    return {
+      title: "Release | DanceCircle",
+    };
+  }
 }
 
 export default async function ReleasePage({ params }: ReleasePageProps) {

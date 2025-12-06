@@ -5,6 +5,8 @@ import City from '@/models/City';
 import Country from '@/models/Country';
 import Continent from '@/models/Continent';
 import DanceStyle from '@/models/DanceStyle';
+import Release from '@/models/Release';
+import DJEvent from '@/models/DJEvent';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://dancecircle.co';
@@ -37,6 +39,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Fetch all dance styles
     const danceStyles = await DanceStyle.find({ isActive: true })
+      .select('_id updatedAt')
+      .lean();
+
+    // Fetch all releases (public music releases)
+    const releases = await Release.find({})
+      .select('_id createdAt')
+      .lean();
+
+    // Fetch all DJ events (public events)
+    const djEvents = await DJEvent.find({})
       .select('_id updatedAt')
       .lean();
 
@@ -123,12 +135,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
     */
 
+    // Release pages (public - music releases by producers)
+    const releasePages = releases.map((release: any) => ({
+      url: `${baseUrl}/release/${release._id.toString()}`,
+      lastModified: release.createdAt || new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    }));
+
+    // DJ event pages (public - events played by DJs)
+    const eventPages = djEvents.map((event: any) => ({
+      url: `${baseUrl}/events/${event._id.toString()}`,
+      lastModified: event.updatedAt || new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }));
+
     return [
       ...staticPages,
       ...userPages,
       ...cityPages,
       ...countryPages,
       ...continentPages,
+      ...releasePages,
+      ...eventPages,
       // ...danceStylePages, // Uncomment when dance styles are public
     ];
   } catch (error) {
