@@ -14,6 +14,7 @@ import CurrentLocationPicker from "@/components/CurrentLocationPicker";
 import { event as fbEvent } from "@/components/FacebookPixel";
 import SupportButton from "@/components/SupportButton";
 import { useTranslation } from "@/components/I18nProvider";
+import { upload } from "@imagekit/next";
 
 interface OnboardingStep {
   id: string;
@@ -838,21 +839,30 @@ export default function Onboarding() {
   const uploadProfilePic = async (file: File): Promise<string> => {
     setUploadingProfilePic(true);
     try {
-      const formData = new FormData();
-      formData.append("profilePicture", file);
-
-      const response = await fetch("/api/upload-profile-pic", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Upload failed");
+      // Get authentication parameters from server
+      const authResponse = await fetch("/api/imagekit-auth");
+      if (!authResponse.ok) {
+        throw new Error("Failed to authenticate upload");
       }
 
-      const { imageUrl } = await response.json();
-      return imageUrl;
+      const { token, signature, expire, publicKey } = await authResponse.json();
+
+      // Upload using ImageKit SDK
+      const uploadResponse = await upload({
+        file,
+        fileName: `profile-${Date.now()}.${file.name.split('.').pop()}`,
+        token,
+        signature,
+        expire,
+        publicKey,
+        folder: "/dancecircle/profile-pics",
+        useUniqueFileName: false,
+        transformation: {
+          pre: "w-800,h-800,c-at_max,fo-face",
+        },
+      });
+
+      return uploadResponse.url;
     } finally {
       setUploadingProfilePic(false);
     }
