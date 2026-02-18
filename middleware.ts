@@ -29,6 +29,7 @@ const publicRoutes = [
   '/release',      // Public music releases
   '/releases',     // Public releases list
   '/events',       // Public events
+  '/organizer-events', // Public organizer events
   '/leaderboards', // Public leaderboards
   '/music',        // Public music pages
   '/stats',        // Public stats

@@ -7,6 +7,7 @@ import City from "@/models/City";
 import Country from "@/models/Country";
 import Continent from "@/models/Continent";
 import DanceStyle from "@/models/DanceStyle";
+import OrganizerEvent from "@/models/OrganizerEvent";
 import { City as CityType } from "@/types";
 import { DanceStyle as DanceStyleType } from "@/types/dance-style";
 import DiscoveryFeed from "@/components/DiscoveryFeed";
@@ -978,6 +979,53 @@ async function getUserFriendsCount(userId: string): Promise<number> {
   }
 }
 
+async function getLocalOrganizerEvents(userId: string) {
+  try {
+    await connectMongo();
+
+    const user: any = await User.findById(userId).select("activeCity city").lean();
+    if (!user) return [];
+
+    const cityId = user.activeCity || user.city;
+    if (!cityId) return [];
+
+    const events = await OrganizerEvent.find({
+      city: cityId,
+      startsAt: { $gte: new Date() },
+      isPublished: true,
+    })
+      .select(
+        "title venue startsAt flyerUrl priceAmount priceCurrency ticketUrl danceStyles city organizerId"
+      )
+      .populate({
+        path: "city",
+        model: City,
+        select: "name country",
+        populate: {
+          path: "country",
+          model: Country,
+          select: "name code",
+        },
+      })
+      .populate({
+        path: "organizerId",
+        model: User,
+        select: "name username image",
+      })
+      .sort({ startsAt: 1 })
+      .limit(6)
+      .lean();
+
+    return events.map((event: any) => ({
+      ...event,
+      _id: event._id.toString(),
+    }));
+  } catch (error) {
+    console.error("Error fetching local organizer events:", error);
+    return [];
+  }
+}
+
 
 // Get stats about the user's home city
 async function getUserCityStats(userId: string) {
@@ -1097,6 +1145,7 @@ export default async function Dashboard() {
     friendsCount,
     leaderboardBadges,
     feedPosts,
+    localOrganizerEvents,
   ] = await Promise.all([
     getInitialDancers(session.user.id),
     getDanceStyles(),
@@ -1111,6 +1160,7 @@ export default async function Dashboard() {
     getUserFriendsCount(session.user.id),
     getUserLeaderboardBadges(session.user.id),
     getFeedPosts(session.user.id, { limit: 4 }), // Only 4 for preview
+    getLocalOrganizerEvents(session.user.id),
   ]);
 
   return (
@@ -1134,25 +1184,64 @@ export default async function Dashboard() {
           </div>
         )}
 
-        {/* Hot Cities Section */}
-        <h2 className="max-w-3xl font-extrabold text-xl md:text-2xl tracking-tight mb-2 md:mb-8">
-          {t("dashboard.hottestCities")}
-        </h2>
-        <CityList initialCities={cities} />
-        <div className="flex justify-center mt-6">
-          <Link href="/cities" className="btn btn-outline btn-sm md:btn-md">
-            {t("dashboard.viewAllCities")}
-          </Link>
-        </div>
         {/* Your City Preview */}
         <div className="mt-8">
           <YourCityPreview cityStats={userCityStats} />
         </div>
-        {/* Activity Feed Preview */}
 
-        <div className="mt-16">
-          <DashboardPostSection initialPosts={feedPosts} friendsCount={friendsCount} />
-        </div>
+        {localOrganizerEvents.length > 0 && (
+          <div className="mt-10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="max-w-3xl font-extrabold text-xl md:text-2xl tracking-tight">
+                Events Near You
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {localOrganizerEvents.map((event: any) => (
+                <Link
+                  key={event._id}
+                  href={`/organizer-events/${event._id}`}
+                  className="card bg-base-200 hover:bg-base-300 transition-colors shadow-md"
+                >
+                  <div className="card-body p-4">
+                    <div className="flex gap-3">
+                      {event.flyerUrl && (
+                        <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                          <img
+                            src={event.flyerUrl}
+                            alt={event.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <h3 className="font-semibold line-clamp-1">{event.title}</h3>
+                        <p className="text-sm text-base-content/70 mt-1">
+                          {new Date(event.startsAt).toLocaleString("en-US", {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                            hour: "numeric",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                        <p className="text-sm text-base-content/60 line-clamp-1">
+                          {event.venue ? `${event.venue} • ` : ""}
+                          {event.city?.name || "City"} by {event.organizerId?.name || "Organizer"}
+                        </p>
+                        {typeof event.priceAmount === "number" && (
+                          <p className="text-xs text-base-content/70 mt-1">
+                            {event.priceCurrency || "USD"} {event.priceAmount.toFixed(2)}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Trip Overlaps - Meetup Opportunities */}
         <TripOverlaps overlaps={tripOverlaps} isPreview={true} />
@@ -1163,6 +1252,22 @@ export default async function Dashboard() {
             <FriendsTripsPreview trips={friendsTrips} />
           </div>
         )}
+
+        {/* Activity Feed Preview */}
+        <div className="mt-16">
+          <DashboardPostSection initialPosts={feedPosts} friendsCount={friendsCount} />
+        </div>
+
+        {/* Hot Cities Section */}
+        <h2 className="max-w-3xl font-extrabold text-xl md:text-2xl tracking-tight mb-2 mt-12 md:mb-8">
+          {t("dashboard.hottestCities")}
+        </h2>
+        <CityList initialCities={cities} />
+        <div className="flex justify-center mt-6">
+          <Link href="/cities" className="btn btn-outline btn-sm md:btn-md">
+            {t("dashboard.viewAllCities")}
+          </Link>
+        </div>
 
         {/* Trendy Countries Section */}
         {/* <div className="mt-12">

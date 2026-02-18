@@ -27,10 +27,16 @@ import DanceStylesSection from "@/components/profile/DanceStylesSection";
 import SocialMediaSection from "@/components/profile/SocialMediaSection";
 import AnthemSection from "@/components/profile/AnthemSection";
 import DJEventsManager from "@/components/profile/DJEventsManager";
+import OrganizerEventsManager from "@/components/profile/OrganizerEventsManager";
 import DanceRoleSection from "@/components/profile/DanceRoleSection";
 import RelationshipStatusSection from "@/components/profile/RelationshipStatusSection";
 import DancingExperienceSection from "@/components/profile/DancingExperienceSection";
 import ProfilePictureSection from "@/components/profile/ProfilePictureSection";
+import NameSection from "@/components/profile/NameSection";
+import BirthDetailsSection from "@/components/profile/BirthDetailsSection";
+import HomeLocationSection from "@/components/profile/HomeLocationSection";
+import NationalitySection from "@/components/profile/NationalitySection";
+import ProfessionalSetupSection from "@/components/profile/ProfessionalSetupSection";
 import LeaderboardBadges from "@/components/LeaderboardBadges";
 import { getUserLeaderboardBadges } from "@/utils/leaderboard-badges";
 import ProducerReleases from "@/components/ProducerReleases";
@@ -279,8 +285,8 @@ export default async function Profile({ searchParams }: ProfileProps) {
                     <div className="flex items-center gap-2 flex-wrap">
                       <h2 className="card-title text-2xl mb-1 flex items-center gap-2">
                         {userData.firstName && userData.lastName
-                          ? `${userData.firstName} ${userData.lastName}, ${age}`
-                          : `${userData.name?.charAt(0)?.toUpperCase() + userData.name?.slice(1)}, ${age}`}
+                          ? `${userData.firstName} ${userData.lastName}${!userData.hideAge && age !== null ? `, ${age}` : ""}`
+                          : `${userData.name?.charAt(0)?.toUpperCase() + userData.name?.slice(1)}${!userData.hideAge && age !== null ? `, ${age}` : ""}`}
                         {userData.isFeaturedProfessional && (
                           <VerifiedBadge size="md" />
                         )}
@@ -639,6 +645,41 @@ export default async function Profile({ searchParams }: ProfileProps) {
 
           {/* Detailed Information */}
           <div className="lg:col-span-2 space-y-6">
+            <div className="card bg-base-200 shadow-xl">
+              <div className="card-body space-y-5">
+                <h3 className="card-title text-xl">Basic Info</h3>
+                <NameSection
+                  initialFirstName={userData.firstName}
+                  initialLastName={userData.lastName}
+                />
+                <BirthDetailsSection
+                  initialDateOfBirth={userData.dateOfBirth}
+                  initialHideAge={userData.hideAge}
+                />
+                <HomeLocationSection initialCity={userData.city} />
+                <NationalitySection initialNationality={userData.nationality} />
+              </div>
+            </div>
+
+            <div className="card bg-base-200 shadow-xl">
+              <div className="card-body">
+                <h3 className="card-title text-xl mb-2">Professional Setup</h3>
+                <ProfessionalSetupSection
+                  initialIsTeacher={userData.isTeacher}
+                  initialIsDJ={userData.isDJ}
+                  initialIsPhotographer={userData.isPhotographer}
+                  initialIsEventOrganizer={userData.isEventOrganizer}
+                  initialIsProducer={userData.isProducer}
+                  initialTeacherProfile={userData.teacherProfile}
+                  initialDjProfile={userData.djProfile}
+                  initialPhotographerProfile={userData.photographerProfile}
+                  initialEventOrganizerProfile={userData.eventOrganizerProfile}
+                  initialProducerProfile={userData.producerProfile}
+                  initialProfessionalContact={userData.professionalContact}
+                />
+              </div>
+            </div>
+
             {/* Dance Information - Only show if there's actual content */}
             {hasDanceProfileContent && (
               <div className="card bg-base-200 shadow-xl">
@@ -805,6 +846,15 @@ export default async function Profile({ searchParams }: ProfileProps) {
               <div className="card bg-base-200 shadow-xl">
                 <div className="card-body">
                   <DJEventsManager />
+                </div>
+              </div>
+            )}
+
+            {/* Organizer Events Manager - Only for Event Organizers */}
+            {userData.isEventOrganizer && (
+              <div className="card bg-base-200 shadow-xl">
+                <div className="card-body">
+                  <OrganizerEventsManager />
                 </div>
               </div>
             )}

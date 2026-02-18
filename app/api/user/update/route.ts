@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
+import { isValidObjectId } from "mongoose";
 import { authOptions } from "@/libs/next-auth";
 import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
 import DanceStyle from "@/models/DanceStyle";
+import City from "@/models/City";
 import { createAutoPostsForProfileUpdate, shouldAutoPost } from "@/utils/auto-posts";
 import { revalidateTag } from "next/cache";
 
@@ -23,6 +25,12 @@ export async function PATCH(req: Request) {
     // Allowed fields for post-onboarding updates
     const allowedUpdates = [
       // Profile fields
+      "firstName",
+      "lastName",
+      "dateOfBirth",
+      "hideAge",
+      "city",
+      "nationality",
       'bio',
       'image',
       'anthem',
@@ -32,6 +40,18 @@ export async function PATCH(req: Request) {
       'relationshipStatus',
       'dancingStartYear',
       'citiesVisited',
+      // Professional fields
+      "isTeacher",
+      "isDJ",
+      "isPhotographer",
+      "isEventOrganizer",
+      "isProducer",
+      "teacherProfile",
+      "djProfile",
+      "photographerProfile",
+      "eventOrganizerProfile",
+      "producerProfile",
+      "professionalContact",
       // Competitions & achievements
       'jackAndJillCompetitions',
       // Settings/preferences
@@ -63,11 +83,61 @@ export async function PATCH(req: Request) {
     }
 
     const oldUserData = user.toObject();
+    const oldCityId = user.city ? user.city.toString() : null;
+
+    if (updateData.city !== undefined) {
+      if (!isValidObjectId(updateData.city)) {
+        return NextResponse.json({ error: "Invalid city" }, { status: 400 });
+      }
+      const cityExists = await City.exists({ _id: updateData.city });
+      if (!cityExists) {
+        return NextResponse.json({ error: "City not found" }, { status: 404 });
+      }
+    }
 
     // Apply updates
     Object.keys(updateData).forEach(key => {
       user[key] = updateData[key];
     });
+
+    // Keep display name aligned with first/last name updates
+    if (updateData.firstName !== undefined || updateData.lastName !== undefined) {
+      user.name = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    }
+
+    // Normalize date input when sent as string
+    if (typeof updateData.dateOfBirth === "string" && updateData.dateOfBirth) {
+      user.dateOfBirth = new Date(updateData.dateOfBirth);
+    }
+
+    // Keep professional contact consistent with selected roles
+    const hasAnyProfessionalRole =
+      user.isTeacher ||
+      user.isDJ ||
+      user.isPhotographer ||
+      user.isEventOrganizer ||
+      user.isProducer;
+    if (!hasAnyProfessionalRole) {
+      user.professionalContact = undefined;
+    }
+
+    // Keep city counters accurate for complete profiles
+    if (updateData.city !== undefined) {
+      const newCityId = user.city ? user.city.toString() : null;
+      if (user.isProfileComplete && oldCityId !== newCityId) {
+        if (oldCityId) {
+          await City.findByIdAndUpdate(oldCityId, { $inc: { totalDancers: -1 } });
+        }
+        if (newCityId) {
+          await City.findByIdAndUpdate(newCityId, { $inc: { totalDancers: 1 } });
+        }
+      }
+
+      // Keep dashboard/discovery context aligned when home city is edited here
+      if (user.city) {
+        user.activeCity = user.city;
+      }
+    }
 
     // Invalidate cache if anthem updated
     if (updateData.anthem) {
@@ -109,4 +179,3 @@ export async function PATCH(req: Request) {
     );
   }
 }
-
