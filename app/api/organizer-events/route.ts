@@ -65,7 +65,9 @@ export async function GET(req: NextRequest) {
     if (upcoming) query.startsAt = { $gte: new Date() };
 
     const skip = (page - 1) * limit;
-    const sort = upcoming ? { startsAt: 1 } : { startsAt: -1 };
+    const sort: { startsAt: 1 | -1 } = upcoming
+      ? { startsAt: 1 }
+      : { startsAt: -1 };
 
     const events = await OrganizerEvent.find(query)
       .sort(sort)
@@ -148,7 +150,9 @@ export async function POST(req: NextRequest) {
 
     await connectMongo();
 
-    const user = await User.findById(session.user.id).select("isEventOrganizer").lean();
+    const user = (await User.findById(session.user.id)
+      .select("isEventOrganizer")
+      .lean()) as { isEventOrganizer?: boolean } | null;
     if (!user?.isEventOrganizer) {
       return NextResponse.json(
         { error: "Only event organizers can create events" },
