@@ -92,11 +92,11 @@ export default function DancerCard({ dancer, showLikeButton = true, showFlag = f
       )}
       
       <Link href={`/dancer/${dancer._id}`} className="block">
-        <div className="card-body p-4">
+        <div className="card-body p-3 sm:p-4">
           {/* Header with Avatar and Basic Info */}
-          <div className="flex items-start gap-3 mb-3">
+          <div className="flex items-start gap-3 mb-2">
             <div className="avatar">
-              <div className="w-16 h-16 rounded-full">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full">
                 {dancer.image ? (
                   <Image
                     src={dancer.image}
@@ -119,20 +119,20 @@ export default function DancerCard({ dancer, showLikeButton = true, showFlag = f
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 {dancer.nationality && (
-                  <span className="text-xl">{getFlagEmoji(getCountryCode(dancer.nationality))}</span>
+                  <span className="text-lg sm:text-xl">{getFlagEmoji(getCountryCode(dancer.nationality))}</span>
                 )}
-                <h3 className="font-bold text-lg truncate flex items-center gap-1">
+                <h3 className="font-bold text-base sm:text-lg truncate flex items-center gap-1">
                   {dancer.name}
                   {dancer.isFeaturedProfessional && (
                     <VerifiedBadge size="sm" className="flex-shrink-0" />
                   )}
                 </h3>
               </div>
-              <p className="text-sm text-base-content/60">@{dancer.username}</p>
+              <p className="text-xs sm:text-sm text-base-content/60">@{dancer.username}</p>
               
               {/* Location - Show home city for travelers, otherwise show city */}
               {dancer.city && dancer.city.name && (showHomeCity || !isTraveling) && (
-                <div className="flex items-center gap-1 text-sm text-base-content/70 mt-1">
+                <div className="flex items-center gap-1 text-xs sm:text-sm text-base-content/70 mt-0.5 sm:mt-1">
                   <FaMapMarkerAlt className="text-xs" />
                   {isTraveling && showHomeCity && <span className="text-xs opacity-70">From: </span>}
                   <span className="truncate">{dancer.city.name}</span>
@@ -141,11 +141,11 @@ export default function DancerCard({ dancer, showLikeButton = true, showFlag = f
             </div>
 
             {/* Age, Zodiac, and Experience */}
-            <div className="flex flex-col items-end text-sm text-base-content/60 gap-0.5">
+            <div className="flex flex-col items-end text-xs sm:text-sm text-base-content/60 gap-0.5">
               {dancer.dateOfBirth && !dancer.hideAge && (
                 <span className="font-semibold">{new Date().getFullYear() - new Date(dancer.dateOfBirth).getFullYear()}</span>
               )}
-              {zodiacInfo && <span className="text-lg">{zodiacInfo.emoji}</span>}
+              {zodiacInfo && <span className="text-base sm:text-lg">{zodiacInfo.emoji}</span>}
               {dancer.dancingStartYear && (
                 <span className="text-xs font-medium flex items-center gap-0.5">
                   💃 {new Date().getFullYear() - dancer.dancingStartYear}y
@@ -156,7 +156,7 @@ export default function DancerCard({ dancer, showLikeButton = true, showFlag = f
 
           {/* Bio */}
           {dancer.bio && (
-            <p className="text-sm text-base-content/80 italic line-clamp-2 mb-2">
+            <p className="text-sm text-base-content/80 italic line-clamp-2 mb-1.5">
               &ldquo;{dancer.bio}&rdquo;
             </p>
           )}
@@ -177,7 +177,7 @@ export default function DancerCard({ dancer, showLikeButton = true, showFlag = f
 
           {/* Professional Roles - Prominent Display */}
           {(dancer.isTeacher || dancer.isDJ || dancer.isPhotographer || dancer.isEventOrganizer || dancer.isProducer) && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {dancer.isTeacher && (
                 <span className="badge badge-sm badge-primary gap-1.5 font-semibold">
                   <FaGraduationCap className="text-sm" />
@@ -213,7 +213,7 @@ export default function DancerCard({ dancer, showLikeButton = true, showFlag = f
 
           {/* J&J Competition Achievements */}
           {jjStats && jjStats.total > 0 && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {jjStats.first > 0 || jjStats.second > 0 || jjStats.third > 0 ? (
                 <>
                   {jjStats.first > 0 && (
@@ -242,7 +242,7 @@ export default function DancerCard({ dancer, showLikeButton = true, showFlag = f
 
           {/* Connect Preferences */}
           {(dancer.openToMeetTravelers || dancer.lookingForPracticePartners) && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {dancer.openToMeetTravelers && (
                 <span className="badge badge-sm badge-info gap-1">
                   ✈️ {t('dancerCard.traveler')}
@@ -258,7 +258,7 @@ export default function DancerCard({ dancer, showLikeButton = true, showFlag = f
 
           {/* Dance Styles */}
           {dancer.danceStylesPopulated && dancer.danceStylesPopulated.length > 0 && (
-            <div className="mb-1.5">
+            <div className="mb-1">
               <div className="flex flex-wrap gap-1">
                 {dancer.danceStylesPopulated.slice(0, 3).map((style, index) => (
                   <span key={index} className="badge badge-outline badge-sm">

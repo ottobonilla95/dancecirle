@@ -644,10 +644,12 @@
     "population": "Population",
     "totalDancers": "Total Dancers",
     "dancersLivingHere": "Dancers Living Here",
+    "dancersShort": "Dancers",
     "activeCommunity": "Active dance community members",
     "visitors": "Visitors",
     "visitedForDance": "Dancers who've visited for dance",
     "mostCommonRole": "Most Common Role",
+    "mostCommonRoleShort": "Role",
     "ofDancers": "of dancers",
     "popularDanceStyles": "Popular Dance Styles",
     "teachers": "Dance Teachers",
@@ -666,10 +668,12 @@
   "country": {
     "totalDancers": "Total Dancers",
     "dancersLivingHere": "Dancers Living Here",
+    "dancersShort": "Dancers",
     "activeCommunity": "Active dance community members",
     "visitors": "Visitors",
     "visitedForDance": "Dancers who've visited for dance",
     "mostCommonRole": "Most Common Role",
+    "mostCommonRoleShort": "Role",
     "ofDancers": "of dancers",
     "topCities": "Top Cities",
     "popularDanceStyles": "Popular Dance Styles",
@@ -944,4 +948,3 @@
     }
   }
 }
-

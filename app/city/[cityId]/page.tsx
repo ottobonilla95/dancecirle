@@ -382,12 +382,12 @@ export default async function CityPage({ params, searchParams }: Props) {
               <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent">
                 {city.name}
               </h1>
-              <div className="flex items-center gap-4 text-base-content/70">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-base-content/70">
                 <span className="flex items-center gap-1">
                   <FaMapMarkerAlt />
                   <Link 
                     href={`/country/${city.country?._id || city.country?.id}`}
-                    className="link link-primary hover:link-accent"
+                    className="link link-primary hover:link-accent whitespace-nowrap"
                   >
                     {city.country?.name}
                   </Link>
@@ -396,7 +396,7 @@ export default async function CityPage({ params, searchParams }: Props) {
                       {", "}
                       <Link 
                         href={`/continent/${city.continent?._id || city.continent?.id}`}
-                        className="link link-primary hover:link-accent"
+                        className="link link-primary hover:link-accent whitespace-nowrap"
                       >
                         {city.continent?.name}
                       </Link>
@@ -419,56 +419,62 @@ export default async function CityPage({ params, searchParams }: Props) {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="stat bg-base-200 rounded-lg">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6 mb-8">
+          <div className="stat bg-base-200 rounded-lg p-3 sm:p-4">
             <div className="stat-figure text-primary">
-              <FaMusic className="text-3xl" />
+              <FaMusic className="text-2xl sm:text-3xl" />
             </div>
-            <div className="stat-title">{t('city.dancersLivingHere')}</div>
-            <div className="stat-value text-primary">{totalDancers}</div>
-            <div className="stat-desc">{t('city.activeCommunity')}</div>
+            <div className="stat-title text-xs sm:text-sm">
+              <span className="sm:hidden">{t('city.dancersShort')}</span>
+              <span className="hidden sm:inline">{t('city.dancersLivingHere')}</span>
+            </div>
+            <div className="stat-value text-primary text-xl sm:text-3xl leading-tight">{totalDancers}</div>
+            <div className="stat-desc hidden sm:block">{t('city.activeCommunity')}</div>
           </div>
 
-          <div className="stat bg-base-200 rounded-lg">
+          <div className="stat bg-base-200 rounded-lg p-3 sm:p-4">
             <div className="stat-figure text-secondary">
-              <FaGlobeAmericas className="text-3xl" />
+              <FaGlobeAmericas className="text-2xl sm:text-3xl" />
             </div>
-            <div className="stat-title">{t('city.visitors')}</div>
-            <div className="stat-value text-secondary">
+            <div className="stat-title text-xs sm:text-sm">{t('city.visitors')}</div>
+            <div className="stat-value text-secondary text-xl sm:text-3xl leading-tight">
               {totalDancersWhoVisited}
             </div>
-            <div className="stat-desc">{t('city.visitedForDance')}</div>
+            <div className="stat-desc hidden sm:block">{t('city.visitedForDance')}</div>
           </div>
 
-          <div className="stat bg-base-200 rounded-lg">
+          <div className="stat bg-base-200 rounded-lg p-3 sm:p-4 hidden sm:block">
             <div className="stat-figure text-accent">
-              <FaHeart className="text-3xl" />
+              <FaHeart className="text-2xl sm:text-3xl" />
             </div>
-            <div className="stat-title">{t('city.mostCommonRole')}</div>
-            <div className="stat-value text-accent">
+            <div className="stat-title text-xs sm:text-sm">
+              <span className="sm:hidden">{t('city.mostCommonRoleShort')}</span>
+              <span className="hidden sm:inline">{t('city.mostCommonRole')}</span>
+            </div>
+            <div className="stat-value text-accent text-xl sm:text-3xl leading-tight">
               {roleLabel}
             </div>
-            <div className="stat-desc">{rolePercentage}% {t('city.ofDancers')}</div>
+            <div className="stat-desc hidden sm:block">{rolePercentage}% {t('city.ofDancers')}</div>
           </div>
         </div>
 
         {upcomingEvents.length > 0 && (
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <div className="card bg-base-200 shadow-xl">
-              <div className="card-body">
-                <h2 className="card-title mb-4 flex items-center gap-2">
+              <div className="card-body p-4 sm:p-6">
+                <h2 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                   <FaCalendar /> Upcoming Events
                 </h2>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {upcomingEvents.map((event: any) => (
                     <Link
                       key={event._id}
                       href={`/organizer-events/${event._id}`}
-                      className="block bg-base-300 hover:bg-base-100 rounded-lg p-3 transition-colors"
+                      className="block bg-base-300 hover:bg-base-100 rounded-lg p-2 sm:p-3 transition-colors"
                     >
-                      <div className="flex gap-3">
+                      <div className="flex gap-2 sm:gap-3">
                         {event.flyerUrl && (
-                          <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden flex-shrink-0">
                             <img
                               src={event.flyerUrl}
                               alt={event.title}
@@ -480,7 +486,7 @@ export default async function CityPage({ params, searchParams }: Props) {
                           <div className="font-semibold hover:text-primary transition-colors line-clamp-1">
                             {event.title}
                           </div>
-                          <p className="text-xs text-base-content/70 mt-1">
+                          <p className="text-xs text-base-content/70 mt-0.5 sm:mt-1">
                             {new Date(event.startsAt).toLocaleString("en-US", {
                               weekday: "short",
                               month: "short",
@@ -494,7 +500,7 @@ export default async function CityPage({ params, searchParams }: Props) {
                             by {event.organizerId?.name || "Organizer"}
                           </p>
                           {typeof event.priceAmount === "number" && (
-                            <p className="text-xs text-base-content/70 mt-1">
+                            <p className="text-xs text-base-content/70 mt-0.5 sm:mt-1">
                               {event.priceCurrency || "USD"} {event.priceAmount.toFixed(2)}
                             </p>
                           )}
@@ -509,21 +515,21 @@ export default async function CityPage({ params, searchParams }: Props) {
         )}
 
         {(teachers.length > 0 || djs.length > 0 || photographers.length > 0 || eventOrganizers.length > 0 || producers.length > 0) && (
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Professionals in {city.name}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <section className="mb-6 sm:mb-8">
+            <h2 className="text-2xl font-bold mb-3 sm:mb-4">Professionals in {city.name}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               {teachers.length > 0 && (
                 <div className="card bg-base-200 shadow-xl">
-                  <div className="card-body">
-                    <h3 className="card-title mb-4 flex items-center gap-2">
+                  <div className="card-body p-4 sm:p-6">
+                    <h3 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                       🎓 {t('city.teachers')}
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {teachers.map((teacher: any) => (
                         <Link
                           key={teacher._id}
                           href={`/dancer/${teacher._id}`}
-                          className="flex items-center gap-3 hover:bg-base-300 rounded p-2 transition-colors"
+                          className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
                             <div className="w-10 h-10 rounded-full">
@@ -563,16 +569,16 @@ export default async function CityPage({ params, searchParams }: Props) {
 
               {djs.length > 0 && (
                 <div className="card bg-base-200 shadow-xl">
-                  <div className="card-body">
-                    <h3 className="card-title mb-4 flex items-center gap-2">
+                  <div className="card-body p-4 sm:p-6">
+                    <h3 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                       🎵 {t('city.djs')}
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {djs.map((dj: any) => (
                         <Link
                           key={dj._id}
                           href={`/dancer/${dj._id}`}
-                          className="flex items-center gap-3 hover:bg-base-300 rounded p-2 transition-colors"
+                          className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
                             <div className="w-10 h-10 rounded-full">
@@ -611,16 +617,16 @@ export default async function CityPage({ params, searchParams }: Props) {
 
               {photographers.length > 0 && (
                 <div className="card bg-base-200 shadow-xl">
-                  <div className="card-body">
-                    <h3 className="card-title mb-4 flex items-center gap-2">
+                  <div className="card-body p-4 sm:p-6">
+                    <h3 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                       📷 {t('city.photographers')}
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {photographers.map((photographer: any) => (
                         <Link
                           key={photographer._id}
                           href={`/dancer/${photographer._id}`}
-                          className="flex items-center gap-3 hover:bg-base-300 rounded p-2 transition-colors"
+                          className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
                             <div className="w-10 h-10 rounded-full">
@@ -659,16 +665,16 @@ export default async function CityPage({ params, searchParams }: Props) {
 
               {eventOrganizers.length > 0 && (
                 <div className="card bg-base-200 shadow-xl">
-                  <div className="card-body">
-                    <h3 className="card-title mb-4 flex items-center gap-2">
+                  <div className="card-body p-4 sm:p-6">
+                    <h3 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                       🎪 Event Organizers
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {eventOrganizers.map((organizer: any) => (
                         <Link
                           key={organizer._id}
                           href={`/dancer/${organizer._id}`}
-                          className="flex items-center gap-3 hover:bg-base-300 rounded p-2 transition-colors"
+                          className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
                             <div className="w-10 h-10 rounded-full">
@@ -707,16 +713,16 @@ export default async function CityPage({ params, searchParams }: Props) {
 
               {producers.length > 0 && (
                 <div className="card bg-base-200 shadow-xl">
-                  <div className="card-body">
-                    <h3 className="card-title mb-4 flex items-center gap-2">
+                  <div className="card-body p-4 sm:p-6">
+                    <h3 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                       🎹 Producers
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {producers.map((producer: any) => (
                         <Link
                           key={producer._id}
                           href={`/dancer/${producer._id}`}
-                          className="flex items-center gap-3 hover:bg-base-300 rounded p-2 transition-colors"
+                          className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
                             <div className="w-10 h-10 rounded-full">
@@ -758,8 +764,8 @@ export default async function CityPage({ params, searchParams }: Props) {
 
         <div className="mb-8">
           <div className="card bg-base-200 shadow-xl">
-            <div className="card-body">
-              <h2 className="card-title mb-6">{t('city.dancersIn')} {city.name}</h2>
+            <div className="card-body p-4 sm:p-6">
+              <h2 className="card-title mb-4 sm:mb-6">{t('city.dancersIn')} {city.name}</h2>
 
               {dancers.length > 0 ? (
                 <DancersFilter
@@ -787,12 +793,12 @@ export default async function CityPage({ params, searchParams }: Props) {
           </div>
         </div>
 
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="card bg-base-200 shadow-xl">
-            <div className="card-body">
-              <h2 className="card-title mb-4">{t('city.popularDanceStyles')}</h2>
+            <div className="card-body p-4 sm:p-6">
+              <h2 className="card-title mb-3 sm:mb-4">{t('city.popularDanceStyles')}</h2>
               {danceStylesInCity.length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {danceStylesInCity.map((style: any, index: number) => (
                     <Link
                       key={style._id}
@@ -814,7 +820,7 @@ export default async function CityPage({ params, searchParams }: Props) {
                   ))}
                 </div>
               ) : (
-                <p className="text-base-content/60 text-center py-4">
+                <p className="text-base-content/60 text-center py-3 sm:py-4">
                   No dance styles data available yet
                 </p>
               )}
@@ -823,13 +829,13 @@ export default async function CityPage({ params, searchParams }: Props) {
         </div>
 
         {mostLikedDancers.length > 0 && (
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <div className="card bg-base-200 shadow-xl">
-              <div className="card-body">
-                <h2 className="card-title mb-4 flex items-center gap-2">
+              <div className="card-body p-4 sm:p-6">
+                <h2 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                   ❤️ {t('city.mostLikedDancers')}
                 </h2>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {mostLikedDancers.map((dancer: any, index: number) => (
                     <Link
                       key={dancer._id}
