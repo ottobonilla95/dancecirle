@@ -225,7 +225,7 @@ export default async function ContinentPage({ params }: Props) {
               {continent.name}
             </span>
           </h1>
-          <div className="flex items-center gap-4 text-base-content/70">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-base-content/70">
             <span className="flex items-center gap-1">
               <FaUsers />
               {formatNumber(totalDancers)} dancers
@@ -242,44 +242,47 @@ export default async function ContinentPage({ params }: Props) {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="stat bg-base-200 rounded-lg">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6 mb-8">
+          <div className="stat bg-base-200 rounded-lg p-3 sm:p-4">
             <div className="stat-figure text-primary">
-              <FaMusic className="text-3xl" />
+              <FaMusic className="text-2xl sm:text-3xl" />
             </div>
-            <div className="stat-title">Total Dancers</div>
-            <div className="stat-value text-primary">{formatNumber(totalDancers)}</div>
-            <div className="stat-desc">Active dance community members</div>
+            <div className="stat-title text-xs sm:text-sm">
+              <span className="sm:hidden">Dancers</span>
+              <span className="hidden sm:inline">Total Dancers</span>
+            </div>
+            <div className="stat-value text-primary text-xl sm:text-3xl leading-tight">{formatNumber(totalDancers)}</div>
+            <div className="stat-desc hidden sm:block">Active dance community members</div>
           </div>
 
-          <div className="stat bg-base-200 rounded-lg">
+          <div className="stat bg-base-200 rounded-lg p-3 sm:p-4">
             <div className="stat-figure text-secondary">
-              <FaFlag className="text-3xl" />
+              <FaFlag className="text-2xl sm:text-3xl" />
             </div>
-            <div className="stat-title">Countries</div>
-            <div className="stat-value text-secondary">{topCountries.length}</div>
-            <div className="stat-desc">With active dancers</div>
+            <div className="stat-title text-xs sm:text-sm">Countries</div>
+            <div className="stat-value text-secondary text-xl sm:text-3xl leading-tight">{topCountries.length}</div>
+            <div className="stat-desc hidden sm:block">With active dancers</div>
           </div>
 
-          <div className="stat bg-base-200 rounded-lg">
+          <div className="stat bg-base-200 rounded-lg p-3 sm:p-4">
             <div className="stat-figure text-accent">
-              <FaCity className="text-3xl" />
+              <FaCity className="text-2xl sm:text-3xl" />
             </div>
-            <div className="stat-title">Cities</div>
-            <div className="stat-value text-accent">{formatNumber(citiesInContinent.length)}</div>
-            <div className="stat-desc">Dance communities</div>
+            <div className="stat-title text-xs sm:text-sm">Cities</div>
+            <div className="stat-value text-accent text-xl sm:text-3xl leading-tight">{formatNumber(citiesInContinent.length)}</div>
+            <div className="stat-desc hidden sm:block">Dance communities</div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
             {/* Popular Dance Styles */}
-            <div className="card bg-base-200 shadow-xl mb-6">
-              <div className="card-body">
-                <h2 className="card-title mb-4">Popular Dance Styles</h2>
+            <div className="card bg-base-200 shadow-xl mb-4 sm:mb-6">
+              <div className="card-body p-4 sm:p-6">
+                <h2 className="card-title mb-3 sm:mb-4">Popular Dance Styles</h2>
                 {danceStylesInContinent.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {danceStylesInContinent.map((style: any, index: number) => (
                       <Link
                         key={style._id}
@@ -301,7 +304,7 @@ export default async function ContinentPage({ params }: Props) {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-base-content/60 text-center py-4">
+                  <p className="text-base-content/60 text-center py-3 sm:py-4">
                     No dance styles data available yet
                   </p>
                 )}
@@ -310,9 +313,9 @@ export default async function ContinentPage({ params }: Props) {
 
             {/* Top Countries */}
             {topCountries.length > 0 && (
-              <div className="card bg-base-200 shadow-xl mb-6">
-                <div className="card-body">
-                  <h2 className="card-title mb-4">Top Countries</h2>
+              <div className="card bg-base-200 shadow-xl mb-4 sm:mb-6">
+                <div className="card-body p-4 sm:p-6">
+                  <h2 className="card-title mb-3 sm:mb-4">Top Countries</h2>
                   <div className="space-y-2">
                     {topCountries.map((country: any) => (
                       <Link
@@ -341,8 +344,8 @@ export default async function ContinentPage({ params }: Props) {
             {/* Top Cities */}
             {topCities.length > 0 && (
               <div className="card bg-base-200 shadow-xl">
-                <div className="card-body">
-                  <h2 className="card-title mb-4">Top Cities</h2>
+                <div className="card-body p-4 sm:p-6">
+                  <h2 className="card-title mb-3 sm:mb-4">Top Cities</h2>
                   <div className="space-y-2">
                     {topCities.map((city: any) => (
                       <Link
@@ -383,8 +386,8 @@ export default async function ContinentPage({ params }: Props) {
           {/* Dancers in this Continent */}
           <div className="lg:col-span-2">
             <div className="card bg-base-200 shadow-xl">
-              <div className="card-body">
-                <h2 className="card-title mb-6">Dancers in {continent.name}</h2>
+              <div className="card-body p-4 sm:p-6">
+                <h2 className="card-title mb-4 sm:mb-6">Dancers in {continent.name}</h2>
 
                 {dancers.length > 0 ? (
                   <DancersFilter
@@ -407,7 +410,7 @@ export default async function ContinentPage({ params }: Props) {
         {!isLoggedIn && (
           <div className="text-center mt-8">
             <div className="card bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-xl">
-              <div className="card-body">
+              <div className="card-body p-4 sm:p-6">
                 <h2 className="card-title justify-center text-2xl mb-2">
                   Join the Dance Community in {continent.name}
                 </h2>
@@ -427,4 +430,3 @@ export default async function ContinentPage({ params }: Props) {
     </div>
   );
 }
-

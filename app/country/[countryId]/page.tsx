@@ -419,13 +419,13 @@ export default async function CountryPage({ params, searchParams }: Props) {
               <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent">
                 {country.name}
               </h1>
-              <div className="flex items-center gap-4 text-base-content/70">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-base-content/70">
                 {country.continent && (
                   <span className="flex items-center gap-1">
                     <FaGlobeAmericas />
                     <Link 
                       href={`/continent/${country.continent?._id || country.continent?.id}`}
-                      className="link link-primary hover:link-accent"
+                      className="link link-primary hover:link-accent whitespace-nowrap"
                     >
                       {country.continent?.name}
                     </Link>
@@ -441,55 +441,61 @@ export default async function CountryPage({ params, searchParams }: Props) {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="stat bg-base-200 rounded-lg">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6 mb-8">
+          <div className="stat bg-base-200 rounded-lg p-3 sm:p-4">
             <div className="stat-figure text-primary">
-              <FaMusic className="text-3xl" />
+              <FaMusic className="text-2xl sm:text-3xl" />
             </div>
-            <div className="stat-title">{t('country.dancersLivingHere')}</div>
-            <div className="stat-value text-primary">{totalDancers}</div>
-            <div className="stat-desc">{t('country.activeCommunity')}</div>
+            <div className="stat-title text-xs sm:text-sm">
+              <span className="sm:hidden">{t('country.dancersShort')}</span>
+              <span className="hidden sm:inline">{t('country.dancersLivingHere')}</span>
+            </div>
+            <div className="stat-value text-primary text-xl sm:text-3xl leading-tight">{totalDancers}</div>
+            <div className="stat-desc hidden sm:block">{t('country.activeCommunity')}</div>
           </div>
 
-          <div className="stat bg-base-200 rounded-lg">
+          <div className="stat bg-base-200 rounded-lg p-3 sm:p-4">
             <div className="stat-figure text-secondary">
-              <FaGlobeAmericas className="text-3xl" />
+              <FaGlobeAmericas className="text-2xl sm:text-3xl" />
             </div>
-            <div className="stat-title">{t('country.visitors')}</div>
-            <div className="stat-value text-secondary">
+            <div className="stat-title text-xs sm:text-sm">{t('country.visitors')}</div>
+            <div className="stat-value text-secondary text-xl sm:text-3xl leading-tight">
               {totalDancersWhoVisited}
             </div>
-            <div className="stat-desc">{t('country.visitedForDance')}</div>
+            <div className="stat-desc hidden sm:block">{t('country.visitedForDance')}</div>
           </div>
 
-          <div className="stat bg-base-200 rounded-lg">
+          <div className="stat bg-base-200 rounded-lg p-3 sm:p-4 hidden sm:block">
             <div className="stat-figure text-accent">
-              <FaHeart className="text-3xl" />
+              <FaHeart className="text-2xl sm:text-3xl" />
             </div>
-            <div className="stat-title">{t('country.mostCommonRole')}</div>
-            <div className="stat-value text-accent">
+            <div className="stat-title text-xs sm:text-sm">
+              <span className="sm:hidden">{t('country.mostCommonRoleShort')}</span>
+              <span className="hidden sm:inline">{t('country.mostCommonRole')}</span>
+            </div>
+            <div className="stat-value text-accent text-xl sm:text-3xl leading-tight">
               {roleLabel}
             </div>
-            <div className="stat-desc">{rolePercentage}% {t('country.ofDancers')}</div>
+            <div className="stat-desc hidden sm:block">{rolePercentage}% {t('country.ofDancers')}</div>
           </div>
         </div>
 
         {(teachers.length > 0 || djs.length > 0 || photographers.length > 0 || eventOrganizers.length > 0 || producers.length > 0) && (
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Professionals in {country.name}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <section className="mb-6 sm:mb-8">
+            <h2 className="text-2xl font-bold mb-3 sm:mb-4">Professionals in {country.name}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               {teachers.length > 0 && (
                 <div className="card bg-base-200 shadow-xl">
-                  <div className="card-body">
-                    <h3 className="card-title mb-4 flex items-center gap-2">
+                  <div className="card-body p-4 sm:p-6">
+                    <h3 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                       🎓 {t('country.teachers')}
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {teachers.map((teacher: any) => (
                         <Link
                           key={teacher._id}
                           href={`/dancer/${teacher._id}`}
-                          className="flex items-center gap-3 hover:bg-base-300 rounded p-2 transition-colors"
+                          className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
                             <div className="w-10 h-10 rounded-full">
@@ -528,16 +534,16 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
               {djs.length > 0 && (
                 <div className="card bg-base-200 shadow-xl">
-                  <div className="card-body">
-                    <h3 className="card-title mb-4 flex items-center gap-2">
+                  <div className="card-body p-4 sm:p-6">
+                    <h3 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                       🎵 {t('country.djs')}
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {djs.map((dj: any) => (
                         <Link
                           key={dj._id}
                           href={`/dancer/${dj._id}`}
-                          className="flex items-center gap-3 hover:bg-base-300 rounded p-2 transition-colors"
+                          className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
                             <div className="w-10 h-10 rounded-full">
@@ -576,16 +582,16 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
               {photographers.length > 0 && (
                 <div className="card bg-base-200 shadow-xl">
-                  <div className="card-body">
-                    <h3 className="card-title mb-4 flex items-center gap-2">
+                  <div className="card-body p-4 sm:p-6">
+                    <h3 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                       📷 {t('country.photographers')}
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {photographers.map((photographer: any) => (
                         <Link
                           key={photographer._id}
                           href={`/dancer/${photographer._id}`}
-                          className="flex items-center gap-3 hover:bg-base-300 rounded p-2 transition-colors"
+                          className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
                             <div className="w-10 h-10 rounded-full">
@@ -624,16 +630,16 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
               {eventOrganizers.length > 0 && (
                 <div className="card bg-base-200 shadow-xl">
-                  <div className="card-body">
-                    <h3 className="card-title mb-4 flex items-center gap-2">
+                  <div className="card-body p-4 sm:p-6">
+                    <h3 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                       🎪 Event Organizers
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {eventOrganizers.map((organizer: any) => (
                         <Link
                           key={organizer._id}
                           href={`/dancer/${organizer._id}`}
-                          className="flex items-center gap-3 hover:bg-base-300 rounded p-2 transition-colors"
+                          className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
                             <div className="w-10 h-10 rounded-full">
@@ -672,16 +678,16 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
               {producers.length > 0 && (
                 <div className="card bg-base-200 shadow-xl">
-                  <div className="card-body">
-                    <h3 className="card-title mb-4 flex items-center gap-2">
+                  <div className="card-body p-4 sm:p-6">
+                    <h3 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                       🎹 Producers
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {producers.map((producer: any) => (
                         <Link
                           key={producer._id}
                           href={`/dancer/${producer._id}`}
-                          className="flex items-center gap-3 hover:bg-base-300 rounded p-2 transition-colors"
+                          className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
                             <div className="w-10 h-10 rounded-full">
@@ -721,10 +727,10 @@ export default async function CountryPage({ params, searchParams }: Props) {
           </section>
         )}
 
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="card bg-base-200 shadow-xl">
-            <div className="card-body">
-              <h2 className="card-title mb-6">{t('country.dancersIn')} {country.name}</h2>
+            <div className="card-body p-4 sm:p-6">
+              <h2 className="card-title mb-4 sm:mb-6">{t('country.dancersIn')} {country.name}</h2>
 
               {dancers.length > 0 ? (
                 <DancersFilter
@@ -751,12 +757,12 @@ export default async function CountryPage({ params, searchParams }: Props) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
           <div className="card bg-base-200 shadow-xl">
-            <div className="card-body">
-              <h2 className="card-title mb-4">{t('country.popularDanceStyles')}</h2>
+            <div className="card-body p-4 sm:p-6">
+              <h2 className="card-title mb-3 sm:mb-4">{t('country.popularDanceStyles')}</h2>
               {danceStylesInCountry.length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {danceStylesInCountry.map((style: any, index: number) => (
                     <Link
                       key={style._id}
@@ -778,7 +784,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
                   ))}
                 </div>
               ) : (
-                <p className="text-base-content/60 text-center py-4">
+                <p className="text-base-content/60 text-center py-3 sm:py-4">
                   No dance styles data available yet
                 </p>
               )}
@@ -787,11 +793,11 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
           {topCities.length > 0 && (
             <div className="card bg-base-200 shadow-xl">
-              <div className="card-body">
-                <h2 className="card-title mb-4 flex items-center gap-2">
+              <div className="card-body p-4 sm:p-6">
+                <h2 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                   <FaCity /> {t('country.topCities')}
                 </h2>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {topCities.map((city: any, index: number) => (
                     <Link
                       key={city._id}
@@ -827,13 +833,13 @@ export default async function CountryPage({ params, searchParams }: Props) {
         </div>
 
         {mostLikedDancers.length > 0 && (
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <div className="card bg-base-200 shadow-xl">
-              <div className="card-body">
-                <h2 className="card-title mb-4 flex items-center gap-2">
+              <div className="card-body p-4 sm:p-6">
+                <h2 className="card-title mb-3 sm:mb-4 flex items-center gap-2">
                   ❤️ {t('country.mostLikedDancers')}
                 </h2>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {mostLikedDancers.map((dancer: any, index: number) => (
                     <Link
                       key={dancer._id}
@@ -880,11 +886,11 @@ export default async function CountryPage({ params, searchParams }: Props) {
         )}
 
         {(country.socialGroups?.whatsapp || country.socialGroups?.line || country.socialGroups?.telegram || country.socialGroups?.facebook || country.socialGroups?.instagram || country.socialGroups?.website) && (
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <div className="card bg-base-200 shadow-xl">
-              <div className="card-body">
-                <h2 className="card-title mb-4">💬 {t('country.communityGroups')}</h2>
-                <p className="text-sm text-base-content/70 mb-4">
+              <div className="card-body p-4 sm:p-6">
+                <h2 className="card-title mb-3 sm:mb-4">💬 {t('country.communityGroups')}</h2>
+                <p className="text-sm text-base-content/70 mb-3 sm:mb-4">
                   {t('country.joinCommunity').replace('{country}', country.name)}
                 </p>
                 <div className="space-y-2">
@@ -967,7 +973,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
         {!isLoggedIn && (
           <div className="text-center mt-8">
             <div className="card bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-xl">
-              <div className="card-body">
+              <div className="card-body p-4 sm:p-6">
                 <h2 className="card-title justify-center text-2xl mb-2">
                   Join the Dance Community in {country.name}
                 </h2>

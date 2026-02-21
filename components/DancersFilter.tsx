@@ -148,10 +148,10 @@ export default function DancersFilter({
   return (
     <div>
       {/* Filters Section */}
-      <div className="mb-6 space-y-4">
+      <div className="mb-4 sm:mb-6 space-y-3 sm:space-y-4">
         {/* Dance Styles Filter */}
         {userDanceStyles && userDanceStyles.length > 0 && (
-          <label className="flex items-center gap-3 cursor-pointer">
+          <label className="flex items-center gap-2 sm:gap-3 cursor-pointer">
             <input
               type="checkbox"
               checked={showMyStyles}
@@ -169,7 +169,7 @@ export default function DancersFilter({
         )}
 
         {/* Professional Filters Grid - 2 per row mobile, 3 per row desktop */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {/* Teachers Filter */}
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -390,4 +390,3 @@ export default function DancersFilter({
     </div>
   );
 }
-

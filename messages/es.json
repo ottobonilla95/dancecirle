@@ -644,10 +644,12 @@
     "population": "Población",
     "totalDancers": "Total de Bailarines",
     "dancersLivingHere": "Bailarines que Viven Aquí",
+    "dancersShort": "Bailarines",
     "activeCommunity": "Miembros activos de la comunidad de baile",
     "visitors": "Visitantes",
     "visitedForDance": "Bailarines que han visitado para bailar",
     "mostCommonRole": "Rol Más Común",
+    "mostCommonRoleShort": "Rol",
     "ofDancers": "de bailarines",
     "popularDanceStyles": "Estilos de Baile Populares",
     "teachers": "Profesores de Baile",
@@ -666,10 +668,12 @@
   "country": {
     "totalDancers": "Total de Bailarines",
     "dancersLivingHere": "Bailarines que Viven Aquí",
+    "dancersShort": "Bailarines",
     "activeCommunity": "Miembros activos de la comunidad de baile",
     "visitors": "Visitantes",
     "visitedForDance": "Bailarines que han visitado para bailar",
     "mostCommonRole": "Rol Más Común",
+    "mostCommonRoleShort": "Rol",
     "ofDancers": "de bailarines",
     "topCities": "Ciudades Principales",
     "popularDanceStyles": "Estilos de Baile Populares",
@@ -944,4 +948,3 @@
     }
   }
 }
-
