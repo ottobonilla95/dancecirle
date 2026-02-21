@@ -43,6 +43,7 @@ const authRoutes = [
   '/api/user/profile',
   '/api/user/check-username',
   '/api/user/delete-account',
+  '/api/imagekit-auth',
   '/api/upload-profile-pic',
   '/api/dance-styles',
   '/api/cities',

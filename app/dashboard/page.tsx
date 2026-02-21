@@ -78,15 +78,15 @@ async function getInitialDancers(currentUserId: string) {
         _id: user._id.toString(),
         city: user.city
           ? {
-              ...user.city,
-              _id: user.city._id.toString(),
-              country: user.city.country
-                ? {
-                    ...user.city.country,
-                    _id: user.city.country._id?.toString(),
-                  }
-                : null,
-            }
+            ...user.city,
+            _id: user.city._id.toString(),
+            country: user.city.country
+              ? {
+                ...user.city.country,
+                _id: user.city.country._id?.toString(),
+              }
+              : null,
+          }
           : null,
         danceStylesPopulated,
         likedBy: user.likedBy || [],
@@ -604,7 +604,7 @@ async function getTripOverlaps(userId: string) {
               const overlapDays =
                 Math.floor(
                   (overlapEnd.getTime() - overlapStart.getTime()) /
-                    (1000 * 60 * 60 * 24)
+                  (1000 * 60 * 60 * 24)
                 ) + 1;
 
               overlaps.push({
@@ -674,7 +674,7 @@ async function getTripOverlaps(userId: string) {
               const overlapDays =
                 Math.floor(
                   (friendTripEnd.getTime() - friendTripStart.getTime()) /
-                    (1000 * 60 * 60 * 24)
+                  (1000 * 60 * 60 * 24)
                 ) + 1;
 
               overlaps.push({
@@ -767,16 +767,16 @@ async function getFriendsTrips(userId: string) {
             },
             city: trip.city
               ? {
-                  _id: trip.city._id.toString(),
-                  name: trip.city.name,
-                  image: trip.city.image,
-                  country: trip.city.country
-                    ? {
-                        name: trip.city.country.name,
-                        code: trip.city.country.code,
-                      }
-                    : null,
-                }
+                _id: trip.city._id.toString(),
+                name: trip.city.name,
+                image: trip.city.image,
+                country: trip.city.country
+                  ? {
+                    name: trip.city.country.name,
+                    code: trip.city.country.code,
+                  }
+                  : null,
+              }
               : null,
             startDate: trip.startDate,
             endDate: trip.endDate,
@@ -1185,12 +1185,12 @@ export default async function Dashboard() {
         )}
 
         {/* Your City Preview */}
-        <div className="mt-8">
+        <div className="sm:mt-8 mt-0">
           <YourCityPreview cityStats={userCityStats} />
         </div>
 
         {localOrganizerEvents.length > 0 && (
-          <div className="mt-10">
+          <div className="sm:mt-10 mt-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="max-w-3xl font-extrabold text-xl md:text-2xl tracking-tight">
                 Events Near You
@@ -1248,13 +1248,13 @@ export default async function Dashboard() {
 
         {/* Friends' Trips Preview */}
         {friendsTrips.length > 0 && (
-          <div className="mt-12">
+          <div className="sm:mt-12 mt-6">
             <FriendsTripsPreview trips={friendsTrips} />
           </div>
         )}
 
         {/* Activity Feed Preview */}
-        <div className="mt-16">
+        <div className="sm:mt-16 mt-6">
           <DashboardPostSection initialPosts={feedPosts} friendsCount={friendsCount} />
         </div>
 

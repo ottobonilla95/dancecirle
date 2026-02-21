@@ -842,7 +842,21 @@ export default function Onboarding() {
       // Get authentication parameters from server
       const authResponse = await fetch("/api/imagekit-auth");
       if (!authResponse.ok) {
-        throw new Error("Failed to authenticate upload");
+        let errorMessage = "Failed to authenticate upload";
+        try {
+          const errorData = await authResponse.json();
+          if (errorData?.error) {
+            errorMessage = errorData.error;
+          }
+        } catch {
+          // Ignore parsing errors and keep generic message
+        }
+        throw new Error(errorMessage);
+      }
+
+      const contentType = authResponse.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        throw new Error("Upload auth endpoint returned a non-JSON response");
       }
 
       const { token, signature, expire, publicKey } = await authResponse.json();
