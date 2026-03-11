@@ -105,6 +105,14 @@ See `.env.example` for all required variables:
 - `STRIPE_PUBLIC_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` -- Payments
 - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` -- Image uploads
 
+## GitHub & Deployment
+
+- **GitHub user:** ottobonilla95
+- **Repo:** github.com/ottobonilla95/dancecirle
+- **Vercel team/scope:** ottos-projects-1d27cc30
+- **Vercel project name:** dancetribe
+- Platform-specific packages (e.g. `@next/swc-darwin-arm64`) must go in `optionalDependencies`, NOT `dependencies` — Vercel builds on Linux and will fail otherwise.
+
 ## Domain Concepts
 
 - **Dancers** have profiles with dance styles (salsa, bachata, kizomba, etc.), skill levels, home city, and travel plans
