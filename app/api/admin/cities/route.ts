@@ -6,6 +6,7 @@ import City from "@/models/City";
 import Country from "@/models/Country";
 import Continent from "@/models/Continent";
 import config from "@/config";
+import { generateSlug } from "@/utils/generate-slug";
 
 // GET: Fetch all cities (with pagination and search)
 export async function GET(req: Request) {
@@ -79,10 +80,18 @@ export async function POST(req: Request) {
     await connectMongo();
 
     const body = await req.json();
-    
+
+    // Generate slug from city name + country name
+    let slug = "";
+    if (body.name && body.country) {
+      const country = await Country.findById(body.country).select("name").lean() as any;
+      slug = generateSlug(body.name, country?.name || "");
+    }
+
     // Create new city
     const city = await City.create({
       name: body.name,
+      slug,
       country: body.country,
       continent: body.continent,
       population: body.population,

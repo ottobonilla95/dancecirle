@@ -4,6 +4,7 @@ import { authOptions } from "@/libs/next-auth";
 import connectMongo from "@/libs/mongoose";
 import Country from "@/models/Country";
 import config from "@/config";
+import { generateSlug } from "@/utils/generate-slug";
 
 // PUT - Update country
 export async function PUT(
@@ -26,6 +27,7 @@ export async function PUT(
       params.id,
       {
         name: body.name,
+        ...(body.name && { slug: generateSlug(body.name) }),
         code: body.code,
         continent: body.continent,
         totalDancers: body.totalDancers,
