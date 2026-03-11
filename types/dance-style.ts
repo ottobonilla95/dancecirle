@@ -2,6 +2,7 @@ export interface DanceStyle {
   id: string;
   _id?: string;
   name: string;
+  slug?: string;
   description?: string;
   image?: string;
   category: 'latin' | 'ballroom' | 'street' | 'contemporary' | 'traditional';

@@ -7,6 +7,7 @@ import Continent from '@/models/Continent';
 import DanceStyle from '@/models/DanceStyle';
 import Release from '@/models/Release';
 import DJEvent from '@/models/DJEvent';
+import OrganizerEvent from '@/models/OrganizerEvent';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://dancecircle.co';
@@ -24,22 +25,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Fetch all cities with dancers
     const cities = await City.find({ totalDancers: { $gt: 0 } })
-      .select('_id updatedAt')
+      .select('_id slug updatedAt')
       .lean();
 
     // Fetch all active countries (totalDancers field may not be populated, so just get all active)
     const countries = await Country.find({ isActive: true })
-      .select('_id updatedAt')
+      .select('_id slug updatedAt')
       .lean();
 
     // Fetch all active continents (totalDancers field may not be populated, so just get all active)
     const continents = await Continent.find({ isActive: true })
-      .select('_id updatedAt')
+      .select('_id slug updatedAt')
       .lean();
 
     // Fetch all dance styles
     const danceStyles = await DanceStyle.find({ isActive: true })
-      .select('_id updatedAt')
+      .select('_id slug updatedAt')
       .lean();
 
     // Fetch all releases (public music releases)
@@ -49,6 +50,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Fetch all DJ events (public events)
     const djEvents = await DJEvent.find({})
+      .select('_id updatedAt')
+      .lean();
+
+    // Fetch all published organizer events
+    const organizerEvents = await OrganizerEvent.find({ isPublished: true })
       .select('_id updatedAt')
       .lean();
 
@@ -79,6 +85,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.7,
       },
       {
+        url: `${baseUrl}/dance-style`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      },
+      {
         url: `${baseUrl}/privacy-policy`,
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
@@ -100,40 +112,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-    // City pages (public)
+    // City pages (public) - use slug for SEO-friendly URLs
     const cityPages = cities.map((city: any) => ({
-      url: `${baseUrl}/city/${city._id.toString()}`,
+      url: `${baseUrl}/city/${city.slug || city._id.toString()}`,
       lastModified: city.updatedAt || new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.6,
     }));
 
-    // Country pages (public)
+    // Country pages (public) - use slug for SEO-friendly URLs
     const countryPages = countries.map((country: any) => ({
-      url: `${baseUrl}/country/${country._id.toString()}`,
+      url: `${baseUrl}/country/${country.slug || country._id.toString()}`,
       lastModified: country.updatedAt || new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.6,
     }));
 
-    // Continent pages (public)
+    // Continent pages (public) - use slug for SEO-friendly URLs
     const continentPages = continents.map((continent: any) => ({
-      url: `${baseUrl}/continent/${continent._id.toString()}`,
+      url: `${baseUrl}/continent/${continent.slug || continent._id.toString()}`,
       lastModified: continent.updatedAt || new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.5,
     }));
 
-    // Dance style pages (note: these are now private, but keeping for when we make them public)
-    // Commenting out for now since they require auth
-    /*
+    // Dance style pages (public) - use slug for SEO-friendly URLs
     const danceStylePages = danceStyles.map((style: any) => ({
-      url: `${baseUrl}/dance-style/${style._id.toString()}`,
+      url: `${baseUrl}/dance-style/${style.slug || style._id.toString()}`,
       lastModified: style.updatedAt || new Date(),
       changeFrequency: 'monthly' as const,
       priority: 0.5,
     }));
-    */
 
     // Release pages (public - music releases by producers)
     const releasePages = releases.map((release: any) => ({
@@ -151,6 +160,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
+    // Organizer event pages (public)
+    const organizerEventPages = organizerEvents.map((event: any) => ({
+      url: `${baseUrl}/organizer-events/${event._id.toString()}`,
+      lastModified: event.updatedAt || new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    }));
+
     return [
       ...staticPages,
       ...userPages,
@@ -159,7 +176,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...continentPages,
       ...releasePages,
       ...eventPages,
-      // ...danceStylePages, // Uncomment when dance styles are public
+      ...danceStylePages,
+      ...organizerEventPages,
     ];
   } catch (error) {
     console.error('Error generating sitemap:', error);

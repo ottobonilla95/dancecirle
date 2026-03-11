@@ -30,7 +30,7 @@ export default function HotDanceStyleCard({ danceStyle, index }: HotDanceStyleCa
 
   return (
     <Link
-      href={`/dance-style/${danceStyle._id}`}
+      href={`/dance-style/${danceStyle.slug || danceStyle._id}`}
       className={`card bg-gradient-to-br ${getCardColor(index)} border hover:scale-105 transition-all duration-300 p-4 relative overflow-hidden`}
     >
       {/* Rank Badge */}

@@ -41,11 +41,14 @@ export async function generateMetadata({ params }: ReleasePageProps): Promise<Me
     return {
       title,
       description,
+      alternates: {
+        canonical: `/release/${params.releaseId}`,
+      },
       openGraph: {
         title,
         description,
         type: "music.song",
-        url: `${config.domainName}/release/${params.releaseId}`,
+        url: `https://${config.domainName}/release/${params.releaseId}`,
         images: producer.image ? [producer.image] : [],
       },
       twitter: {
@@ -88,8 +91,27 @@ export default async function ReleasePage({ params }: ReleasePageProps) {
     });
   };
 
+  // JSON-LD structured data for music release
+  const releaseJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "MusicRecording",
+    name: release.title,
+    byArtist: {
+      "@type": "Person",
+      name: producer.name,
+      url: `https://${config.domainName}/${producer.username || producer._id}`,
+    },
+    ...(release.description ? { description: release.description } : {}),
+    ...(release.createdAt ? { datePublished: release.createdAt } : {}),
+    url: `https://${config.domainName}/release/${params.releaseId}`,
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(releaseJsonLd) }}
+      />
       {/* Back Button */}
       <Link
         href={`/${producer.username || producer._id}`}

@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import connectMongo from "@/libs/mongoose";
 import Continent from "@/models/Continent";
 import Country from "@/models/Country";
@@ -21,19 +21,64 @@ import {
   FaFlag,
 } from "react-icons/fa";
 
+// Helper: find continent by slug or ObjectId
+function findContinentByParam(continentId: string) {
+  if (isValidObjectId(continentId)) {
+    return Continent.findById(continentId);
+  }
+  return Continent.findOne({ slug: continentId });
+}
+
 interface Props {
   params: {
     continentId: string;
   };
 }
 
-export default async function ContinentPage({ params }: Props) {
+// Cache this page for 1 hour
+export const revalidate = 3600;
+
+// Generate dynamic SEO metadata
+export async function generateMetadata({ params }: Props) {
   await connectMongo();
 
-  // Check if the continentId is a valid ObjectId
-  if (!isValidObjectId(params.continentId)) {
-    notFound();
+  try {
+    const continent: any = await findContinentByParam(params.continentId)?.lean();
+
+    if (!continent) {
+      return { title: "Continent Not Found" };
+    }
+
+    const continentSlug = continent.slug || continent._id.toString();
+    const title = `${continent.name} Dance Community | Bachata, Salsa, Kizomba in ${continent.name}`;
+    const description = `Discover dancers across ${continent.name}. Connect with dance communities, find partners, teachers, and events throughout ${continent.name}.`;
+
+    return {
+      title,
+      description,
+      keywords: `${continent.name} dance, ${continent.name} dancers, dance community ${continent.name}, Bachata ${continent.name}, Salsa ${continent.name}, Kizomba ${continent.name}`,
+      alternates: {
+        canonical: `/continent/${continentSlug}`,
+      },
+      openGraph: {
+        title,
+        description,
+        url: `https://dancecircle.co/continent/${continentSlug}`,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+      },
+    };
+  } catch (error) {
+    console.error("Error generating continent metadata:", error);
+    return { title: "Continent Page" };
   }
+}
+
+export default async function ContinentPage({ params }: Props) {
+  await connectMongo();
 
   // Get current session
   const session = await getServerSession(authOptions);
@@ -46,7 +91,7 @@ export default async function ContinentPage({ params }: Props) {
       .select("danceStyles")
       .lean();
     if (currentUser?.danceStyles && Array.isArray(currentUser.danceStyles)) {
-      userDanceStyles = currentUser.danceStyles.map((ds: any) => 
+      userDanceStyles = currentUser.danceStyles.map((ds: any) =>
         ds.danceStyle.toString()
       );
     }
@@ -54,18 +99,26 @@ export default async function ContinentPage({ params }: Props) {
 
   let continent: any;
   try {
-    continent = await Continent.findById(params.continentId).lean();
+    continent = await findContinentByParam(params.continentId)?.lean();
 
     if (!continent) {
       notFound();
     }
+
+    // Redirect ObjectId URLs to slug URLs
+    if (isValidObjectId(params.continentId) && continent.slug) {
+      redirect(`/continent/${continent.slug}`);
+    }
   } catch (error) {
+    if ((error as any)?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
     console.error("Error fetching continent:", error);
     notFound();
   }
 
-  // Convert continentId to ObjectId for MongoDB queries
-  const continentObjectId = new mongoose.Types.ObjectId(params.continentId);
+  // Use the continent's actual ObjectId for MongoDB queries
+  const continentObjectId = continent._id;
 
   // Get all countries in this continent
   const countriesInContinent = await Country.find({
@@ -132,7 +185,7 @@ export default async function ContinentPage({ params }: Props) {
       },
     },
     { $unwind: "$style" },
-    { $project: { name: "$style.name", count: 1 } },
+    { $project: { name: "$style.name", slug: "$style.slug", count: 1 } },
   ]);
 
   // Get all countries in this continent
@@ -140,7 +193,7 @@ export default async function ContinentPage({ params }: Props) {
     continent: continentObjectId,
     isActive: true,
   })
-    .select("name code")
+    .select("name code slug")
     .lean();
 
   // Calculate dancers per country dynamically
@@ -177,7 +230,7 @@ export default async function ContinentPage({ params }: Props) {
     isActive: true,
     totalDancers: { $gt: 0 },
   })
-    .select("name totalDancers image country")
+    .select("name slug totalDancers image country")
     .populate({
       path: "country",
       model: Country,
@@ -214,8 +267,22 @@ export default async function ContinentPage({ params }: Props) {
     return emojiMap[name] || "🌐";
   };
 
+  // JSON-LD structured data for SEO
+  const continentSlug = continent.slug || continent._id.toString();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    name: `${continent.name} Dance Community`,
+    description: `Discover dancers across ${continent.name}. Connect with Bachata, Salsa, Kizomba communities and events.`,
+    url: `https://dancecircle.co/continent/${continentSlug}`,
+  };
+
   return (
     <div className="min-h-screen p-4 bg-base-100">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -286,7 +353,7 @@ export default async function ContinentPage({ params }: Props) {
                     {danceStylesInContinent.map((style: any, index: number) => (
                       <Link
                         key={style._id}
-                        href={`/dance-style/${style._id}`}
+                        href={`/dance-style/${style.slug || style._id}`}
                         className="flex justify-between items-center hover:bg-base-300 rounded p-2 transition-colors"
                       >
                         <span className="text-sm font-medium hover:text-primary transition-colors">
@@ -320,7 +387,7 @@ export default async function ContinentPage({ params }: Props) {
                     {topCountries.map((country: any) => (
                       <Link
                         key={country._id}
-                        href={`/country/${country._id}`}
+                        href={`/country/${country.slug || country._id}`}
                         className="flex justify-between items-center hover:bg-base-300 rounded p-2 transition-colors"
                       >
                         <div className="flex items-center gap-2">
@@ -350,7 +417,7 @@ export default async function ContinentPage({ params }: Props) {
                     {topCities.map((city: any) => (
                       <Link
                         key={city._id}
-                        href={`/city/${city._id}`}
+                        href={`/city/${city.slug || city._id}`}
                         className="flex justify-between items-center hover:bg-base-300 rounded p-2 transition-colors"
                       >
                         <div className="flex items-center gap-2">

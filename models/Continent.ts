@@ -10,6 +10,14 @@ const continentSchema = new mongoose.Schema(
       trim: true,
       unique: true,
     },
+    slug: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+      lowercase: true,
+      index: true,
+    },
     code: {
       type: String,
       required: true,

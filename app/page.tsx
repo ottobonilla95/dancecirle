@@ -1,7 +1,9 @@
+import { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/libs/next-auth";
 import { redirect } from "next/navigation";
 import Hero from "@/components/Hero";
+import config from "@/config";
 import CityList from "@/components/organisims/CityList";
 import Footer from "@/components/Footer";
 import connectMongo from "@/libs/mongoose";
@@ -388,6 +390,24 @@ const getCommunityMapData = unstable_cache(
 { revalidate: 600, tags: ["landing-community-map"] } // 10 minutes - expensive query
 );
 
+export const metadata: Metadata = {
+  title: "DanceCircle - Connect with Dancers Worldwide | Bachata, Salsa, Kizomba",
+  description:
+    "Connect with dancers worldwide! Discover dance cities, events, music, and communities. Find Bachata, Salsa, Kizomba partners, teachers, DJs, and festivals near you.",
+  keywords:
+    "dance community, Bachata, Salsa, Kizomba, Zouk, dance partners, dance events, dance cities, dance teachers, dance festivals",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "DanceCircle - Connect with Dancers Worldwide",
+    description:
+      "Connect with dancers worldwide! Discover dance cities, events, music, and communities.",
+    url: `https://${config.domainName}/`,
+    type: "website",
+  },
+};
+
 export default async function Home() {
   // Check if user is logged in and redirect to dashboard
   const session = await getServerSession(authOptions);
@@ -410,8 +430,27 @@ export default async function Home() {
     getCommunityMapData(),
   ]);
 
+  const homepageJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "DanceCircle",
+    description: "Connect with dancers worldwide. Discover dance cities, events, music, and communities.",
+    url: `https://${config.domainName}/`,
+    applicationCategory: "SocialNetworkingApplication",
+    operatingSystem: "Web, iOS, Android",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageJsonLd) }}
+      />
       <main>
         <Hero featuredUsers={featuredUsersData.users} totalDancers={featuredUsersData.totalDancers} />
         

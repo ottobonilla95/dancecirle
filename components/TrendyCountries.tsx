@@ -6,6 +6,7 @@ interface TrendyCountriesProps {
   countries: Array<{
     _id: string;
     name: string;
+    slug?: string;
     code: string;
     totalDancers: number;
     recentlyActive?: number;
@@ -36,7 +37,7 @@ export default async function TrendyCountries({ countries }: TrendyCountriesProp
           
           return (
             <Link
-              href={`/country/${country._id}`}
+              href={`/country/${country.slug || country._id}`}
               key={country._id}
               className={`block bg-base-200 hover:bg-base-300 transition-all duration-200 hover:shadow-lg group overflow-hidden rounded-xl md:rounded-2xl ${isHidden ? 'hidden md:block' : ''}`}
             >

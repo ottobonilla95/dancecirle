@@ -2,6 +2,7 @@ import Link from "next/link";
 
 interface DanceStyle {
   id?: string;
+  slug?: string;
   name: string;
   level: string;
   levelLabel: string;
@@ -59,7 +60,7 @@ export default function DanceStyleCard({ danceStyles, title = "Dance Styles & Le
           );
 
           return style.id ? (
-            <Link key={index} href={`/dance-style/${style.id}`} className="block">
+            <Link key={index} href={`/dance-style/${style.slug || style.id}`} className="block">
               {content}
             </Link>
           ) : (

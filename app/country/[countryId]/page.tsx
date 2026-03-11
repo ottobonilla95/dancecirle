@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import connectMongo from "@/libs/mongoose";
 import Country from "@/models/Country";
 import Continent from "@/models/Continent";
@@ -28,6 +28,14 @@ import {
 } from "react-icons/fa";
 import { SiLine, SiTelegram } from "react-icons/si";
 
+// Helper: find country by slug or ObjectId
+function findCountryByParam(countryId: string) {
+  if (isValidObjectId(countryId)) {
+    return Country.findById(countryId);
+  }
+  return Country.findOne({ slug: countryId });
+}
+
 interface Props {
   params: {
     countryId: string;
@@ -47,20 +55,14 @@ export const revalidate = 3600;
 export async function generateMetadata({ params }: Props) {
   await connectMongo();
 
-  if (!isValidObjectId(params.countryId)) {
-    return {
-      title: "Country Not Found",
-    };
-  }
-
   try {
-    const country: any = await Country.findById(params.countryId)
-      .populate({
+    const country: any = await findCountryByParam(params.countryId)
+      ?.populate({
         path: "continent",
         model: Continent,
         select: "name code",
       })
-      .lean();
+      ?.lean();
 
     if (!country) {
       return {
@@ -68,8 +70,7 @@ export async function generateMetadata({ params }: Props) {
       };
     }
 
-    // Get all cities in this country
-    const countryObjectId = new mongoose.Types.ObjectId(params.countryId);
+    const countryObjectId = country._id;
     const citiesInCountry = await City.find({
       country: countryObjectId,
       isActive: true,
@@ -84,24 +85,24 @@ export async function generateMetadata({ params }: Props) {
       isProfileComplete: true,
     });
 
-    // Use hardcoded popular dance styles for SEO
     const danceStylesText = SEO_DANCE_STYLES.join(", ");
     const topStyles = SEO_DANCE_STYLES.slice(0, 3).join(", ");
 
+    const countrySlug = country.slug || country._id.toString();
     const title = `${country.name} Dance Community | ${topStyles} in ${country.name}`;
     const description = `Discover ${totalDancers} dancers across ${country.name}. Connect with ${danceStylesText} communities, find partners, teachers, and events throughout ${country.name}.`;
-    
+
     return {
       title,
       description,
       keywords: `${country.name} dance, ${country.name} dancers, ${danceStylesText}, dance community ${country.name}, dance partners ${country.name}, ${country.name} dance scene, dance classes ${country.name}`,
       alternates: {
-        canonical: `/country/${params.countryId}`,
+        canonical: `/country/${countrySlug}`,
       },
       openGraph: {
         title,
         description,
-        url: `https://dancecircle.co/country/${params.countryId}`,
+        url: `https://dancecircle.co/country/${countrySlug}`,
       },
       twitter: {
         card: "summary_large_image",
@@ -124,11 +125,6 @@ export default async function CountryPage({ params, searchParams }: Props) {
   const messages = await getMessages();
   const t = (key: string) => getTranslation(messages, key);
 
-  // Check if the countryId is a valid ObjectId
-  if (!isValidObjectId(params.countryId)) {
-    notFound();
-  }
-
   // Get current session
   const session = await getServerSession(authOptions);
   const isLoggedIn = !!session;
@@ -140,7 +136,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
       .select("danceStyles")
       .lean();
     if (currentUser?.danceStyles && Array.isArray(currentUser.danceStyles)) {
-      userDanceStyles = currentUser.danceStyles.map((ds: any) => 
+      userDanceStyles = currentUser.danceStyles.map((ds: any) =>
         ds.danceStyle.toString()
       );
     }
@@ -153,24 +149,32 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
   let country: any;
   try {
-    country = await Country.findById(params.countryId)
-      .populate({
+    country = await findCountryByParam(params.countryId)
+      ?.populate({
         path: "continent",
         model: Continent,
-        select: "name code",
+        select: "name code slug",
       })
-      .lean();
+      ?.lean();
 
     if (!country) {
       notFound();
     }
+
+    // Redirect ObjectId URLs to slug URLs
+    if (isValidObjectId(params.countryId) && country.slug) {
+      redirect(`/country/${country.slug}`);
+    }
   } catch (error) {
+    if ((error as any)?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
     console.error("Error fetching country:", error);
     notFound();
   }
 
-  // Convert countryId to ObjectId for MongoDB queries
-  const countryObjectId = new mongoose.Types.ObjectId(params.countryId);
+  // Use the country's actual ObjectId for MongoDB queries
+  const countryObjectId = country._id;
 
   // Get all cities in this country first
   const citiesInCountry = await City.find({
@@ -244,7 +248,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
       },
     },
     { $unwind: "$style" },
-    { $project: { name: "$style.name", count: 1 } },
+    { $project: { name: "$style.name", slug: "$style.slug", count: 1 } },
   ]);
 
   // Get role distribution
@@ -385,7 +389,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
     isActive: true,
     totalDancers: { $gt: 0 },
   })
-    .select("name totalDancers image")
+    .select("name slug totalDancers image")
     .sort({ totalDancers: -1 })
     .limit(10)
     .lean();
@@ -406,8 +410,22 @@ export default async function CountryPage({ params, searchParams }: Props) {
     return num.toString();
   };
 
+  // JSON-LD structured data for SEO
+  const countrySlug = country.slug || country._id.toString();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Country",
+    name: `${country.name} Dance Community`,
+    description: `Discover dancers across ${country.name}. Connect with Bachata, Salsa, Kizomba communities, find partners, teachers, and events.`,
+    url: `https://dancecircle.co/country/${countrySlug}`,
+  };
+
   return (
     <div className="min-h-screen p-4 bg-base-100">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -424,7 +442,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
                   <span className="flex items-center gap-1">
                     <FaGlobeAmericas />
                     <Link 
-                      href={`/continent/${country.continent?._id || country.continent?.id}`}
+                      href={`/continent/${country.continent?.slug || country.continent?._id || country.continent?.id}`}
                       className="link link-primary hover:link-accent whitespace-nowrap"
                     >
                       {country.continent?.name}
@@ -766,7 +784,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
                   {danceStylesInCountry.map((style: any, index: number) => (
                     <Link
                       key={style._id}
-                      href={`/dance-style/${style._id}`}
+                      href={`/dance-style/${style.slug || style._id}`}
                       className="flex justify-between items-center hover:bg-base-300 rounded p-2 transition-colors"
                     >
                       <span className="text-sm font-medium hover:text-primary transition-colors">
@@ -801,7 +819,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
                   {topCities.map((city: any, index: number) => (
                     <Link
                       key={city._id}
-                      href={`/city/${city._id}`}
+                      href={`/city/${city.slug || city._id}`}
                       className="flex items-center justify-between hover:bg-base-300 rounded p-2 transition-colors"
                     >
                       <div className="flex items-center gap-3">

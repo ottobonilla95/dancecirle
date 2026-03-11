@@ -240,7 +240,7 @@ export default function SearchBar({
                   {cities.map((city) => (
                     <Link
                       key={city._id}
-                      href={`/city/${city._id}`}
+                      href={`/city/${city.slug || city._id}`}
                       onClick={clearSearch}
                       className="block px-6 py-3 hover:bg-base-200 transition-colors"
                     >
@@ -270,7 +270,7 @@ export default function SearchBar({
                   {countries.map((country) => (
                     <Link
                       key={country._id}
-                      href={`/country/${country._id}`}
+                      href={`/country/${country.slug || country._id}`}
                       onClick={clearSearch}
                       className="block px-6 py-3 hover:bg-base-200 transition-colors"
                     >

@@ -1,10 +1,18 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import connectMongo from "@/libs/mongoose";
 import DanceStyle from "@/models/DanceStyle";
 import User from "@/models/User";
 import City from "@/models/City";
 import { isValidObjectId } from "mongoose";
 import mongoose from "mongoose";
+
+// Helper: find dance style by slug or ObjectId
+function findDanceStyleByParam(styleId: string) {
+  if (isValidObjectId(styleId)) {
+    return DanceStyle.findById(styleId);
+  }
+  return DanceStyle.findOne({ slug: styleId });
+}
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/libs/next-auth";
 import Link from "next/link";
@@ -63,17 +71,63 @@ const getCategoryColor = (category: string) => {
   }
 };
 
+// Cache this page for 1 hour
+export const revalidate = 3600;
+
+// Generate dynamic SEO metadata
+export async function generateMetadata({ params }: Props) {
+  await connectMongo();
+
+  try {
+    const danceStyle: any = await findDanceStyleByParam(params.styleId)?.lean();
+
+    if (!danceStyle) {
+      return { title: "Dance Style Not Found" };
+    }
+
+    const totalDancers = await User.countDocuments({
+      "danceStyles.danceStyle": danceStyle._id,
+      isProfileComplete: true,
+    });
+
+    const styleSlug = danceStyle.slug || danceStyle._id.toString();
+    const title = `${danceStyle.name} Dance Community | Find ${danceStyle.name} Dancers Worldwide`;
+    const description = danceStyle.description
+      ? `${danceStyle.description.substring(0, 120)} Connect with ${totalDancers} ${danceStyle.name} dancers worldwide on DanceCircle.`
+      : `Connect with ${totalDancers} ${danceStyle.name} dancers worldwide. Find partners, classes, and events. Join the global ${danceStyle.name} community on DanceCircle.`;
+
+    return {
+      title,
+      description,
+      keywords: `${danceStyle.name}, ${danceStyle.name} dance, ${danceStyle.name} dancers, ${danceStyle.name} classes, ${danceStyle.name} partners, ${danceStyle.name} community, learn ${danceStyle.name}`,
+      alternates: {
+        canonical: `/dance-style/${styleSlug}`,
+      },
+      openGraph: {
+        title,
+        description,
+        url: `https://dancecircle.co/dance-style/${styleSlug}`,
+        images: danceStyle.image ? [danceStyle.image] : [],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: danceStyle.image ? [danceStyle.image] : [],
+      },
+    };
+  } catch (error) {
+    console.error("Error generating dance style metadata:", error);
+    return { title: "Dance Style Page" };
+  }
+}
+
 export default async function DanceStylePage({ params, searchParams }: Props) {
   // Get translations
   const messages = await getMessages();
   const t = (key: string) => getTranslation(messages, key);
 
   await connectMongo();
-
-  // Check if the styleId is a valid ObjectId
-  if (!isValidObjectId(params.styleId)) {
-    notFound();
-  }
 
   // Get current session
   const session = await getServerSession(authOptions);
@@ -86,18 +140,26 @@ export default async function DanceStylePage({ params, searchParams }: Props) {
 
   let danceStyle: any;
   try {
-    danceStyle = await DanceStyle.findById(params.styleId).lean();
+    danceStyle = await findDanceStyleByParam(params.styleId)?.lean();
 
     if (!danceStyle) {
       notFound();
     }
+
+    // Redirect ObjectId URLs to slug URLs
+    if (isValidObjectId(params.styleId) && danceStyle.slug) {
+      redirect(`/dance-style/${danceStyle.slug}`);
+    }
   } catch (error) {
+    if ((error as any)?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
     console.error("Error fetching dance style:", error);
     notFound();
   }
 
-  // Convert styleId to ObjectId for MongoDB queries
-  const styleObjectId = new mongoose.Types.ObjectId(params.styleId);
+  // Use the dance style's actual ObjectId for MongoDB queries
+  const styleObjectId = danceStyle._id;
 
   // Get dancers who practice this style (with pagination)
   const dancers = await User.find({
@@ -176,8 +238,23 @@ export default async function DanceStylePage({ params, searchParams }: Props) {
     return num.toString();
   };
 
+  // JSON-LD structured data for SEO
+  const styleSlug = danceStyle.slug || danceStyle._id.toString();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Thing",
+    name: danceStyle.name,
+    description: danceStyle.description || `${danceStyle.name} dance community on DanceCircle`,
+    url: `https://dancecircle.co/dance-style/${styleSlug}`,
+    ...(danceStyle.image ? { image: danceStyle.image } : {}),
+  };
+
   return (
     <div className="min-h-screen p-4 bg-base-100">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">

@@ -147,13 +147,19 @@ export async function generateMetadata({ params }: Props) {
       .filter(Boolean)
       .join(", ");
 
+    const canonicalPath = user.username ? `/${user.username}` : `/dancer/${params.userId}`;
+
     return {
       title,
       description,
       keywords,
+      alternates: {
+        canonical: canonicalPath,
+      },
       openGraph: {
         title,
         description,
+        url: `https://dancecircle.co${canonicalPath}`,
         images: user.image ? [user.image] : [],
         type: "profile",
       },
@@ -501,9 +507,52 @@ export default async function PublicProfile({ params }: Props) {
     userData.isPhotographer ||
     userData.isEventOrganizer ||
     userData.isProducer;
+
+  // JSON-LD structured data for SEO
+  const profileRoles = [];
+  if (userData.isTeacher) profileRoles.push("Dance Teacher");
+  if (userData.isDJ) profileRoles.push("DJ");
+  if (userData.isPhotographer) profileRoles.push("Photographer");
+  if (userData.isEventOrganizer) profileRoles.push("Event Organizer");
+  if (userData.isProducer) profileRoles.push("Producer");
+
+  const profileDanceStyles = userData.danceStyles
+    ?.map((ds: any) => ds.danceStyle?.name)
+    .filter(Boolean) || [];
+
+  const canonicalPath = userData.username ? `/${userData.username}` : `/dancer/${params.userId}`;
+  const jsonLd: any = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: userData.name,
+    url: `https://dancecircle.co${canonicalPath}`,
+    ...(userData.image ? { image: userData.image } : {}),
+    ...(userData.bio ? { description: userData.bio.substring(0, 200) } : {}),
+    ...(profileRoles.length > 0 ? { jobTitle: profileRoles.join(", ") } : {}),
+    ...(userData.city?.name ? {
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: userData.city.name,
+        addressCountry: userData.city.country?.name,
+      },
+    } : {}),
+    knowsAbout: profileDanceStyles,
+  };
+
+  // Add social links if available
+  const sameAs = [];
+  if (userData.socialMedia?.instagram) sameAs.push(`https://instagram.com/${userData.socialMedia.instagram}`);
+  if (userData.socialMedia?.tiktok) sameAs.push(`https://tiktok.com/@${userData.socialMedia.tiktok}`);
+  if (userData.socialMedia?.youtube) sameAs.push(userData.socialMedia.youtube);
+  if (sameAs.length > 0) jsonLd.sameAs = sameAs;
+
   return (
     <LikesProvider>
       <div className="min-h-screen p-4 bg-base-100">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         {/* Track profile views */}
         <ProfileViewTracker profileUserId={params.userId} />
 

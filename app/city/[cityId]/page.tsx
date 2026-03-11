@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import connectMongo from "@/libs/mongoose";
 import City from "@/models/City";
 import Country from "@/models/Country";
@@ -28,6 +28,15 @@ import {
 } from "react-icons/fa";
 import { SiLine, SiTelegram } from "react-icons/si";
 
+// Helper: find city by slug or ObjectId
+function findCityByParam(cityId: string) {
+  if (isValidObjectId(cityId)) {
+    return City.findById(cityId);
+  }
+  // Try slug lookup
+  return City.findOne({ slug: cityId });
+}
+
 interface Props {
   params: {
     cityId: string;
@@ -47,20 +56,14 @@ export const revalidate = 3600;
 export async function generateMetadata({ params }: Props) {
   await connectMongo();
 
-  if (!isValidObjectId(params.cityId)) {
-    return {
-      title: "City Not Found",
-    };
-  }
-
   try {
-    const city: any = await City.findById(params.cityId)
-      .populate({
+    const city: any = await findCityByParam(params.cityId)
+      ?.populate({
         path: "country",
         model: Country,
-        select: "name code",
+        select: "name code slug",
       })
-      .lean();
+      ?.lean();
 
     if (!city) {
       return {
@@ -68,7 +71,7 @@ export async function generateMetadata({ params }: Props) {
       };
     }
 
-    const cityObjectId = new mongoose.Types.ObjectId(params.cityId);
+    const cityObjectId = city._id;
     const totalDancers = await User.countDocuments({
       city: cityObjectId,
       isProfileComplete: true,
@@ -78,20 +81,21 @@ export async function generateMetadata({ params }: Props) {
     const danceStylesText = SEO_DANCE_STYLES.join(", ");
     const topStyles = SEO_DANCE_STYLES.slice(0, 3).join(", ");
 
+    const citySlug = city.slug || city._id.toString();
     const title = `${city.name} Dance Community | ${topStyles} in ${city.name}`;
     const description = `Connect with ${totalDancers} dancers in ${city.name}, ${city.country?.name}. Find ${danceStylesText} partners, classes, and events. Join the ${city.name} dance scene!`;
-    
+
     return {
       title,
       description,
       keywords: `${city.name} dance, ${city.name} dancers, ${danceStylesText}, dance community ${city.name}, ${city.name} ${city.country?.name} dance, dance partners ${city.name}, dance classes ${city.name}`,
       alternates: {
-        canonical: `/city/${params.cityId}`,
+        canonical: `/city/${citySlug}`,
       },
       openGraph: {
         title,
         description,
-        url: `https://dancecircle.co/city/${params.cityId}`,
+        url: `https://dancecircle.co/city/${citySlug}`,
         images: city.image ? [city.image] : [],
       },
       twitter: {
@@ -116,11 +120,6 @@ export default async function CityPage({ params, searchParams }: Props) {
   const messages = await getMessages();
   const t = (key: string) => getTranslation(messages, key);
 
-  // Check if the cityId is a valid ObjectId
-  if (!isValidObjectId(params.cityId)) {
-    notFound();
-  }
-
   // Get current session
   const session = await getServerSession(authOptions);
   const isLoggedIn = !!session;
@@ -132,7 +131,7 @@ export default async function CityPage({ params, searchParams }: Props) {
       .select("danceStyles")
       .lean();
     if (currentUser?.danceStyles && Array.isArray(currentUser.danceStyles)) {
-      userDanceStyles = currentUser.danceStyles.map((ds: any) => 
+      userDanceStyles = currentUser.danceStyles.map((ds: any) =>
         ds.danceStyle.toString()
       );
     }
@@ -145,29 +144,38 @@ export default async function CityPage({ params, searchParams }: Props) {
 
   let city: any;
   try {
-    city = await City.findById(params.cityId)
-      .populate({
+    city = await findCityByParam(params.cityId)
+      ?.populate({
         path: "country",
         model: Country,
-        select: "name code",
+        select: "name code slug",
       })
-      .populate({
+      ?.populate({
         path: "continent",
         model: Continent,
-        select: "name",
+        select: "name slug",
       })
-      .lean();
+      ?.lean();
 
     if (!city) {
       notFound();
     }
+
+    // If accessed by ObjectId but city has a slug, redirect to slug URL (SEO)
+    if (isValidObjectId(params.cityId) && city.slug) {
+      redirect(`/city/${city.slug}`);
+    }
   } catch (error) {
+    // redirect() throws a special error in Next.js, let it propagate
+    if ((error as any)?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
     console.error("Error fetching city:", error);
     notFound();
   }
 
-  // Convert cityId to ObjectId for MongoDB queries
-  const cityObjectId = new mongoose.Types.ObjectId(params.cityId);
+  // Use the city's actual ObjectId for MongoDB queries
+  const cityObjectId = city._id;
 
   // Get ALL dancers in this city (locals + travelers)
   // Locals: home city matches
@@ -219,7 +227,7 @@ export default async function CityPage({ params, searchParams }: Props) {
       },
     },
     { $unwind: "$style" },
-    { $project: { name: "$style.name", count: 1 } },
+    { $project: { name: "$style.name", slug: "$style.slug", count: 1 } },
   ]);
 
   // Calculate some stats
@@ -363,8 +371,37 @@ export default async function CityPage({ params, searchParams }: Props) {
     return num.toString();
   };
 
+  // JSON-LD structured data for SEO
+  const citySlug = city.slug || city._id.toString();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    name: `${city.name} Dance Community`,
+    description: `Connect with ${totalDancers} dancers in ${city.name}, ${city.country?.name}. Find Bachata, Salsa, Kizomba partners, classes, and events.`,
+    url: `https://dancecircle.co/city/${citySlug}`,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: city.name,
+      addressCountry: city.country?.name,
+    },
+    ...(city.coordinates?.lat && city.coordinates?.lng
+      ? {
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: city.coordinates.lat,
+            longitude: city.coordinates.lng,
+          },
+        }
+      : {}),
+    ...(city.image ? { image: city.image } : {}),
+  };
+
   return (
     <div className="min-h-screen p-4 bg-base-100">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -386,7 +423,7 @@ export default async function CityPage({ params, searchParams }: Props) {
                 <span className="flex items-center gap-1">
                   <FaMapMarkerAlt />
                   <Link 
-                    href={`/country/${city.country?._id || city.country?.id}`}
+                    href={`/country/${city.country?.slug || city.country?._id || city.country?.id}`}
                     className="link link-primary hover:link-accent whitespace-nowrap"
                   >
                     {city.country?.name}
@@ -395,7 +432,7 @@ export default async function CityPage({ params, searchParams }: Props) {
                     <>
                       {", "}
                       <Link 
-                        href={`/continent/${city.continent?._id || city.continent?.id}`}
+                        href={`/continent/${city.continent?.slug || city.continent?._id || city.continent?.id}`}
                         className="link link-primary hover:link-accent whitespace-nowrap"
                       >
                         {city.continent?.name}
@@ -802,7 +839,7 @@ export default async function CityPage({ params, searchParams }: Props) {
                   {danceStylesInCity.map((style: any, index: number) => (
                     <Link
                       key={style._id}
-                      href={`/dance-style/${style._id}`}
+                      href={`/dance-style/${style.slug || style._id}`}
                       className="flex justify-between items-center hover:bg-base-300 rounded p-2 transition-colors"
                     >
                       <span className="text-sm font-medium hover:text-primary transition-colors">

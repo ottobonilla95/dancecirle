@@ -10,6 +10,7 @@ type SortOption = "totalDancers" | "name";
 interface Country {
   _id: string;
   name: string;
+  slug?: string;
   code: string;
   totalDancers: number;
   continent: {
@@ -204,7 +205,7 @@ export default function CountriesPage() {
           {countries.map((country) => (
             <Link
               key={country._id}
-              href={`/country/${country._id}`}
+              href={`/country/${country.slug || country._id}`}
               className="group"
             >
               <div className="card bg-base-200 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105">
