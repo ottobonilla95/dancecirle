@@ -4,6 +4,7 @@ import { authOptions } from "@/libs/next-auth";
 import connectMongo from "@/libs/mongoose";
 import DanceStyle from "@/models/DanceStyle";
 import config from "@/config";
+import { generateSlug } from "@/utils/generate-slug";
 
 // GET: Fetch single dance style
 export async function GET(
@@ -67,6 +68,7 @@ export async function PUT(
       params.styleId,
       {
         name: body.name,
+        ...(body.name && { slug: generateSlug(body.name) }),
         description: body.description,
         image: body.image,
         category: body.category,

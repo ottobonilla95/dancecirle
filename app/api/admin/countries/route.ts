@@ -5,6 +5,7 @@ import connectMongo from "@/libs/mongoose";
 import Country from "@/models/Country";
 import Continent from "@/models/Continent";
 import config from "@/config";
+import { generateSlug } from "@/utils/generate-slug";
 
 // GET - Fetch all countries with pagination and search
 export async function GET(req: Request) {
@@ -78,6 +79,7 @@ export async function POST(req: Request) {
 
     const newCountry = await Country.create({
       name: body.name,
+      slug: body.name ? generateSlug(body.name) : undefined,
       code: body.code,
       continent: body.continent,
       totalDancers: body.totalDancers || 0,

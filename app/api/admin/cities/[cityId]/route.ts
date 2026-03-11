@@ -3,7 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/libs/next-auth";
 import connectMongo from "@/libs/mongoose";
 import City from "@/models/City";
+import Country from "@/models/Country";
 import config from "@/config";
+import { generateSlug } from "@/utils/generate-slug";
 
 // GET: Fetch single city
 export async function GET(
@@ -64,12 +66,20 @@ export async function PUT(
     await connectMongo();
 
     const body = await req.json();
-    
+
+    // Regenerate slug from city name + country name
+    let slug: string | undefined;
+    if (body.name && body.country) {
+      const country = await Country.findById(body.country).select("name").lean() as any;
+      slug = generateSlug(body.name, country?.name || "");
+    }
+
     // Update city
     const city = await City.findByIdAndUpdate(
       params.cityId,
       {
         name: body.name,
+        ...(slug && { slug }),
         country: body.country,
         continent: body.continent,
         population: body.population,

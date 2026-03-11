@@ -4,6 +4,7 @@ import { authOptions } from "@/libs/next-auth";
 import connectMongo from "@/libs/mongoose";
 import DanceStyle from "@/models/DanceStyle";
 import config from "@/config";
+import { generateSlug } from "@/utils/generate-slug";
 
 // GET: Fetch all dance styles
 export async function GET(req: Request) {
@@ -66,6 +67,7 @@ export async function POST(req: Request) {
     // Create new dance style
     const danceStyle = await DanceStyle.create({
       name: body.name,
+      slug: body.name ? generateSlug(body.name) : undefined,
       description: body.description || "",
       image: body.image || "",
       category: body.category || "latin",
