@@ -995,20 +995,20 @@ export default async function Dashboard() {
           </h2>
           <CityList initialCities={cities} />
           <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
-            <Link href="/cities" className="btn btn-outline btn-sm md:btn-md">
-              {t("dashboard.viewAllCities")}
+            <Link href="/cities" className="btn btn-outline btn-sm md:btn-md gap-1.5">
+              🏙️ {t("dashboard.viewAllCities")}
             </Link>
-            <Link href="/countries" className="btn btn-outline btn-sm md:btn-md">
-              {t("dashboard.exploreCountries")}
+            <Link href="/countries" className="btn btn-outline btn-sm md:btn-md gap-1.5">
+              🌍 {t("dashboard.exploreCountries")}
             </Link>
-            <Link href="/dance-style" className="btn btn-outline btn-sm md:btn-md">
-              {t("dashboard.exploreStyles")}
+            <Link href="/dance-style" className="btn btn-outline btn-sm md:btn-md gap-1.5">
+              💃 {t("dashboard.exploreStyles")}
             </Link>
-            <Link href="/music" className="btn btn-outline btn-sm md:btn-md">
-              {t("dashboard.exploreMusic")}
+            <Link href="/music" className="btn btn-outline btn-sm md:btn-md gap-1.5">
+              🎵 {t("dashboard.exploreMusic")}
             </Link>
-            <Link href="/stats" className="btn btn-outline btn-sm md:btn-md">
-              {t("dashboard.exploreStats")}
+            <Link href="/stats" className="btn btn-outline btn-sm md:btn-md gap-1.5">
+              📊 {t("dashboard.exploreStats")}
             </Link>
           </div>
         </div>
