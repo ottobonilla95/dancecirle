@@ -248,7 +248,8 @@
     "alreadyMember": "Si ya tienes una cuenta, te iniciaremos sesión",
     "exploreMore": "Explora más",
     "dancersConnected": "bailarines conectados",
-    "globalDanceCommunity": "Comunidad Global de Baile"
+    "globalDanceCommunity": "Comunidad Global de Baile",
+    "joinedDancers": "{count}+ bailarines se han unido"
   },
   "landing": {
     "hottestCities": "Ciudades de Baile Más Populares 🔥",
@@ -260,7 +261,9 @@
     "hotDanceStyles": "Estilos de Baile Populares 🕺",
     "trendyMusic": "Música en Tendencia 🎵",
     "joinDancersWorldwide": "🌍 Únete a Bailarines de Todo el Mundo",
-    "connectWithDancersInCountries": "Conecta con bailarines en {count} países alrededor del mundo"
+    "connectWithDancersInCountries": "Conecta con bailarines en {count} países alrededor del mundo",
+    "readyToJoin": "¿Listo para Unirte al Mundo del Baile?",
+    "readyToJoinSubtitle": "Conecta con bailarines, descubre eventos y encuentra tu comunidad — todo gratis."
   },
   "dashboard": {
     "hottestCities": "Ciudades de Baile Más Populares 🔥",

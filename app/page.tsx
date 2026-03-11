@@ -509,11 +509,11 @@ export default async function Home() {
             {t('landing.hottestCities')}
           </h2>
           <CityList initialCities={cities} />
-          {/* <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-6">
             <Link href="/cities" className="btn btn-outline btn-sm md:btn-md">
-              View All Cities
+              {t('dashboard.viewAllCities')}
             </Link>
-          </div> */}
+          </div>
           {/* Hot Dance Styles Section */}
           <div className="mt-12">
             <HotDanceStyles danceStyles={hotDanceStyles} />
@@ -557,9 +557,19 @@ export default async function Home() {
           )}
         </div>
 
-        <div className="h-10" />
-
-        {/* <CTA /> */}
+        {/* Final CTA */}
+        <div className="mt-20 mb-16 text-center max-w-2xl mx-auto px-4">
+          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-4">
+            {t('landing.readyToJoin')}
+          </h2>
+          <p className="text-base-content/70 mb-8 text-lg">
+            {t('landing.readyToJoinSubtitle')}
+          </p>
+          <ButtonSignin
+            text={t('hero.ctaButton')}
+            extraStyle="btn-primary btn-lg text-base sm:text-lg px-8 sm:px-12"
+          />
+        </div>
       </main>
       <Footer />
     </>

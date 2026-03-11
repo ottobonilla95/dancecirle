@@ -248,7 +248,8 @@
     "alreadyMember": "If you already have an account, we'll log you in",
     "exploreMore": "Explore more",
     "dancersConnected": "dancers connected",
-    "globalDanceCommunity": "Global Dance Community"
+    "globalDanceCommunity": "Global Dance Community",
+    "joinedDancers": "{count}+ dancers have joined"
   },
   "landing": {
     "hottestCities": "Hottest Dance Cities 🔥",
@@ -260,7 +261,9 @@
     "hotDanceStyles": "Hot Dance Styles 🕺",
     "trendyMusic": "Trendy Music 🎵",
     "joinDancersWorldwide": "🌍 Join Dancers Worldwide",
-    "connectWithDancersInCountries": "Connect with dancers in {count} countries across the globe"
+    "connectWithDancersInCountries": "Connect with dancers in {count} countries across the globe",
+    "readyToJoin": "Ready to Join the Dance World?",
+    "readyToJoinSubtitle": "Connect with dancers, discover events, and find your community — all for free."
   },
   "dashboard": {
     "hottestCities": "Hottest Dance Cities 🔥",

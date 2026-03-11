@@ -8,8 +8,10 @@ import Country from "@/models/Country";
 import Continent from "@/models/Continent";
 import DanceStyle from "@/models/DanceStyle";
 import OrganizerEvent from "@/models/OrganizerEvent";
+import { City as CityType } from "@/types";
 import { DanceStyle as DanceStyleType } from "@/types/dance-style";
 import DiscoveryFeed from "@/components/DiscoveryFeed";
+import CityList from "@/components/organisims/CityList";
 import FriendsTripsPreview from "@/components/FriendsTripsPreview";
 import TripOverlaps from "@/components/TripOverlaps";
 import YourCityPreview from "@/components/YourCityPreview";
@@ -365,6 +367,32 @@ const getCommunityStats = unstable_cache(
   },
   ["community-stats"],
   { revalidate: 120, tags: ["community-stats"] } // 2 minutes cache for safety
+);
+
+// Cached: Cities list
+const getCitiesCached = unstable_cache(
+  async (): Promise<CityType[]> => {
+    try {
+      await connectMongo();
+      const cities = await City.find({ totalDancers: { $gt: 0 } })
+        .populate({ path: "country", model: Country, select: "name code" })
+        .populate({ path: "continent", model: Continent, select: "name" })
+        .sort({ totalDancers: -1 })
+        .limit(6)
+        .lean();
+      return cities.map((doc: any) => ({
+        ...doc,
+        _id: doc._id.toString(),
+        country: { name: doc.country?.name || "", code: doc.country?.code || "" },
+        continent: { name: doc.continent?.name || "" },
+      }));
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+      return [];
+    }
+  },
+  ["hot-cities"],
+  { revalidate: 60, tags: ["hot-cities"] }
 );
 
 // Helper to check if two date ranges overlap
@@ -845,6 +873,7 @@ export default async function Dashboard() {
   const [
     initialDancers,
     danceStyles,
+    cities,
     communityStats,
     tripOverlaps,
     friendsTrips,
@@ -856,6 +885,7 @@ export default async function Dashboard() {
   ] = await Promise.all([
     getInitialDancers(session.user.id),
     getDanceStyles(),
+    getCitiesCached(),
     getCommunityStats(),
     getTripOverlaps(session.user.id),
     getFriendsTrips(session.user.id),
@@ -958,28 +988,28 @@ export default async function Dashboard() {
           <DashboardPostSection initialPosts={feedPosts} friendsCount={friendsCount} />
         </div>
 
-        {/* Explore the Dance World CTA */}
-        <div className="mt-12 card bg-base-200 shadow-md">
-          <div className="card-body p-5">
-            <h2 className="card-title text-lg">{t("dashboard.exploreTitle")}</h2>
-            <p className="text-sm text-base-content/70">{t("dashboard.exploreSubtitle")}</p>
-            <div className="flex flex-wrap gap-2 mt-2">
-              <Link href="/cities" className="btn btn-sm btn-outline">
-                {communityStats.totalCities || 0} {t("dashboard.exploreCities")}
-              </Link>
-              <Link href="/countries" className="btn btn-sm btn-outline">
-                {communityStats.totalCountries || 0} {t("dashboard.exploreCountries")}
-              </Link>
-              <Link href="/dance-style" className="btn btn-sm btn-outline">
-                {danceStyles.length} {t("dashboard.exploreStyles")}
-              </Link>
-              <Link href="/music" className="btn btn-sm btn-outline">
-                {t("dashboard.exploreMusic")}
-              </Link>
-              <Link href="/stats" className="btn btn-sm btn-outline">
-                {t("dashboard.exploreStats")}
-              </Link>
-            </div>
+        {/* Hot Cities Section */}
+        <div className="mt-12">
+          <h2 className="max-w-3xl font-extrabold text-xl md:text-2xl tracking-tight mb-2 md:mb-8">
+            {t("dashboard.hottestCities")}
+          </h2>
+          <CityList initialCities={cities} />
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+            <Link href="/cities" className="btn btn-outline btn-sm md:btn-md">
+              {t("dashboard.viewAllCities")}
+            </Link>
+            <Link href="/countries" className="btn btn-outline btn-sm md:btn-md">
+              {t("dashboard.exploreCountries")}
+            </Link>
+            <Link href="/dance-style" className="btn btn-outline btn-sm md:btn-md">
+              {t("dashboard.exploreStyles")}
+            </Link>
+            <Link href="/music" className="btn btn-outline btn-sm md:btn-md">
+              {t("dashboard.exploreMusic")}
+            </Link>
+            <Link href="/stats" className="btn btn-outline btn-sm md:btn-md">
+              {t("dashboard.exploreStats")}
+            </Link>
           </div>
         </div>
 
