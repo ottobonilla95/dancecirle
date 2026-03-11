@@ -8,18 +8,11 @@ import Country from "@/models/Country";
 import Continent from "@/models/Continent";
 import DanceStyle from "@/models/DanceStyle";
 import OrganizerEvent from "@/models/OrganizerEvent";
-import { City as CityType } from "@/types";
 import { DanceStyle as DanceStyleType } from "@/types/dance-style";
 import DiscoveryFeed from "@/components/DiscoveryFeed";
-import CityList from "@/components/organisims/CityList";
-// import HotDanceStyles from "@/components/HotDanceStyles";
-import StatsPreview from "@/components/StatsPreview";
-import TrendyMusicPreview from "@/components/TrendyMusicPreview";
 import FriendsTripsPreview from "@/components/FriendsTripsPreview";
-// import TrendyCountries from "@/components/TrendyCountries";
 import TripOverlaps from "@/components/TripOverlaps";
 import YourCityPreview from "@/components/YourCityPreview";
-import InviteFriendsBanner from "@/components/InviteFriendsBanner";
 import InstallAppDashboardBanner from "@/components/InstallAppDashboardBanner";
 import Link from "next/link";
 import { getMessages, getTranslation } from "@/lib/i18n";
@@ -374,120 +367,6 @@ const getCommunityStats = unstable_cache(
   { revalidate: 120, tags: ["community-stats"] } // 2 minutes cache for safety
 );
 
-// Extract Spotify track ID from URL
-function extractSpotifyTrackId(url: string): string | null {
-  const match = url.match(/track\/([a-zA-Z0-9]+)/);
-  return match ? match[1] : null;
-}
-
-// Extract YouTube video ID from URL
-function extractYouTubeVideoId(url: string): string | null {
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/,
-    /youtube\.com\/embed\/([a-zA-Z0-9_-]+)/,
-  ];
-
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match) return match[1];
-  }
-
-  return null;
-}
-
-// Determine platform from URL
-function detectPlatform(url: string): "spotify" | "youtube" | null {
-  if (url.includes("spotify.com")) return "spotify";
-  if (url.includes("youtube.com") || url.includes("youtu.be")) return "youtube";
-  return null;
-}
-
-// Cached: Trending songs change when users update their anthems
-const getTrendingSongs = unstable_cache(
-  async () => {
-    try {
-      await connectMongo();
-
-      // Get all users with anthem URLs
-      const users = await User.find({
-        "anthem.url": { $exists: true, $ne: "" },
-      })
-        .select("anthem name image username")
-        .lean();
-
-      // Count occurrences of each song by Spotify track ID (ignore YouTube)
-      const songData: {
-        [trackId: string]: { count: number; url: string; users: any[] };
-      } = {};
-
-      users.forEach((user: any) => {
-        if (user.anthem?.url) {
-          const platform = detectPlatform(user.anthem.url);
-
-          // Only count Spotify songs
-          if (platform === "spotify") {
-            const trackId = extractSpotifyTrackId(user.anthem.url);
-            if (trackId) {
-              if (!songData[trackId]) {
-                songData[trackId] = {
-                  count: 0,
-                  url: user.anthem.url,
-                  users: [],
-                };
-              }
-              songData[trackId].count += 1;
-              songData[trackId].users.push({
-                _id: user._id,
-                name: user.name,
-                image: user.image,
-                username: user.username,
-              });
-            }
-          }
-        }
-      });
-
-      // Convert to array and sort by count
-      const trendingSongs = Object.entries(songData)
-        .map(([trackId, data]) => ({
-          url: data.url,
-          count: data.count,
-          platform: "spotify" as const,
-          spotifyTrackId: trackId,
-          youtubeVideoId: null as string | null,
-          users: data.users,
-        }))
-        .sort((a, b) => b.count - a.count);
-
-      // Additional deduplication check by track ID (case-insensitive)
-      const seenTrackIds = new Set<string>();
-      const deduplicated = trendingSongs.filter((song) => {
-        const normalizedId = song.spotifyTrackId.toLowerCase();
-        if (seenTrackIds.has(normalizedId)) {
-          return false;
-        }
-        seenTrackIds.add(normalizedId);
-        return true;
-      });
-
-      const finalSongs = deduplicated.slice(0, 10); // Top 10
-
-      if (finalSongs.length === 0) {
-        console.warn(
-          "⚠️ getTrendingSongs returned empty - users may not have anthems set"
-        );
-      }
-
-      return finalSongs;
-    } catch (error) {
-      console.error("Error fetching trending songs:", error);
-      return [];
-    }
-  },
-  ["trending-songs"],
-  { revalidate: 300, tags: ["trending-songs"] } // 5 minutes cache for safety
-);
-
 // Helper to check if two date ranges overlap
 function datesOverlap(
   start1: Date,
@@ -798,175 +677,7 @@ async function getFriendsTrips(userId: string) {
   }
 }
 
-// Cached: Trendy countries - expensive aggregation
-// const getTrendyCountries = unstable_cache(
-//   async () => {
-//     try {
-//       await connectMongo();
-
-//       // Calculate everything in real-time for accuracy
-//       const trendyCountries = await Country.aggregate([
-//       // Get all active countries
-//       { $match: { isActive: true } },
-//       // Lookup ALL users in each country
-//       {
-//         $lookup: {
-//           from: "users",
-//           let: { countryId: "$_id" },
-//           pipeline: [
-//             { $match: { isProfileComplete: true } },
-//             // Lookup city
-//             {
-//               $lookup: {
-//                 from: "cities",
-//                 localField: "city",
-//                 foreignField: "_id",
-//                 as: "cityData",
-//               },
-//             },
-//             { $unwind: "$cityData" },
-//             // Match country
-//             {
-//               $match: {
-//                 $expr: { $eq: ["$cityData.country", "$$countryId"] },
-//               },
-//             },
-//             // Project only what we need
-//             { $project: { _id: 1, updatedAt: 1 } },
-//           ],
-//           as: "dancers",
-//         },
-//       },
-//       // Filter out countries with no dancers
-//       { $match: { "dancers.0": { $exists: true } } },
-//       // Calculate metrics
-//       {
-//         $addFields: {
-//           totalDancers: { $size: "$dancers" },
-//           recentlyActive: {
-//             $size: {
-//               $filter: {
-//                 input: "$dancers",
-//                 as: "dancer",
-//                 cond: {
-//                   $gte: [
-//                     "$$dancer.updatedAt",
-//                     new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-//                   ],
-//                 },
-//               },
-//             },
-//           },
-//         },
-//       },
-//       // Calculate trending score: totalDancers + (recentlyActive * 2)
-//       {
-//         $addFields: {
-//           trendingScore: {
-//             $add: ["$totalDancers", { $multiply: ["$recentlyActive", 2] }],
-//           },
-//         },
-//       },
-//       // Sort by trending score
-//       { $sort: { trendingScore: -1 } },
-//       // Limit to top 6
-//       { $limit: 6 },
-//       // Lookup continent
-//       {
-//         $lookup: {
-//           from: "continents",
-//           localField: "continent",
-//           foreignField: "_id",
-//           as: "continentData",
-//         },
-//       },
-//       // Project final structure
-//       {
-//         $project: {
-//           _id: 1,
-//           name: 1,
-//           code: 1,
-//           totalDancers: 1,
-//           recentlyActive: 1,
-//           trendingScore: 1,
-//           continent: {
-//             $arrayElemAt: ["$continentData", 0],
-//           },
-//         },
-//       },
-//     ]);
-
-//     const result = trendyCountries.map((country: any) => ({
-//       ...country,
-//       _id: country._id.toString(),
-//       continent: country.continent
-//         ? {
-//             _id: country.continent._id?.toString(),
-//             name: country.continent.name || "",
-//           }
-//         : null,
-//     }));
-
-//     if (result.length === 0) {
-//       console.warn("⚠️ getTrendyCountries returned empty - check database");
-//     }
-
-//     return result;
-//   } catch (error) {
-//     console.error("Error fetching trendy countries:", error);
-//     return [];
-//   }
-// },
-// ["trendy-countries"],
-// { revalidate: 120, tags: ["trendy-countries"] } // 2 minutes cache for safety
-// );
-
-// Cached: Cities list changes when dancer counts change
-// Note: Shared with landing page - we cache top 10, dashboard uses first 8
-const getCitiesCached = unstable_cache(
-  async (): Promise<CityType[]> => {
-    console.log("🚀 getCities FUNCTION CALLED");
-    try {
-      await connectMongo();
-
-      const cities = await City.find({ totalDancers: { $gt: 0 } })
-        .populate({ path: "country", model: Country, select: "name code" })
-        .populate({ path: "continent", model: Continent, select: "name" })
-        .sort({ totalDancers: -1 })
-        .limit(10) // Cache top 10 (landing uses 10, dashboard uses 8)
-        .lean();
-
-      const result = cities.map((doc: any) => ({
-        ...doc,
-        _id: doc._id.toString(),
-        country: {
-          name: doc.country?.name || "",
-          code: doc.country?.code || "",
-        },
-        continent: { name: doc.continent?.name || "" },
-      }));
-
-      if (result.length === 0) {
-        console.warn("⚠️ getCities returned empty - check database");
-      }
-
-      return result;
-    } catch (error) {
-      console.error("Error fetching cities:", error);
-      return [];
-    }
-  },
-  ["hot-cities"],
-  { revalidate: 60, tags: ["hot-cities"] } // Shared cache with landing page
-);
-
-// Dashboard wrapper - returns only first 8 cities
-async function getCities(): Promise<CityType[]> {
-  const cities = await getCitiesCached();
-  return cities.slice(0, 8);
-}
-
-// Get user's friends count for invite banner
+// Get user's friends count
 async function getUserFriendsCount(userId: string): Promise<number> {
   try {
     await connectMongo();
@@ -1134,11 +845,7 @@ export default async function Dashboard() {
   const [
     initialDancers,
     danceStyles,
-    cities,
-    // hotDanceStyles,
     communityStats,
-    trendingSongs,
-    // trendyCountries,
     tripOverlaps,
     friendsTrips,
     userCityStats,
@@ -1149,11 +856,7 @@ export default async function Dashboard() {
   ] = await Promise.all([
     getInitialDancers(session.user.id),
     getDanceStyles(),
-    getCities(),
-    // getHotDanceStyles(),
     getCommunityStats(),
-    getTrendingSongs(),
-    // getTrendyCountries(),
     getTripOverlaps(session.user.id),
     getFriendsTrips(session.user.id),
     getUserCityStats(session.user.id),
@@ -1168,9 +871,6 @@ export default async function Dashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Install App Banner - Only shows if NOT installed as PWA */}
         <InstallAppDashboardBanner />
-
-        {/* Invite Friends Banner */}
-        <InviteFriendsBanner friendsCount={friendsCount} />
 
         {/* Leaderboard Badges */}
         {leaderboardBadges.length > 0 && (
@@ -1258,36 +958,29 @@ export default async function Dashboard() {
           <DashboardPostSection initialPosts={feedPosts} friendsCount={friendsCount} />
         </div>
 
-        {/* Hot Cities Section */}
-        <h2 className="max-w-3xl font-extrabold text-xl md:text-2xl tracking-tight mb-2 mt-12 md:mb-8">
-          {t("dashboard.hottestCities")}
-        </h2>
-        <CityList initialCities={cities} />
-        <div className="flex justify-center mt-6">
-          <Link href="/cities" className="btn btn-outline btn-sm md:btn-md">
-            {t("dashboard.viewAllCities")}
-          </Link>
-        </div>
-
-        {/* Trendy Countries Section */}
-        {/* <div className="mt-12">
-          <TrendyCountries countries={trendyCountries} />
-        </div> */}
-
-        {/* Hot Dance Styles Section */}
-        {/* <div className="mt-12">
-          <HotDanceStyles danceStyles={hotDanceStyles} />
-        </div> */}
-
-        {/* Trendy Music Section */}
-        <TrendyMusicPreview songs={trendingSongs} />
-
-        {/* Community Stats Section */}
-        <div className="mt-12">
-          <StatsPreview
-            stats={communityStats}
-            countryData={communityStats.countryData}
-          />
+        {/* Explore the Dance World CTA */}
+        <div className="mt-12 card bg-base-200 shadow-md">
+          <div className="card-body p-5">
+            <h2 className="card-title text-lg">{t("dashboard.exploreTitle")}</h2>
+            <p className="text-sm text-base-content/70">{t("dashboard.exploreSubtitle")}</p>
+            <div className="flex flex-wrap gap-2 mt-2">
+              <Link href="/cities" className="btn btn-sm btn-outline">
+                {communityStats.totalCities || 0} {t("dashboard.exploreCities")}
+              </Link>
+              <Link href="/countries" className="btn btn-sm btn-outline">
+                {communityStats.totalCountries || 0} {t("dashboard.exploreCountries")}
+              </Link>
+              <Link href="/dance-style" className="btn btn-sm btn-outline">
+                {danceStyles.length} {t("dashboard.exploreStyles")}
+              </Link>
+              <Link href="/music" className="btn btn-sm btn-outline">
+                {t("dashboard.exploreMusic")}
+              </Link>
+              <Link href="/stats" className="btn btn-sm btn-outline">
+                {t("dashboard.exploreStats")}
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Discovery Feed */}
