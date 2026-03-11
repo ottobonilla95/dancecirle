@@ -1,16 +1,24 @@
+// Reserved words that cannot be used as usernames (locale prefixes, route names, etc.)
+const RESERVED_USERNAMES = [
+  "en", "es", "admin", "api", "dashboard", "settings", "onboarding",
+  "feed", "friends", "discover", "cities", "countries", "music",
+  "stats", "blog", "signin", "invite", "messages", "leaderboards",
+];
+
 /**
  * Check if a username is valid according to our rules
  */
 export function isValidUsername(username: string): boolean {
   if (!username) return false;
-  
+
   const regex = /^[a-z0-9_]+$/;
   return (
     regex.test(username) &&
     username.length >= 3 &&
     username.length <= 20 &&
     !username.startsWith('_') &&
-    !username.endsWith('_')
+    !username.endsWith('_') &&
+    !RESERVED_USERNAMES.includes(username)
   );
 }
 
@@ -26,6 +34,8 @@ export function validateUsername(value: string): string {
     return "Username can only contain lowercase letters, numbers, and underscores";
   if (value.startsWith("_") || value.endsWith("_"))
     return "Username cannot start or end with an underscore";
+  if (RESERVED_USERNAMES.includes(value))
+    return "This username is reserved";
   return "";
 }
 
