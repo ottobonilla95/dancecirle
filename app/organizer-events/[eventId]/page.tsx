@@ -65,6 +65,9 @@ export async function generateMetadata({
     return {
       title,
       description,
+      alternates: {
+        canonical: `/organizer-events/${params.eventId}`,
+      },
       openGraph: {
         title,
         description,
@@ -106,8 +109,45 @@ export default async function OrganizerEventPage({ params }: EventPageProps) {
     minute: "2-digit",
   });
 
+  // JSON-LD structured data for event
+  const eventJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "DanceEvent",
+    name: event.title,
+    startDate: event.startsAt,
+    ...(event.endsAt ? { endDate: event.endsAt } : {}),
+    location: {
+      "@type": "Place",
+      name: event.venue || event.city?.name,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: event.city?.name,
+        addressCountry: event.city?.country?.name,
+      },
+    },
+    ...(event.description ? { description: event.description.slice(0, 200) } : {}),
+    ...(event.flyerUrl ? { image: event.flyerUrl } : {}),
+    ...(event.ticketUrl ? { url: event.ticketUrl } : {}),
+    organizer: {
+      "@type": "Organization",
+      name: event.organizerId?.eventOrganizerProfile?.organizationName || event.organizerId?.name,
+    },
+    ...(typeof event.priceAmount === "number" ? {
+      offers: {
+        "@type": "Offer",
+        price: event.priceAmount,
+        priceCurrency: event.priceCurrency || "USD",
+        ...(event.ticketUrl ? { url: event.ticketUrl } : {}),
+      },
+    } : {}),
+  };
+
   return (
     <main className="min-h-screen bg-base-100 pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }}
+      />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <BackButton label="Back" className="mb-4" />
 

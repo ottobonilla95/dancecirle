@@ -2,6 +2,7 @@ export type City = {
   _id?: string;
   id: string;
   name: string;
+  slug?: string;
   country: {
     name: string;
     code: string;

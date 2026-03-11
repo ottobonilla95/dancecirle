@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { Suspense } from "react";
 import connectMongo from "@/libs/mongoose";
 import DanceStyle from "@/models/DanceStyle";
@@ -145,6 +146,23 @@ async function getCategoryStats() {
   }
 }
 
+export const metadata: Metadata = {
+  title: "Dance Styles | Bachata, Salsa, Kizomba & More | DanceCircle",
+  description:
+    "Explore all dance styles on DanceCircle. Find Bachata, Salsa, Kizomba, Zouk, Urban Kiz, and more. See how many dancers practice each style worldwide.",
+  keywords:
+    "dance styles, Bachata, Salsa, Kizomba, Zouk, Urban Kiz, Bachazouk, Latin dance, partner dance, dance community",
+  alternates: {
+    canonical: "/dance-style",
+  },
+  openGraph: {
+    title: "Dance Styles | DanceCircle",
+    description:
+      "Explore all dance styles on DanceCircle. Find dancers, classes, and communities for every style.",
+    url: "https://dancecircle.co/dance-style",
+  },
+};
+
 export default async function DanceStylesPage() {
   // Get translations
   const messages = await getMessages();
@@ -256,7 +274,7 @@ export default async function DanceStylesPage() {
                     .map((style) => (
                       <Link
                         key={style._id}
-                        href={`/dance-style/${style._id}`}
+                        href={`/dance-style/${style.slug || style._id}`}
                         className="card bg-base-200 hover:bg-base-300 transition-all duration-200 hover:shadow-lg group"
                       >
                         <div className="card-body p-4">

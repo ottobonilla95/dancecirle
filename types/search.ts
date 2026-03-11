@@ -12,6 +12,7 @@ export type SearchUser = {
 export type SearchCity = {
   _id: string;
   name: string;
+  slug?: string;
   country: {
     name: string;
     code: string;
@@ -23,6 +24,7 @@ export type SearchCity = {
 export type SearchCountry = {
   _id: string;
   name: string;
+  slug?: string;
   code: string;
 };
 

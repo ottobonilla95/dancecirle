@@ -9,6 +9,14 @@ const citySchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    slug: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+      lowercase: true,
+      index: true,
+    },
     country: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Country",

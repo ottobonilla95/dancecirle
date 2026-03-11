@@ -93,6 +93,7 @@ async function getDetailedStats() {
           country: { $first: "$countryData.name" },
           countryCode: { $first: "$countryData.code" },
           image: { $first: "$cityData.image" },
+          slug: { $first: "$cityData.slug" },
           dancerCount: { $sum: 1 },
         },
       },
@@ -117,6 +118,7 @@ async function getDetailedStats() {
       {
         $project: {
           name: "$styleDetails.name",
+          slug: "$styleDetails.slug",
           category: "$styleDetails.category",
           emoji: "$styleDetails.emoji",
           count: 1,
@@ -438,7 +440,7 @@ export default async function StatsPage() {
             {stats.danceStyleStats
               .slice(0, 9)
               .map((style: any, index: number) => (
-                <Link key={style._id} href={`/dance-style/${style._id}`}>
+                <Link key={style._id} href={`/dance-style/${style.slug || style._id}`}>
                   <div className="flex items-center justify-between p-3 bg-base-100 rounded-lg hover:bg-base-200 transition-colors cursor-pointer">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{style.emoji || "💃"}</span>
@@ -520,7 +522,7 @@ export default async function StatsPage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {stats.cityStats.slice(0, 10).map((city: any, index: number) => (
-              <Link key={city._id} href={`/city/${city._id}`}>
+              <Link key={city._id} href={`/city/${city.slug || city._id}`}>
                 <div className="flex items-center justify-between p-3 bg-base-100 rounded-lg hover:bg-base-200 transition-colors cursor-pointer">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">

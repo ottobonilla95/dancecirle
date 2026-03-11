@@ -11,7 +11,7 @@ interface CityCardProps {
 const CityCard = ({ city, index }: CityCardProps) => {
   const { t } = useTranslation();
   return (
-    <Link href={`/city/${city._id}`}>
+    <Link href={`/city/${city.slug || city._id}`}>
       <div className="relative group cursor-pointer bg-base-100 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 h-48">
         {city.image ? (
           <img

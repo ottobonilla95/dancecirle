@@ -10,6 +10,14 @@ const danceStyleSchema = new mongoose.Schema(
       trim: true,
       unique: true,
     },
+    slug: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+      lowercase: true,
+      index: true,
+    },
     description: {
       type: String,
       trim: true,

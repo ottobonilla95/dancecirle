@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
       ],
       isActive: true
     })
-      .select("name country image totalDancers")
+      .select("name slug country image totalDancers")
       .populate({
         path: "country",
         model: Country,
@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
       name: { $regex: accentInsensitivePattern, $options: "i" },
       isActive: true
     })
-      .select("name code")
+      .select("name code slug")
       .sort({ name: 1 })
       .limit(2)
       .lean();

@@ -37,11 +37,14 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
     return {
       title,
       description,
+      alternates: {
+        canonical: `/events/${params.eventId}`,
+      },
       openGraph: {
         title,
         description,
         type: "website",
-        url: `${config.domainName}/events/${params.eventId}`,
+        url: `https://${config.domainName}/events/${params.eventId}`,
         images: event.imageUrl ? [event.imageUrl] : (event.djId?.image ? [event.djId.image] : []),
       },
       twitter: {
