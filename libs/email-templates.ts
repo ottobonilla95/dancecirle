@@ -111,7 +111,7 @@ const emailTranslations = {
 function getUnsubscribeFooter(userId: string, type: string, locale: Locale = 'en') {
   const unsubscribeUrl = `https://${config.domainName}/api/unsubscribe?userId=${userId}&type=${type}`;
   const unsubscribeAllUrl = `https://${config.domainName}/api/unsubscribe?userId=${userId}&type=all`;
-  const settingsUrl = `https://${config.domainName}/settings`;
+  const settingsUrl = `https://${config.domainName}/${locale}/settings`;
   
   const text = locale === 'es' 
     ? `<a href="${unsubscribeUrl}" style="color: #999; text-decoration: underline;">Cancelar este tipo de notificaciones</a> | <a href="${unsubscribeAllUrl}" style="color: #999; text-decoration: underline;">Cancelar todas las notificaciones</a> | <a href="${settingsUrl}" style="color: #667eea;">Gestionar preferencias</a>`
@@ -168,7 +168,7 @@ export function friendRequestReceivedEmail(sender: UserData, recipient: UserData
                 <p style="color: #666; margin: 10px 0;">${t.wantsToConnect}</p>
               </div>
               <div style="text-align: center;">
-                <a href="https://dancecircle.co/friends" class="button">${t.viewButton}</a>
+                <a href="https://${config.domainName}/${locale}/friends" class="button">${t.viewButton}</a>
               </div>
               <p style="margin-top: 30px; color: #666; font-size: 14px;">
                 ${t.footer1}
@@ -233,7 +233,7 @@ export function friendRequestAcceptedEmail(accepter: UserData, sender: UserData,
                 ${accepter.username ? `<p style="color: #666; margin: 5px 0;">@${accepter.username}</p>` : ''}
               </div>
               <div style="text-align: center;">
-                <a href="https://dancecircle.co/${accepter.username || `dancer/${accepter._id}`}" class="button">${t.viewButton}</a>
+                <a href="https://${config.domainName}/${locale}/${accepter.username || `dancer/${accepter._id}`}" class="button">${t.viewButton}</a>
               </div>
               <p style="margin-top: 30px; color: #666; font-size: 14px;">
                 ${t.footer1}
@@ -309,7 +309,7 @@ export function messageReceivedEmail(
                 </div>
               </div>
               <div style="text-align: center;">
-                <a href="https://dancecircle.co/messages/${conversationId}" class="button">${t.viewButton}</a>
+                <a href="https://${config.domainName}/${locale}/messages/${conversationId}" class="button">${t.viewButton}</a>
               </div>
               <p style="margin-top: 30px; color: #666; font-size: 14px;">
                 ${t.footer1}
@@ -376,7 +376,7 @@ export function profileLikedEmail(liker: UserData, recipient: UserData, locale: 
                 <p style="color: #666; margin: 10px 0;">${t.likedProfile}</p>
               </div>
               <div style="text-align: center;">
-                <a href="https://dancecircle.co/${liker.username || `dancer/${liker._id}`}" class="button">${t.viewButton}</a>
+                <a href="https://${config.domainName}/${locale}/${liker.username || `dancer/${liker._id}`}" class="button">${t.viewButton}</a>
               </div>
               <p style="margin-top: 30px; color: #666; font-size: 14px;">
                 ${t.footer1}

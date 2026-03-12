@@ -192,7 +192,7 @@ export async function POST(
                       ${t.completeMessage}
                     </p>
                     <div style="text-align: center;">
-                      <a href="${typeof window !== 'undefined' ? window.location.origin : 'https://dancecircle.co'}/profile" class="button">
+                      <a href="https://${config.domainName}/${lang}/profile" class="button">
                         ${t.buttonText}
                       </a>
                     </div>
@@ -213,7 +213,7 @@ export async function POST(
                   <p>${t.footerReason}</p>
                   <p style="margin-top: 10px; font-size: 11px;">
                     <a href="https://${config.domainName}/api/unsubscribe?userId=${userId}&type=all" style="color: #999; text-decoration: underline;">Unsubscribe from all</a> | 
-                    <a href="https://${config.domainName}/settings" style="color: #667eea; text-decoration: none;">Manage preferences</a>
+                    <a href="https://${config.domainName}/${lang}/settings" style="color: #667eea; text-decoration: none;">Manage preferences</a>
                   </p>
                   <p>${t.copyright}</p>
                 </div>

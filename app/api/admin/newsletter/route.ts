@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
           </div>
 
           <div style="text-align: center; margin: 20px 0;">
-            <a href="https://dancecircle.ai" style="display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+            <a href="https://${config.domainName}/en" style="display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">
               Visit ${config.appName} →
             </a>
           </div>
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
             <p>You received this email because you have an account at ${config.appName}</p>
             <p style="margin-top: 10px; font-size: 11px;">
               <a href="https://${config.domainName}/api/unsubscribe?userId={{USER_ID}}&type=all" style="color: #999; text-decoration: underline;">Unsubscribe from all</a> | 
-              <a href="https://${config.domainName}/settings" style="color: #667eea; text-decoration: none;">Manage preferences</a>
+              <a href="https://${config.domainName}/en/settings" style="color: #667eea; text-decoration: none;">Manage preferences</a>
             </p>
           </div>
         </div>
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
           return sendEmail({
             to: recipient.email,
             subject: `📢 ${subject}`,
-            text: `${subject}\n\n${message}\n\n---\nVisit ${config.appName} at https://dancecircle.ai\n\nUnsubscribe: https://${config.domainName}/api/unsubscribe?userId=${recipient._id}&type=all`,
+            text: `${subject}\n\n${message}\n\n---\nVisit ${config.appName} at https://${config.domainName}/en\n\nUnsubscribe: https://${config.domainName}/api/unsubscribe?userId=${recipient._id}&type=all`,
             html: personalizedHtml,
             headers: {
               'List-Unsubscribe': `<https://${config.domainName}/api/unsubscribe?userId=${recipient._id}&type=all>`,

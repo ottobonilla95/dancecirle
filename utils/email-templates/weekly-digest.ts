@@ -7,7 +7,7 @@ import config from "@/config";
 function getWeeklyDigestUnsubscribeFooter(userId: string): string {
   const unsubscribeUrl = `https://${config.domainName}/api/unsubscribe?userId=${userId}&type=weeklyDigest`;
   const unsubscribeAllUrl = `https://${config.domainName}/api/unsubscribe?userId=${userId}&type=all`;
-  const settingsUrl = `https://${config.domainName}/settings`;
+  const settingsUrl = `https://${config.domainName}/en/settings`;
   
   return `<a href="${unsubscribeUrl}" style="color: #999; text-decoration: underline;">Unsubscribe from weekly digest</a> | <a href="${unsubscribeAllUrl}" style="color: #999; text-decoration: underline;">Unsubscribe from all</a> | <a href="${settingsUrl}" style="color: #667eea;">Manage preferences</a>`;
 }
@@ -40,7 +40,7 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
         <div style="padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; margin-bottom: 10px;">
           <div style="color: white; font-size: 18px; font-weight: bold; margin-bottom: 10px;">${emoji} ${text}</div>
           ${!change.isNew ? `<div style="color: rgba(255,255,255,0.9); font-size: 14px; margin-bottom: 10px;">Keep it up! You're climbing.</div>` : ''}
-          <a href="https://${config.domainName}/leaderboards?category=mostLiked" style="display: inline-block; background: white; color: #667eea; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
+          <a href="https://${config.domainName}/en/leaderboards?category=mostLiked" style="display: inline-block; background: white; color: #667eea; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
             View Leaderboard →
           </a>
         </div>
@@ -57,7 +57,7 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
         <div style="padding: 15px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 8px; margin-bottom: 10px;">
           <div style="color: white; font-size: 18px; font-weight: bold; margin-bottom: 10px;">${emoji} ${text}</div>
           ${!change.isNew ? `<div style="color: rgba(255,255,255,0.9); font-size: 14px; margin-bottom: 10px;">Amazing progress!</div>` : ''}
-          <a href="https://${config.domainName}/leaderboards?category=jjChampions" style="display: inline-block; background: white; color: #f5576c; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
+          <a href="https://${config.domainName}/en/leaderboards?category=jjChampions" style="display: inline-block; background: white; color: #f5576c; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
             View Leaderboard →
           </a>
         </div>
@@ -73,7 +73,7 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
       leaderboardItems.push(`
         <div style="padding: 15px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 8px; margin-bottom: 10px;">
           <div style="color: white; font-size: 18px; font-weight: bold; margin-bottom: 10px;">${emoji} ${text}</div>
-          <a href="https://${config.domainName}/leaderboards?category=jjPodium" style="display: inline-block; background: white; color: #fa709a; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
+          <a href="https://${config.domainName}/en/leaderboards?category=jjPodium" style="display: inline-block; background: white; color: #fa709a; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
             View Leaderboard →
           </a>
         </div>
@@ -89,7 +89,7 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
       leaderboardItems.push(`
         <div style="padding: 15px; background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); border-radius: 8px; margin-bottom: 10px;">
           <div style="color: #333; font-size: 18px; font-weight: bold; margin-bottom: 10px;">${emoji} ${text}</div>
-          <a href="https://${config.domainName}/leaderboards?category=jjParticipation" style="display: inline-block; background: #d299c2; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
+          <a href="https://${config.domainName}/en/leaderboards?category=jjParticipation" style="display: inline-block; background: #d299c2; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
             View Leaderboard →
           </a>
         </div>
@@ -105,7 +105,7 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
       leaderboardItems.push(`
         <div style="padding: 15px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 8px; margin-bottom: 10px;">
           <div style="color: #333; font-size: 18px; font-weight: bold; margin-bottom: 10px;">${emoji} ${text}</div>
-          <a href="https://${config.domainName}/leaderboards?category=mostLikedTeachers" style="display: inline-block; background: #a8edea; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
+          <a href="https://${config.domainName}/en/leaderboards?category=mostLikedTeachers" style="display: inline-block; background: #a8edea; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
             View Leaderboard →
           </a>
         </div>
@@ -121,7 +121,7 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
       leaderboardItems.push(`
         <div style="padding: 15px; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); border-radius: 8px; margin-bottom: 10px;">
           <div style="color: #333; font-size: 18px; font-weight: bold; margin-bottom: 10px;">${emoji} ${text}</div>
-          <a href="https://${config.domainName}/leaderboards?category=mostLikedDJs" style="display: inline-block; background: #ff9a9e; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
+          <a href="https://${config.domainName}/en/leaderboards?category=mostLikedDJs" style="display: inline-block; background: #ff9a9e; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
             View Leaderboard →
           </a>
         </div>
@@ -137,7 +137,7 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
       leaderboardItems.push(`
         <div style="padding: 15px; background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 8px; margin-bottom: 10px;">
           <div style="color: #333; font-size: 18px; font-weight: bold; margin-bottom: 10px;">${emoji} ${text}</div>
-          <a href="https://${config.domainName}/leaderboards?category=mostLikedPhotographers" style="display: inline-block; background: #ffecd2; color: #333; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
+          <a href="https://${config.domainName}/en/leaderboards?category=mostLikedPhotographers" style="display: inline-block; background: #ffecd2; color: #333; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
             View Leaderboard →
           </a>
         </div>
@@ -153,7 +153,7 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
       leaderboardItems.push(`
         <div style="padding: 15px; background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); border-radius: 8px; margin-bottom: 10px;">
           <div style="color: #333; font-size: 18px; font-weight: bold; margin-bottom: 10px;">${emoji} ${text}</div>
-          <a href="https://${config.domainName}/leaderboards?category=mostLikedProducers" style="display: inline-block; background: #84fab0; color: #333; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
+          <a href="https://${config.domainName}/en/leaderboards?category=mostLikedProducers" style="display: inline-block; background: #84fab0; color: #333; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
             View Leaderboard →
           </a>
         </div>
@@ -214,7 +214,7 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
         </h2>
         <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
           <div style="font-size: 16px; margin-bottom: 15px;">• <strong>${friendActivity.friendsWithUpcomingTrips}</strong> friend${friendActivity.friendsWithUpcomingTrips > 1 ? 's have' : ' has'} upcoming trips ✈️</div>
-          <a href="https://${config.domainName}/friends/trips" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; margin-top: 10px;">
+          <a href="https://${config.domainName}/en/friends/trips" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; margin-top: 10px;">
             See All Trips
           </a>
         </div>
@@ -247,10 +247,10 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
   }
 
   const baseUrl = `https://${config.domainName}`;
-  const dashboardUrl = `${baseUrl}/dashboard`;
-  const profileUrl = user.username 
-    ? `${baseUrl}/${user.username}`
-    : `${baseUrl}/profile`;
+  const dashboardUrl = `${baseUrl}/en/dashboard`;
+  const profileUrl = user.username
+    ? `${baseUrl}/en/${user.username}`
+    : `${baseUrl}/en/profile`;
 
   return `
     <!DOCTYPE html>
@@ -290,8 +290,8 @@ export function generateWeeklyDigestHTML(data: WeeklyDigestData): string {
             <p style="margin: 0 0 10px 0;">Keep dancing! 💃🕺</p>
             <p style="margin: 0;">
               <a href="${profileUrl}" style="color: #667eea; text-decoration: none;">View Your Profile</a> • 
-              <a href="${baseUrl}/leaderboards" style="color: #667eea; text-decoration: none;">Leaderboards</a> • 
-              <a href="${baseUrl}/settings" style="color: #667eea; text-decoration: none;">Email Settings</a>
+              <a href="${baseUrl}/en/leaderboards" style="color: #667eea; text-decoration: none;">Leaderboards</a> •
+              <a href="${baseUrl}/en/settings" style="color: #667eea; text-decoration: none;">Email Settings</a>
             </p>
             <p style="margin: 15px 0 0 0; font-size: 11px; color: #999;">
               This is your weekly digest from ${config.appName}. You're receiving this because you're an active member of our dance community.
@@ -373,7 +373,7 @@ export function generateWeeklyDigestText(data: WeeklyDigestData): string {
     text += `FRIEND ACTIVITY\n`;
     text += `----------------\n`;
     text += `• ${friendActivity.friendsWithUpcomingTrips} friend${friendActivity.friendsWithUpcomingTrips > 1 ? 's have' : ' has'} upcoming trips\n`;
-    text += `\nSee all trips: https://${config.domainName}/friends/trips\n`;
+    text += `\nSee all trips: https://${config.domainName}/en/friends/trips\n`;
     text += '\n';
   }
 
@@ -389,7 +389,7 @@ export function generateWeeklyDigestText(data: WeeklyDigestData): string {
   }
 
   const baseUrl = `https://${config.domainName}`;
-  text += `\nView your dashboard: ${baseUrl}/dashboard\n`;
+  text += `\nView your dashboard: ${baseUrl}/en/dashboard\n`;
   text += `\nKeep dancing! 💃🕺\n`;
 
   return text;
