@@ -1,5 +1,5 @@
 import { LeaderboardBadge } from "@/utils/leaderboard-badges";
-import Link from "next/link";
+import { Link } from "@/navigation";
 
 interface LeaderboardBadgesProps {
   badges: LeaderboardBadge[];

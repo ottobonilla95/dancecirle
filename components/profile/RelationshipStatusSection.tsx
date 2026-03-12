@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "@/components/I18nProvider";
 
 interface RelationshipStatusSectionProps {
   initialRelationshipStatus?: string;
 }
 
 export default function RelationshipStatusSection({ initialRelationshipStatus }: RelationshipStatusSectionProps) {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [relationshipStatus, setRelationshipStatus] = useState(initialRelationshipStatus || "");
   const [isSaving, setIsSaving] = useState(false);
@@ -79,7 +81,7 @@ export default function RelationshipStatusSection({ initialRelationshipStatus }:
             disabled={isSaving}
             className="btn btn-primary btn-sm"
           >
-            {isSaving ? "Saving..." : "Save"}
+            {isSaving ? t('common.saving') : t('common.save')}
           </button>
           <button
             onClick={handleCancel}

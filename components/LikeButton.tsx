@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { useLikes } from "@/contexts/LikesContext";
 
 interface LikeButtonProps {

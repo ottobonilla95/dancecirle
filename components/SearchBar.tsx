@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import Image from "next/image";
 import { FaSearch, FaTimes, FaUser, FaCity, FaGlobe, FaUsers } from "react-icons/fa";
 import { SearchUser, SearchCity, SearchCountry, UnifiedSearchResponse } from "@/types/search";

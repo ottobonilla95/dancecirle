@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { FaUserFriends, FaBell } from "react-icons/fa";
 
 interface FriendRequestNotificationProps {

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { FaPlane, FaCalendar, FaMapMarkerAlt } from "react-icons/fa";
 import { useTranslation } from "./I18nProvider";
 

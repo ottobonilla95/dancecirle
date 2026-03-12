@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { User } from "@/types/user";
 import { FaMapMarkerAlt, FaHeart, FaInstagram, FaTiktok, FaYoutube, FaGraduationCap, FaHeadphones, FaCamera, FaCheck, FaTimes } from "react-icons/fa";
 import { getZodiacSign } from "@/utils/zodiac";

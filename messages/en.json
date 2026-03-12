@@ -233,7 +233,10 @@
     "bySigningIn": "By signing in, you agree to our",
     "terms": "Terms of Service",
     "and": "and",
-    "privacy": "Privacy Policy"
+    "privacy": "Privacy Policy",
+    "linkExpired": "Link Expired",
+    "linkExpiredMessage": "Your sign-in link has expired or was already used. Please request a new one below.",
+    "signInError": "Sign in error. Please try again."
   },
   "hero": {
     "title": "Connect with dancers worldwide",
@@ -307,7 +310,8 @@
     "dancersInCity": "dancers",
     "topStylesInCity": "Top Styles",
     "exploreYourCity": "Explore",
-    "travelers": "travelers"
+    "travelers": "travelers",
+    "eventsNearYou": "Events Near You"
   },
   "trips": {
     "meetUpOpportunities": "Meetup Opportunities!",
@@ -319,7 +323,13 @@
     "yourTrip": "Your trip",
     "trip": "trip",
     "viewCity": "View City",
-    "viewProfile": "View Profile"
+    "viewProfile": "View Profile",
+    "upcomingTrips": "Upcoming Trips",
+    "addTrip": "Add Trip",
+    "fillAllFields": "Please fill in all fields",
+    "failedToAdd": "Failed to add trip",
+    "noTripsYet": "No upcoming trips yet. Add your first trip!",
+    "noTrips": "No upcoming trips"
   },
   "profile": {
     "myProfile": "My Profile",
@@ -621,7 +631,14 @@
     "popularStyles": "Popular styles",
     "noCitiesAvailable": "No cities available at the moment",
     "day": "day",
-    "days": "days"
+    "days": "days",
+    "back": "Back",
+    "sortBy": "Sort by:",
+    "az": "A-Z",
+    "saving": "Saving...",
+    "adding": "Adding...",
+    "searching": "Searching...",
+    "noResults": "No results found"
   },
   "dancer": {
     "wantToConnect": "Want to connect with {name}?",
@@ -648,7 +665,16 @@
     "topTeachers": "Top Teachers",
     "topDJs": "Top DJs",
     "likes": "likes",
-    "wins": "wins"
+    "wins": "wins",
+    "jjPodium": "J&J Podium",
+    "jjParticipation": "J&J Participation",
+    "mostLikedTeachers": "Most Liked Teachers",
+    "mostLikedDJs": "Most Liked DJs",
+    "mostLikedPhotographers": "Most Liked Photographers",
+    "mostLikedProducers": "Most Liked Producers",
+    "podiums": "Podiums",
+    "competitions": "Competitions",
+    "noData": "No data available yet. Be the first!"
   },
   "city": {
     "population": "Population",
@@ -671,9 +697,17 @@
     "dancersIn": "Dancers in",
     "joinDanceCommunityIn": "Join the Dance Community in",
     "signUpToConnect": "Sign up to connect with dancers in",
-    "noDancersFound": "No dancers found",
+    "noDancersFound": "No dancers found in {name} yet",
     "tryAdjusting": "Try adjusting your filters or check back later for new dancers!",
-    "view": "View"
+    "view": "View",
+    "eventOrganizers": "Event Organizers",
+    "producers": "Producers",
+    "professionalsIn": "Professionals in {name}",
+    "noDanceStylesYet": "No dance styles data available yet",
+    "website": "Website",
+    "connectCTA": "Connect with {count} dancers and discover the amazing dance scene in your city!",
+    "joinDanceCircle": "Join DanceCircle",
+    "setAsLocation": "set this as your location"
   },
   "country": {
     "totalDancers": "Total Dancers",
@@ -696,9 +730,17 @@
     "dancersIn": "Dancers in",
     "joinDanceCommunityIn": "Join the Dance Community in",
     "signUpToConnect": "Sign up to connect with dancers in",
-    "noDancersFound": "No dancers found",
+    "noDancersFound": "No dancers found in {name} yet",
     "tryAdjusting": "Try adjusting your filters or check back later for new dancers!",
-    "view": "View"
+    "view": "View",
+    "eventOrganizers": "Event Organizers",
+    "producers": "Producers",
+    "professionalsIn": "Professionals in {name}",
+    "noDanceStylesYet": "No dance styles data available yet",
+    "website": "Website",
+    "connectCTA": "Connect with {count} dancers and discover the amazing dance scene in {name}!",
+    "joinDanceCircle": "Join DanceCircle",
+    "setAsLocation": "set this as your location"
   },
   "filters": {
     "showMyDancers": "Show only dancers who dance what I dance",
@@ -891,7 +933,11 @@
     "pressEnter": "Press Enter to send, Shift+Enter for new line",
     "justNow": "Just now",
     "backToInbox": "Back to inbox",
-    "viewProfile": "View profile"
+    "viewProfile": "View profile",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago",
+    "failedToStart": "Failed to start conversation"
   },
   "djEvents": {
     "title": "DJ Events",
@@ -956,5 +1002,197 @@
       "newRelease": "New release",
       "viewReleaseDetails": "View Release Details"
     }
+  },
+  "meta": {
+    "home": {
+      "title": "DanceCircle - Connect with Dancers Worldwide | Bachata, Salsa, Kizomba",
+      "description": "Connect with dancers worldwide! Discover dance cities, events, music, and communities. Find Bachata, Salsa, Kizomba partners, teachers, DJs, and festivals near you.",
+      "ogTitle": "DanceCircle - Connect with Dancers Worldwide",
+      "ogDescription": "Connect with dancers worldwide! Discover dance cities, events, music, and communities.",
+      "jsonLdDescription": "Connect with dancers worldwide. Discover dance cities, events, music, and communities."
+    },
+    "city": {
+      "title": "{cityName} Dance Community | {topStyles} in {cityName}",
+      "description": "Connect with {count} dancers in {cityName}, {countryName}. Find {styles} partners, classes, and events. Join the {cityName} dance scene!",
+      "notFound": "City Not Found",
+      "fallback": "City Page"
+    },
+    "country": {
+      "title": "{countryName} Dance Community | {topStyles} in {countryName}",
+      "description": "Discover {count} dancers across {countryName}. Connect with {styles} communities, find partners, teachers, and events throughout {countryName}.",
+      "notFound": "Country Not Found",
+      "fallback": "Country Page"
+    },
+    "continent": {
+      "title": "{continentName} Dance Community | Bachata, Salsa, Kizomba in {continentName}",
+      "description": "Discover dancers across {continentName}. Connect with dance communities, find partners, teachers, and events throughout {continentName}.",
+      "notFound": "Continent Not Found",
+      "fallback": "Continent Page"
+    },
+    "danceStyle": {
+      "title": "{styleName} Dance Community | Find {styleName} Dancers Worldwide",
+      "description": "Connect with {count} {styleName} dancers worldwide. Find partners, classes, and events. Join the global {styleName} community on DanceCircle.",
+      "descriptionWithBio": "{bio} Connect with {count} {styleName} dancers worldwide on DanceCircle.",
+      "notFound": "Dance Style Not Found",
+      "fallback": "Dance Style Page"
+    },
+    "dancer": {
+      "title": "{name} - {role} | {styles} in {location}",
+      "titleNoLocation": "{name} - {role} | {styles}",
+      "description": "Connect with {name}, {role} specializing in {styles}{location}. View profile, dance styles, and connect on DanceCircle.",
+      "descriptionWithBio": "{name} - {role} specializing in {styles}. {bio}",
+      "notFound": "Dancer Not Found",
+      "fallback": "Dancer Profile",
+      "defaultRole": "Dancer",
+      "roleTeacher": "Teacher",
+      "roleDJ": "DJ",
+      "rolePhotographer": "Photographer",
+      "roleEventOrganizer": "Event Organizer",
+      "roleProducer": "Producer",
+      "danceCommunity": "dance community",
+      "dancePartner": "dance partner"
+    },
+    "event": {
+      "title": "{eventName} - {city} | DanceCircle",
+      "description": "{eventName} by DJ {djName} in {city}. {venue}{date}",
+      "notFound": "Event Not Found | DanceCircle",
+      "fallback": "Event | DanceCircle"
+    },
+    "release": {
+      "title": "{title} by {producer} | DanceCircle",
+      "description": "Listen to {title} by {producer} on {platform}",
+      "notFound": "Release Not Found | DanceCircle",
+      "fallback": "Release | DanceCircle"
+    },
+    "releases": {
+      "title": "{producer}'s Releases | DanceCircle",
+      "description": "Explore all music releases by {producer}. {count} {releaseWord} available on DanceCircle.",
+      "release": "release",
+      "releasesPl": "releases",
+      "notFound": "Producer Not Found | DanceCircle",
+      "fallback": "Releases | DanceCircle"
+    },
+    "organizerEvent": {
+      "title": "{eventTitle}{city} | DanceCircle",
+      "description": "Discover this social dance event{city} on DanceCircle.",
+      "notFound": "Event Not Found | DanceCircle",
+      "fallback": "Event | DanceCircle"
+    }
+  },
+  "continent": {
+    "totalDancers": "Total Dancers",
+    "dancersShort": "Dancers",
+    "activeCommunity": "Active dance community members",
+    "countries": "Countries",
+    "withActiveDancers": "With active dancers",
+    "cities": "Cities",
+    "danceCommunities": "Dance communities",
+    "popularDanceStyles": "Popular Dance Styles",
+    "noDanceStylesYet": "No dance styles data available yet",
+    "topCountries": "Top Countries",
+    "topCities": "Top Cities",
+    "dancersIn": "Dancers in {name}",
+    "noDancersIn": "No dancers found in {name} yet",
+    "joinCommunityIn": "Join the Dance Community in {name}",
+    "connectWithDancers": "Connect with {count} dancers across {countries} countries!",
+    "joinDanceCircle": "Join DanceCircle"
+  },
+  "citiesPage": {
+    "title": "Dance Cities Worldwide",
+    "subtitle": "Discover vibrant dance communities around the globe. Find your perfect city to dance, connect, and grow.",
+    "searchPlaceholder": "Search cities...",
+    "sortBy": "Sort by:",
+    "largestCities": "Largest Cities",
+    "loadingCities": "Loading cities...",
+    "citiesFound": "{count} cities found",
+    "noCitiesFound": "No cities found",
+    "noCitiesFoundTitle": "No Cities Found",
+    "noMatchingCities": "No cities match \"{query}\". Try a different search term.",
+    "noCitiesAvailable": "No cities available at the moment."
+  },
+  "countriesPage": {
+    "title": "Dance Countries Worldwide",
+    "subtitle": "Discover vibrant dance communities in countries around the globe. Find your perfect destination to dance, connect, and grow.",
+    "searchPlaceholder": "Search countries...",
+    "sortBy": "Sort by:",
+    "loadingCountries": "Loading countries...",
+    "countriesFound": "{count} countries found",
+    "noCountriesFound": "No countries found",
+    "noCountriesFoundTitle": "No Countries Found",
+    "noMatchingCountries": "No countries match \"{query}\". Try a different search term.",
+    "noCountriesAvailable": "No countries available at the moment.",
+    "az": "A-Z"
+  },
+  "releasePage": {
+    "backToProfile": "Back to Profile",
+    "listenOnSpotify": "Listen on Spotify",
+    "watchOnYouTube": "Watch on YouTube",
+    "aboutProducer": "About the Producer",
+    "moreFrom": "More from {name}"
+  },
+  "releasesPage": {
+    "backToProfile": "Back to Profile",
+    "allReleases": "All Releases",
+    "noReleasesYet": "No releases yet",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{count} days ago",
+    "weeksAgo": "{count} weeks ago",
+    "backTo": "Back to {name}'s Profile"
+  },
+  "organizerEvent": {
+    "back": "Back",
+    "getTickets": "Get Tickets",
+    "price": "Price:"
+  },
+  "eventDetail": {
+    "notFound": "Event not found",
+    "goBack": "Go Back",
+    "back": "Back",
+    "dj": "DJ",
+    "review": "review",
+    "reviews": "reviews",
+    "leaveReview": "Leave a Review",
+    "rating": "Rating",
+    "comment": "Comment",
+    "sharePlaceholder": "Share your experience...",
+    "posting": "Posting...",
+    "postReview": "Post Review",
+    "alreadyReviewed": "You've already reviewed this event",
+    "signInToReview": "Please sign in to leave a review",
+    "reviewsTitle": "Reviews",
+    "noReviews": "No reviews yet. Be the first to review this event!",
+    "signInToComment": "Please sign in to leave a comment",
+    "writeComment": "Please write a comment",
+    "failedToPost": "Failed to post comment"
+  },
+  "activityFeed": {
+    "noActivity": "No activity yet",
+    "discoverPeople": "Discover People",
+    "discoverMoreDancers": "Discover More Dancers"
+  },
+  "citySearch": {
+    "searching": "Searching...",
+    "noCitiesFound": "No cities found",
+    "typeToSearch": "Type at least 2 characters to search cities",
+    "noCitiesForTerm": "No cities found for \"{query}\"",
+    "searchingCities": "Searching cities..."
+  },
+  "dancersFilter": {
+    "noDancersFound": "No dancers found",
+    "noDancersMatchStyles": "No dancers in {location} match your dance styles"
+  },
+  "profileSections": {
+    "save": "Save",
+    "saving": "Saving...",
+    "editOrganizerEvent": "Edit Organizer Event",
+    "addOrganizerEvent": "Add Organizer Event",
+    "saveEvent": "Save Event",
+    "editDJEvent": "Edit DJ Event",
+    "addDJEvent": "Add DJ Event"
+  },
+  "friendsMap": {
+    "networkStartsHere": "Your Dance Network Starts Here",
+    "friendsWillAppear": "Your friends will appear here once they add their city location"
   }
 }

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { FaUserPlus, FaUserCheck, FaUserClock, FaCheck, FaTimes, FaChevronDown } from "react-icons/fa";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { useTranslation } from "./I18nProvider";
 import { useRefreshFriendRequests } from "@/contexts/FriendRequestContext";
 

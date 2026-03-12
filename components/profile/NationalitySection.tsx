@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { COUNTRIES } from "@/constants/countries";
+import { useTranslation } from "@/components/I18nProvider";
 import Flag from "@/components/Flag";
 import { getCountryCode } from "@/utils/countries";
 
@@ -13,6 +14,7 @@ interface NationalitySectionProps {
 export default function NationalitySection({
   initialNationality,
 }: NationalitySectionProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [nationality, setNationality] = useState(initialNationality || "");
@@ -74,7 +76,7 @@ export default function NationalitySection({
             disabled={saving}
             onClick={handleSave}
           >
-            {saving ? "Saving..." : "Save"}
+            {saving ? t('common.saving') : t('common.save')}
           </button>
           <button
             type="button"

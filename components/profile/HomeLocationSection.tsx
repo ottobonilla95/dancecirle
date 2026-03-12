@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CitySelector from "@/components/CitySelector";
+import { useTranslation } from "@/components/I18nProvider";
 import { City } from "@/types";
 
 interface HomeLocationSectionProps {
@@ -29,6 +30,7 @@ function normalizeCity(city: any): City | null {
 }
 
 export default function HomeLocationSection({ initialCity }: HomeLocationSectionProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [selectedCities, setSelectedCities] = useState<City[]>(
@@ -95,7 +97,7 @@ export default function HomeLocationSection({ initialCity }: HomeLocationSection
             disabled={saving}
             onClick={handleSave}
           >
-            {saving ? "Saving..." : "Save"}
+            {saving ? t('common.saving') : t('common.save')}
           </button>
           <button
             type="button"

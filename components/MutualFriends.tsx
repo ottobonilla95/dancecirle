@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { FaTimes } from "react-icons/fa";
 import { useTranslation } from "./I18nProvider";
 

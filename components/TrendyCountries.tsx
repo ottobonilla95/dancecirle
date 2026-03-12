@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { getMessages, getTranslation } from "@/lib/i18n";
 import Flag from "./Flag";
 

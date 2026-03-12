@@ -1,6 +1,9 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import { City } from "@/types";
 import apiClient from "@/libs/api";
+import { useTranslation } from "@/components/I18nProvider";
 
 interface CitySelectorProps {
   selectedCities: City[];
@@ -17,6 +20,7 @@ export default function CitySelector({
   label = "Cities",
   className = "",
 }: CitySelectorProps) {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<City[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -210,7 +214,7 @@ export default function CitySelector({
               ))
             ) : (
               <div className="px-4 py-3 text-base-content/60">
-                {isLoading ? "Searching..." : "No cities found"}
+                {isLoading ? t('citySearch.searching') : t('citySearch.noCitiesFound')}
               </div>
             )}
           </div>
@@ -220,7 +224,7 @@ export default function CitySelector({
       {/* Helper text */}
       <label className="label">
         <span className="label-text-alt text-base-content/60">
-          Type at least 2 characters to search cities
+          {t('citySearch.typeToSearch')}
         </span>
       </label>
     </div>

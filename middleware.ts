@@ -2,44 +2,42 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
+const LOCALES = ['en', 'es']
+const DEFAULT_LOCALE = 'en'
+
 // Routes that don't require onboarding (public pages that anyone can view)
 const publicRoutes = [
   '/',
-  '/api/auth',
-  '/api/webhook',
-  '/blog',
   '/privacy-policy',
   '/tos',
   '/dev',
   '/signin',
-  '/api/auth/signin',
-  '/api/auth/signout',
-  '/api/auth/callback',
-  '/api/auth/session',
-  '/api/auth/providers',
-  '/api/auth/csrf',
-  '/dancer',       // Public dancer profiles
-  '/dance-style',  // Public dance style pages
-  '/city',         // Public city pages
-  '/cities',       // Public cities list
-  '/country',      // Public country pages
-  '/countries',    // Public countries list
-  '/continent',    // Public continent pages
-  '/dj',           // Public DJ pages
-  '/release',      // Public music releases
-  '/releases',     // Public releases list
-  '/events',       // Public events
-  '/organizer-events', // Public organizer events
-  '/leaderboards', // Public leaderboards
-  '/music',        // Public music pages
-  '/stats',        // Public stats
-  '/discover',     // Public discover page
-  '/invite'        // Public invite page
+  '/dancer',
+  '/dance-style',
+  '/city',
+  '/cities',
+  '/country',
+  '/countries',
+  '/continent',
+  '/dj',
+  '/release',
+  '/releases',
+  '/events',
+  '/organizer-events',
+  '/leaderboards',
+  '/music',
+  '/stats',
+  '/discover',
+  '/invite'
 ]
 
 // Routes that require authentication but allow incomplete profiles
 const authRoutes = [
   '/onboarding',
+]
+
+// API routes that allow incomplete profiles
+const authApiRoutes = [
   '/api/user/profile',
   '/api/user/check-username',
   '/api/user/delete-account',
@@ -51,10 +49,53 @@ const authRoutes = [
   '/api/continents'
 ]
 
+/**
+ * Detect the preferred locale from the request.
+ * Priority: NEXT_LOCALE cookie > accept-language header > default
+ */
+function detectLocale(request: NextRequest, token?: any): string {
+  // User DB preference (only available for authenticated users)
+  if (token?.preferredLanguage && LOCALES.includes(token.preferredLanguage as string)) {
+    return token.preferredLanguage as string
+  }
+
+  // Cookie preference
+  const cookieLang = request.cookies.get('NEXT_LOCALE')?.value
+  if (cookieLang && LOCALES.includes(cookieLang)) {
+    return cookieLang
+  }
+
+  // Accept-language header
+  const headerLang = request.headers.get('accept-language')
+  if (headerLang?.includes('es')) {
+    return 'es'
+  }
+
+  return DEFAULT_LOCALE
+}
+
+/**
+ * Strip locale prefix from pathname to get the "real" path.
+ * e.g., /en/dashboard -> /dashboard, /es/cities -> /cities
+ */
+function stripLocale(pathname: string): { locale: string | null; path: string } {
+  const segments = pathname.split('/')
+  // segments[0] is empty string (leading slash), segments[1] might be locale
+  if (segments.length >= 2 && LOCALES.includes(segments[1])) {
+    return {
+      locale: segments[1],
+      path: '/' + segments.slice(2).join('/') || '/',
+    }
+  }
+  return { locale: null, path: pathname }
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Skip middleware for static files and Next.js internals FIRST (before any auth checks)
+  // ========================================
+  // Skip static files and Next.js internals
+  // ========================================
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/static') ||
@@ -68,118 +109,90 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Check if this is a public route BEFORE calling getToken (expensive!)
-  const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'));
-  
-  // Allow username routes (/{username} pattern - single segment, no slashes)
-  const pathSegments = pathname.split('/').filter(Boolean);
-  const isUsernameRoute = pathSegments.length === 1;
-
   // ========================================
-  // Language Detection (for i18n)
+  // Skip API routes (not locale-prefixed)
   // ========================================
-  
-  const cookieLang = request.cookies.get('NEXT_LOCALE')?.value;
-  const headerLang = request.headers.get('accept-language');
-  
-  let locale = 'en';
-  let token = null;
-  
-  // Only get token if NOT a public or username route (saves expensive DB calls!)
-  if (!isPublicRoute && !isUsernameRoute) {
-    token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
-    });
-    
-    // Determine language (priority: user DB preference > cookie > header > default 'en')
-    if (token?.preferredLanguage && ['en', 'es'].includes(token.preferredLanguage as string)) {
-      locale = token.preferredLanguage as string;
-    } else if (cookieLang && ['en', 'es'].includes(cookieLang)) {
-      locale = cookieLang;
-    } else if (headerLang?.includes('es')) {
-      locale = 'es';
-    }
-  } else {
-    // For public routes, just use cookie or header
-    if (cookieLang && ['en', 'es'].includes(cookieLang)) {
-      locale = cookieLang;
-    } else if (headerLang?.includes('es')) {
-      locale = 'es';
-    }
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.next()
   }
 
-  // Add locale to request headers for server components
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-locale', locale);
+  // ========================================
+  // Locale Detection & Redirect
+  // ========================================
+  const { locale: urlLocale, path: strippedPath } = stripLocale(pathname)
+
+  // If URL has no locale prefix, redirect to locale-prefixed version
+  if (!urlLocale) {
+    // For non-prefixed URLs, detect locale without expensive token fetch
+    const locale = detectLocale(request)
+    const url = request.nextUrl.clone()
+    url.pathname = `/${locale}${pathname}`
+    return NextResponse.redirect(url, 301)
+  }
+
+  // URL has a valid locale prefix — set x-locale header for server components
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-locale', urlLocale)
+
+  // ========================================
+  // Route Matching (using stripped path, without locale prefix)
+  // ========================================
+  const isPublicRoute = publicRoutes.some(
+    route => strippedPath === route || strippedPath.startsWith(route + '/')
+  )
+
+  // Username routes: /{locale}/{username} — single segment after locale
+  const pathSegments = strippedPath.split('/').filter(Boolean)
+  const isUsernameRoute = pathSegments.length === 1
+
+  // Allow public routes
+  if (isPublicRoute) {
+    return NextResponse.next({ request: { headers: requestHeaders } })
+  }
+
+  // Allow username routes
+  if (isUsernameRoute) {
+    return NextResponse.next({ request: { headers: requestHeaders } })
+  }
 
   // ========================================
   // Authentication & Onboarding Logic
   // ========================================
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET
+  })
 
-  // Allow public routes (already checked above)
-  if (isPublicRoute) {
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    })
+  // Update locale detection with token (user DB preference)
+  if (token?.preferredLanguage && LOCALES.includes(token.preferredLanguage as string)) {
+    requestHeaders.set('x-locale', token.preferredLanguage as string)
   }
 
-  // Allow username routes (already checked above)
-  if (isUsernameRoute) {
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    })
-  }
-
-  // If not authenticated, allow normal auth flow (will be handled by individual layouts)
+  // If not authenticated, allow normal auth flow
   if (!token) {
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    })
+    return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
   // Allow auth-related routes for authenticated users
-  if (authRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))) {
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    })
+  if (authRoutes.some(route => strippedPath === route || strippedPath.startsWith(route + '/'))) {
+    return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
   // If profile incomplete, redirect to onboarding
   if (token.isProfileComplete !== true) {
-    return NextResponse.redirect(new URL('/onboarding', request.url))
+    return NextResponse.redirect(new URL(`/${urlLocale}/onboarding`, request.url))
   }
 
   // If profile complete but accessing onboarding, redirect to dashboard
-  if (pathname === '/onboarding') {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  if (strippedPath === '/onboarding') {
+    return NextResponse.redirect(new URL(`/${urlLocale}/dashboard`, request.url))
   }
 
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  })
+  return NextResponse.next({ request: { headers: requestHeaders } })
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api/auth (auth routes)
-     * - api/webhook (webhook routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
     '/((?!api/auth|api/webhook|_next/static|_next/image|favicon.ico).*)',
   ],
 }

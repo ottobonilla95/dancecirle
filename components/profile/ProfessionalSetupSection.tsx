@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/components/I18nProvider";
 
 interface ProfessionalSetupSectionProps {
   initialIsTeacher?: boolean;
@@ -52,6 +53,7 @@ export default function ProfessionalSetupSection({
   initialProducerProfile,
   initialProfessionalContact,
 }: ProfessionalSetupSectionProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -476,7 +478,7 @@ export default function ProfessionalSetupSection({
             disabled={saving}
             onClick={handleSave}
           >
-            {saving ? "Saving..." : "Save"}
+            {saving ? t('common.saving') : t('common.save')}
           </button>
           <button
             type="button"

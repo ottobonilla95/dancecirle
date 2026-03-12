@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { FaTimes, FaWhatsapp, FaCopy, FaCheck } from "react-icons/fa";
 import { useTranslation } from "@/components/I18nProvider";
-import Link from "next/link";
+import { Link } from "@/navigation";
 
 interface InviteFriendsBannerProps {
   friendsCount: number;
