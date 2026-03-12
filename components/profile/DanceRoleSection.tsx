@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "@/components/I18nProvider";
 
 interface DanceRoleSectionProps {
   initialDanceRole?: string;
 }
 
 export default function DanceRoleSection({ initialDanceRole }: DanceRoleSectionProps) {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [danceRole, setDanceRole] = useState(initialDanceRole || "");
   const [isSaving, setIsSaving] = useState(false);
@@ -75,7 +77,7 @@ export default function DanceRoleSection({ initialDanceRole }: DanceRoleSectionP
             disabled={isSaving}
             className="btn btn-primary btn-sm"
           >
-            {isSaving ? "Saving..." : "Save"}
+            {isSaving ? t('common.saving') : t('common.save')}
           </button>
           <button
             onClick={handleCancel}

@@ -2,11 +2,12 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { upload } from "@imagekit/next";
 import { FaCalendar, FaEdit, FaMapMarkerAlt, FaPlus, FaTrash, FaUpload } from "react-icons/fa";
 import CityDropdown from "@/components/CityDropdown";
 import { City } from "@/types";
+import { useTranslation } from "@/components/I18nProvider";
 
 interface EventCity {
   _id: string;
@@ -86,6 +87,7 @@ const EMPTY_FORM: EventFormData = {
 };
 
 export default function OrganizerEventsManager() {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const [events, setEvents] = useState<OrganizerEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -392,7 +394,7 @@ export default function OrganizerEventsManager() {
         <dialog className="modal modal-open">
           <div className="modal-box max-w-2xl">
             <h3 className="font-bold text-lg mb-4">
-              {editingEvent ? "Edit Organizer Event" : "Add Organizer Event"}
+              {editingEvent ? t('profileSections.editOrganizerEvent') : t('profileSections.addOrganizerEvent')}
             </h3>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -627,7 +629,7 @@ export default function OrganizerEventsManager() {
                   className="btn btn-primary"
                   disabled={submitting || uploadingFlyer}
                 >
-                  {submitting ? "Saving..." : "Save Event"}
+                  {submitting ? t('common.saving') : t('profileSections.saveEvent')}
                 </button>
               </div>
             </form>

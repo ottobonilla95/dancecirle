@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { usePresence } from '@/hooks/usePresence';
 import { FaCircle, FaTimes } from 'react-icons/fa';
-import Link from 'next/link';
+import { Link } from '@/navigation';
 
 export default function ActiveUsersCounter() {
   const { activeUsers, onlineUsers } = usePresence();

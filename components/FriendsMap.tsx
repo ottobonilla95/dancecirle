@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { Link } from '@/navigation';
+import { useTranslation } from '@/components/I18nProvider';
 import mapboxgl from 'mapbox-gl';
 
 interface Friend {
@@ -24,6 +26,7 @@ interface FriendsMapProps {
 }
 
 export default function FriendsMap({ friends, mapboxToken }: FriendsMapProps) {
+  const { t } = useTranslation();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
@@ -321,18 +324,18 @@ export default function FriendsMap({ friends, mapboxToken }: FriendsMapProps) {
           <div className="text-center max-w-md px-6 py-8 bg-base-100 rounded-2xl shadow-2xl mx-4">
             <div className="text-6xl mb-4">🌍</div>
             <h3 className="text-2xl font-bold mb-2 text-base-content">
-              Your Dance Network Starts Here
+              {t('friendsMap.networkStartsHere')}
             </h3>
             <p className="text-base-content/70 mb-6">
               Connect with dancers around the world and watch them appear on your map!
             </p>
-            <a 
-              href="/discover" 
-            className="btn btn-primary btn-lg gap-2"
-          >
-            <span>🔍</span>
-            Discover People
-          </a>
+            <Link
+              href="/discover"
+              className="btn btn-primary btn-lg gap-2"
+            >
+              <span>🔍</span>
+              Discover People
+            </Link>
           </div>
         </div>
       )}
@@ -343,7 +346,7 @@ export default function FriendsMap({ friends, mapboxToken }: FriendsMapProps) {
           <div className="text-center max-w-md px-6 py-8 bg-base-100 rounded-2xl shadow-xl mx-4">
             <div className="text-5xl mb-3">📍</div>
             <p className="text-base-content/80">
-              Your friends will appear here once they add their city location
+              {t('friendsMap.friendsWillAppear')}
             </p>
           </div>
         </div>

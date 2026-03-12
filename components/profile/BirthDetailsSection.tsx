@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/components/I18nProvider";
 
 interface BirthDetailsSectionProps {
   initialDateOfBirth?: string | Date;
@@ -30,6 +31,7 @@ export default function BirthDetailsSection({
   initialDateOfBirth,
   initialHideAge = false,
 }: BirthDetailsSectionProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState(toDateInputValue(initialDateOfBirth));
@@ -102,7 +104,7 @@ export default function BirthDetailsSection({
             disabled={saving}
             onClick={handleSave}
           >
-            {saving ? "Saving..." : "Save"}
+            {saving ? t('common.saving') : t('common.save')}
           </button>
           <button
             type="button"

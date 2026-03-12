@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { DanceStyle } from "@/types/dance-style";
 import HotDanceStyleCard from "./HotDanceStyleCard";
 import { getMessages, getTranslation } from "@/lib/i18n";

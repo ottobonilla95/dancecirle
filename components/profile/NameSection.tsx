@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/components/I18nProvider";
 
 interface NameSectionProps {
   initialFirstName?: string;
@@ -12,6 +13,7 @@ export default function NameSection({
   initialFirstName,
   initialLastName,
 }: NameSectionProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [firstName, setFirstName] = useState(initialFirstName || "");
@@ -82,7 +84,7 @@ export default function NameSection({
             disabled={saving}
             onClick={handleSave}
           >
-            {saving ? "Saving..." : "Save"}
+            {saving ? t('common.saving') : t('common.save')}
           </button>
           <button
             type="button"

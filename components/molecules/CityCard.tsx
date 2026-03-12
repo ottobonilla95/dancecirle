@@ -1,6 +1,6 @@
 import Flag from "../Flag";
 import { City } from "@/types";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { useTranslation } from "../I18nProvider";
 
 interface CityCardProps {

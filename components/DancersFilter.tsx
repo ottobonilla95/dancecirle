@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FaFilter } from "react-icons/fa";
 import { useTranslation } from "./I18nProvider";
+import { tReplace } from "@/lib/t-replace";
 import DancerCard from "./DancerCard";
 
 interface Dancer {
@@ -375,9 +376,9 @@ export default function DancersFilter({
       ) : (
         <div className="text-center py-12 text-base-content/60">
           <FaFilter className="mx-auto text-4xl mb-4 opacity-50" />
-          <p className="text-lg font-medium mb-2">No dancers found</p>
+          <p className="text-lg font-medium mb-2">{t('dancersFilter.noDancersFound')}</p>
           <p className="text-sm">
-            No dancers in {locationName} match your dance styles
+            {tReplace(t('dancersFilter.noDancersMatchStyles'), { location: locationName })}
           </p>
           <button
             onClick={clearAllFilters}

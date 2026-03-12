@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { Link, useRouter } from "@/navigation";
 import { useSession } from "next-auth/react";
 import { FaArrowLeft, FaCalendar, FaMapMarkerAlt, FaStar } from "react-icons/fa";
+import { useTranslation } from "@/components/I18nProvider";
 
 interface EventData {
   _id: string;
@@ -42,6 +42,7 @@ interface EventDetailClientProps {
 
 export default function EventDetailClient({ eventId }: EventDetailClientProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const [event, setEvent] = useState<EventData | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -93,12 +94,12 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
 
   const handleSubmitComment = async () => {
     if (!session) {
-      alert("Please sign in to leave a comment");
+      alert(t('eventDetail.signInToComment'));
       return;
     }
 
     if (!newComment.trim()) {
-      alert("Please write a comment");
+      alert(t('eventDetail.writeComment'));
       return;
     }
 
@@ -122,11 +123,11 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
         fetchComments();
         fetchEvent(); // Refresh event to update average rating
       } else {
-        alert(data.error || "Failed to post comment");
+        alert(data.error || t('eventDetail.failedToPost'));
       }
     } catch (error) {
       console.error("Error posting comment:", error);
-      alert("Failed to post comment");
+      alert(t('eventDetail.failedToPost'));
     } finally {
       setCommenting(false);
     }
@@ -144,9 +145,9 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold">Event not found</h2>
+          <h2 className="text-2xl font-bold">{t('eventDetail.notFound')}</h2>
           <button onClick={() => router.back()} className="btn btn-primary mt-4">
-            Go Back
+            {t('eventDetail.goBack')}
           </button>
         </div>
       </div>
@@ -161,7 +162,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
           onClick={() => router.back()}
           className="btn btn-ghost btn-sm mb-4"
         >
-          <FaArrowLeft /> Back
+          <FaArrowLeft /> {t('eventDetail.back')}
         </button>
 
         {/* Event Details */}
@@ -215,7 +216,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
             )}
 
             {/* DJ Info */}
-            <div className="divider">DJ</div>
+            <div className="divider">{t('eventDetail.dj')}</div>
             <Link
               href={`/dancer/${event.djId._id}`}
               className="flex items-center gap-3 hover:bg-base-300 p-3 rounded-lg transition-all"
@@ -240,7 +241,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                   <FaStar className="text-yellow-500 text-xl" />
                   <span className="text-2xl font-bold">{event.averageRating.toFixed(1)}</span>
                   <span className="text-base-content/60">
-                    ({event.totalComments} {event.totalComments === 1 ? "review" : "reviews"})
+                    ({event.totalComments} {event.totalComments === 1 ? t('eventDetail.review') : t('eventDetail.reviews')})
                   </span>
                 </div>
               </div>
@@ -253,12 +254,12 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
           !hasCommented ? (
             <div className="card bg-base-200 shadow-xl mb-6">
               <div className="card-body">
-                <h2 className="card-title">Leave a Review</h2>
+                <h2 className="card-title">{t('eventDetail.leaveReview')}</h2>
                 
                 {/* Rating */}
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Rating</span>
+                    <span className="label-text">{t('eventDetail.rating')}</span>
                   </label>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -278,11 +279,11 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                 {/* Comment */}
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Comment</span>
+                    <span className="label-text">{t('eventDetail.comment')}</span>
                   </label>
                   <textarea
                     className="textarea textarea-bordered h-24"
-                    placeholder="Share your experience..."
+                    placeholder={t('eventDetail.sharePlaceholder')}
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     maxLength={500}
@@ -299,18 +300,18 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                   className="btn btn-primary"
                   disabled={commenting || !newComment.trim()}
                 >
-                  {commenting ? "Posting..." : "Post Review"}
+                  {commenting ? t('eventDetail.posting') : t('eventDetail.postReview')}
                 </button>
               </div>
             </div>
           ) : (
             <div className="alert alert-success mb-6">
-              <span>✓ You&apos;ve already reviewed this event</span>
+              <span>✓ {t('eventDetail.alreadyReviewed')}</span>
             </div>
           )
         ) : (
           <div className="alert alert-info mb-6">
-            <span>Please sign in to leave a review</span>
+            <span>{t('eventDetail.signInToReview')}</span>
           </div>
         )}
 
@@ -318,12 +319,12 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
         <div className="card bg-base-200 shadow-xl">
           <div className="card-body">
             <h2 className="card-title mb-4">
-              Reviews ({comments.length})
+              {t('eventDetail.reviewsTitle')} ({comments.length})
             </h2>
 
             {comments.length === 0 ? (
               <p className="text-center text-base-content/60 py-8">
-                No reviews yet. Be the first to review this event!
+                {t('eventDetail.noReviews')}
               </p>
             ) : (
               <div className="space-y-4">

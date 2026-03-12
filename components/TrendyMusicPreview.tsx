@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/navigation";
 import Image from "next/image";
 import { FaMusic, FaSpotify, FaYoutube, FaFire } from "react-icons/fa";
 import { getMessages, getTranslation } from "@/lib/i18n";

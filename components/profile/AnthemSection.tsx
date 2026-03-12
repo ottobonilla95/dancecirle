@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaEdit, FaSave, FaTimes } from "react-icons/fa";
+import { useTranslation } from "@/components/I18nProvider";
 
 interface Anthem {
   url: string;
@@ -16,6 +17,7 @@ interface AnthemSectionProps {
 }
 
 export default function AnthemSection({ initialAnthem }: AnthemSectionProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [anthem, setAnthem] = useState<Anthem>(initialAnthem || {
@@ -89,11 +91,11 @@ export default function AnthemSection({ initialAnthem }: AnthemSectionProps) {
             {saving ? (
               <>
                 <span className="loading loading-spinner loading-xs"></span>
-                Saving...
+                {t('common.saving')}
               </>
             ) : (
               <>
-                <FaSave /> Save
+                <FaSave /> {t('common.save')}
               </>
             )}
           </button>

@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { Link, useRouter } from "@/navigation";
 import { FaCompass, FaCopy, FaUserFriends, FaLink } from "react-icons/fa";
 import InstallPrompt from "./InstallPrompt";
 import { useTranslation } from "./I18nProvider";

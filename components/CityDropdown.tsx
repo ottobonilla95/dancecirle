@@ -1,6 +1,10 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import { City } from "@/types";
 import apiClient from "@/libs/api";
+import { useTranslation } from "@/components/I18nProvider";
+import { tReplace } from "@/lib/t-replace";
 
 interface CityDropdownProps {
   searchTerm: string;
@@ -19,6 +23,7 @@ export default function CityDropdown({
   selectedCities = [],
   className = "",
 }: CityDropdownProps) {
+  const { t } = useTranslation();
   const [searchResults, setSearchResults] = useState<City[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -151,7 +156,7 @@ export default function CityDropdown({
           {isLoading ? (
             <div className="p-4 text-center">
               <span className="loading loading-spinner loading-sm"></span>
-              <span className="ml-2">Searching cities...</span>
+              <span className="ml-2">{t('citySearch.searchingCities')}</span>
             </div>
           ) : searchResults.length > 0 ? (
             searchResults.map((city, index) => (
@@ -170,7 +175,7 @@ export default function CityDropdown({
             ))
           ) : searchTerm.length >= 2 ? (
             <div className="p-4 text-center text-base-content/60">
-              No cities found for &quot;{searchTerm}&quot;
+              {tReplace(t('citySearch.noCitiesForTerm'), { query: searchTerm })}
             </div>
           ) : null}
         </div>

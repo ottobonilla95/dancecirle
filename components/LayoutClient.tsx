@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, Suspense } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/navigation";
 import { useSession } from "next-auth/react";
 import { Crisp } from "crisp-sdk-web";
 import { SessionProvider } from "next-auth/react";

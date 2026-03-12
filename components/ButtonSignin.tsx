@@ -2,8 +2,7 @@
 "use client";
 
 import { useSession, signIn } from "next-auth/react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useRouter } from "@/navigation";
 import config from "@/config";
 import { event as fbEvent } from "./FacebookPixel";
 

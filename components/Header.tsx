@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import type { JSX } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import Image from "next/image";
 import ButtonSignin from "./ButtonSignin";
 import SearchBar from "./SearchBar";

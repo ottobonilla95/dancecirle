@@ -233,7 +233,10 @@
     "bySigningIn": "Al iniciar sesión, aceptas nuestros",
     "terms": "Términos de Servicio",
     "and": "y",
-    "privacy": "Política de Privacidad"
+    "privacy": "Política de Privacidad",
+    "linkExpired": "Enlace Expirado",
+    "linkExpiredMessage": "Tu enlace de inicio de sesión ha expirado o ya fue utilizado. Por favor solicita uno nuevo a continuación.",
+    "signInError": "Error al iniciar sesión. Por favor intenta de nuevo."
   },
   "hero": {
     "title": "Conecta con bailarines de todo el mundo",
@@ -307,7 +310,8 @@
     "dancersInCity": "bailarines",
     "topStylesInCity": "Estilos Principales",
     "exploreYourCity": "Explorar",
-    "travelers": "viajeros"
+    "travelers": "viajeros",
+    "eventsNearYou": "Eventos Cerca de Ti"
   },
   "trips": {
     "meetUpOpportunities": "¡Oportunidades de Encuentro!",
@@ -319,7 +323,13 @@
     "yourTrip": "Tu viaje",
     "trip": "viaje",
     "viewCity": "Ver Ciudad",
-    "viewProfile": "Ver Perfil"
+    "viewProfile": "Ver Perfil",
+    "upcomingTrips": "Próximos Viajes",
+    "addTrip": "Agregar Viaje",
+    "fillAllFields": "Por favor completa todos los campos",
+    "failedToAdd": "Error al agregar viaje",
+    "noTripsYet": "¡No hay viajes próximos aún. Agrega tu primer viaje!",
+    "noTrips": "No hay viajes próximos"
   },
   "profile": {
     "myProfile": "Mi Perfil",
@@ -621,7 +631,14 @@
     "popularStyles": "Estilos populares",
     "noCitiesAvailable": "No hay ciudades disponibles en este momento",
     "day": "día",
-    "days": "días"
+    "days": "días",
+    "back": "Volver",
+    "sortBy": "Ordenar por:",
+    "az": "A-Z",
+    "saving": "Guardando...",
+    "adding": "Agregando...",
+    "searching": "Buscando...",
+    "noResults": "No se encontraron resultados"
   },
   "dancer": {
     "wantToConnect": "¿Quieres conectar con {name}?",
@@ -648,7 +665,16 @@
     "topTeachers": "Mejores Profesores",
     "topDJs": "Mejores DJs",
     "likes": "me gusta",
-    "wins": "victorias"
+    "wins": "victorias",
+    "jjPodium": "J&J Podio",
+    "jjParticipation": "J&J Participación",
+    "mostLikedTeachers": "Profesores Más Queridos",
+    "mostLikedDJs": "DJs Más Queridos",
+    "mostLikedPhotographers": "Fotógrafos Más Queridos",
+    "mostLikedProducers": "Productores Más Queridos",
+    "podiums": "Podios",
+    "competitions": "Competencias",
+    "noData": "¡No hay datos disponibles aún. Sé el primero!"
   },
   "city": {
     "population": "Población",
@@ -671,9 +697,17 @@
     "dancersIn": "Bailarines en",
     "joinDanceCommunityIn": "Únete a la Comunidad de Baile en",
     "signUpToConnect": "Regístrate para conectar con bailarines en",
-    "noDancersFound": "No se encontraron bailarines",
+    "noDancersFound": "No se encontraron bailarines en {name} aún",
     "tryAdjusting": "¡Intenta ajustar tus filtros o vuelve más tarde para nuevos bailarines!",
-    "view": "Ver"
+    "view": "Ver",
+    "eventOrganizers": "Organizadores de Eventos",
+    "producers": "Productores",
+    "professionalsIn": "Profesionales en {name}",
+    "noDanceStylesYet": "No hay datos de estilos de baile disponibles aún",
+    "website": "Sitio Web",
+    "connectCTA": "¡Conecta con {count} bailarines y descubre la increíble escena de baile en tu ciudad!",
+    "joinDanceCircle": "Únete a DanceCircle",
+    "setAsLocation": "establecer como tu ubicación"
   },
   "country": {
     "totalDancers": "Total de Bailarines",
@@ -696,9 +730,17 @@
     "dancersIn": "Bailarines en",
     "joinDanceCommunityIn": "Únete a la Comunidad de Baile en",
     "signUpToConnect": "Regístrate para conectar con bailarines en",
-    "noDancersFound": "No se encontraron bailarines",
+    "noDancersFound": "No se encontraron bailarines en {name} aún",
     "tryAdjusting": "¡Intenta ajustar tus filtros o vuelve más tarde para nuevos bailarines!",
-    "view": "Ver"
+    "view": "Ver",
+    "eventOrganizers": "Organizadores de Eventos",
+    "producers": "Productores",
+    "professionalsIn": "Profesionales en {name}",
+    "noDanceStylesYet": "No hay datos de estilos de baile disponibles aún",
+    "website": "Sitio Web",
+    "connectCTA": "¡Conecta con {count} bailarines y descubre la increíble escena de baile en {name}!",
+    "joinDanceCircle": "Únete a DanceCircle",
+    "setAsLocation": "establecer como tu ubicación"
   },
   "filters": {
     "showMyDancers": "Mostrar solo bailarines que bailan lo que yo bailo",
@@ -889,9 +931,13 @@
     "typeMessage": "Escribe tu mensaje...",
     "send": "Enviar",
     "pressEnter": "Presiona Enter para enviar, Shift+Enter para nueva línea",
-    "justNow": "Justo ahora",
+    "justNow": "Ahora mismo",
     "backToInbox": "Volver a la bandeja",
-    "viewProfile": "Ver perfil"
+    "viewProfile": "Ver perfil",
+    "minutesAgo": "Hace {count}m",
+    "hoursAgo": "Hace {count}h",
+    "daysAgo": "Hace {count}d",
+    "failedToStart": "Error al iniciar conversación"
   },
   "djEvents": {
     "title": "Eventos de DJ",
@@ -956,5 +1002,197 @@
       "newRelease": "Nuevo lanzamiento",
       "viewReleaseDetails": "Ver Detalles del Lanzamiento"
     }
+  },
+  "meta": {
+    "home": {
+      "title": "DanceCircle - Conecta con Bailarines en Todo el Mundo | Bachata, Salsa, Kizomba",
+      "description": "¡Conecta con bailarines en todo el mundo! Descubre ciudades de baile, eventos, música y comunidades. Encuentra compañeros de Bachata, Salsa, Kizomba, profesores, DJs y festivales cerca de ti.",
+      "ogTitle": "DanceCircle - Conecta con Bailarines en Todo el Mundo",
+      "ogDescription": "¡Conecta con bailarines en todo el mundo! Descubre ciudades de baile, eventos, música y comunidades.",
+      "jsonLdDescription": "Conecta con bailarines en todo el mundo. Descubre ciudades de baile, eventos, música y comunidades."
+    },
+    "city": {
+      "title": "Comunidad de Baile en {cityName} | {topStyles} en {cityName}",
+      "description": "Conecta con {count} bailarines en {cityName}, {countryName}. Encuentra compañeros de {styles}, clases y eventos. ¡Únete a la escena de baile de {cityName}!",
+      "notFound": "Ciudad No Encontrada",
+      "fallback": "Página de Ciudad"
+    },
+    "country": {
+      "title": "Comunidad de Baile en {countryName} | {topStyles} en {countryName}",
+      "description": "Descubre {count} bailarines en {countryName}. Conecta con comunidades de {styles}, encuentra compañeros, profesores y eventos en {countryName}.",
+      "notFound": "País No Encontrado",
+      "fallback": "Página de País"
+    },
+    "continent": {
+      "title": "Comunidad de Baile en {continentName} | Bachata, Salsa, Kizomba en {continentName}",
+      "description": "Descubre bailarines en {continentName}. Conecta con comunidades de baile, encuentra compañeros, profesores y eventos en {continentName}.",
+      "notFound": "Continente No Encontrado",
+      "fallback": "Página de Continente"
+    },
+    "danceStyle": {
+      "title": "Comunidad de {styleName} | Encuentra Bailarines de {styleName} en Todo el Mundo",
+      "description": "Conecta con {count} bailarines de {styleName} en todo el mundo. Encuentra compañeros, clases y eventos. Únete a la comunidad global de {styleName} en DanceCircle.",
+      "descriptionWithBio": "{bio} Conecta con {count} bailarines de {styleName} en todo el mundo en DanceCircle.",
+      "notFound": "Estilo de Baile No Encontrado",
+      "fallback": "Página de Estilo de Baile"
+    },
+    "dancer": {
+      "title": "{name} - {role} | {styles} en {location}",
+      "titleNoLocation": "{name} - {role} | {styles}",
+      "description": "Conecta con {name}, {role} especializado/a en {styles}{location}. Ve su perfil, estilos de baile y conecta en DanceCircle.",
+      "descriptionWithBio": "{name} - {role} especializado/a en {styles}. {bio}",
+      "notFound": "Bailarín/a No Encontrado/a",
+      "fallback": "Perfil de Bailarín",
+      "defaultRole": "Bailarín/a",
+      "roleTeacher": "Profesor/a",
+      "roleDJ": "DJ",
+      "rolePhotographer": "Fotógrafo/a",
+      "roleEventOrganizer": "Organizador/a de Eventos",
+      "roleProducer": "Productor/a",
+      "danceCommunity": "comunidad de baile",
+      "dancePartner": "compañero/a de baile"
+    },
+    "event": {
+      "title": "{eventName} - {city} | DanceCircle",
+      "description": "{eventName} por DJ {djName} en {city}. {venue}{date}",
+      "notFound": "Evento No Encontrado | DanceCircle",
+      "fallback": "Evento | DanceCircle"
+    },
+    "release": {
+      "title": "{title} de {producer} | DanceCircle",
+      "description": "Escucha {title} de {producer} en {platform}",
+      "notFound": "Lanzamiento No Encontrado | DanceCircle",
+      "fallback": "Lanzamiento | DanceCircle"
+    },
+    "releases": {
+      "title": "Lanzamientos de {producer} | DanceCircle",
+      "description": "Explora todos los lanzamientos musicales de {producer}. {count} {releaseWord} disponibles en DanceCircle.",
+      "release": "lanzamiento",
+      "releasesPl": "lanzamientos",
+      "notFound": "Productor No Encontrado | DanceCircle",
+      "fallback": "Lanzamientos | DanceCircle"
+    },
+    "organizerEvent": {
+      "title": "{eventTitle}{city} | DanceCircle",
+      "description": "Descubre este evento de baile social{city} en DanceCircle.",
+      "notFound": "Evento No Encontrado | DanceCircle",
+      "fallback": "Evento | DanceCircle"
+    }
+  },
+  "continent": {
+    "totalDancers": "Bailarines Totales",
+    "dancersShort": "Bailarines",
+    "activeCommunity": "Miembros activos de la comunidad de baile",
+    "countries": "Países",
+    "withActiveDancers": "Con bailarines activos",
+    "cities": "Ciudades",
+    "danceCommunities": "Comunidades de baile",
+    "popularDanceStyles": "Estilos de Baile Populares",
+    "noDanceStylesYet": "No hay datos de estilos de baile disponibles aún",
+    "topCountries": "Países Principales",
+    "topCities": "Ciudades Principales",
+    "dancersIn": "Bailarines en {name}",
+    "noDancersIn": "No se encontraron bailarines en {name} aún",
+    "joinCommunityIn": "Únete a la Comunidad de Baile en {name}",
+    "connectWithDancers": "¡Conecta con {count} bailarines en {countries} países!",
+    "joinDanceCircle": "Únete a DanceCircle"
+  },
+  "citiesPage": {
+    "title": "Ciudades de Baile en el Mundo",
+    "subtitle": "Descubre comunidades de baile vibrantes alrededor del mundo. Encuentra tu ciudad perfecta para bailar, conectar y crecer.",
+    "searchPlaceholder": "Buscar ciudades...",
+    "sortBy": "Ordenar por:",
+    "largestCities": "Ciudades Más Grandes",
+    "loadingCities": "Cargando ciudades...",
+    "citiesFound": "{count} ciudades encontradas",
+    "noCitiesFound": "No se encontraron ciudades",
+    "noCitiesFoundTitle": "No se Encontraron Ciudades",
+    "noMatchingCities": "Ninguna ciudad coincide con \"{query}\". Intenta con otro término de búsqueda.",
+    "noCitiesAvailable": "No hay ciudades disponibles en este momento."
+  },
+  "countriesPage": {
+    "title": "Países de Baile en el Mundo",
+    "subtitle": "Descubre comunidades de baile vibrantes en países alrededor del mundo. Encuentra tu destino perfecto para bailar, conectar y crecer.",
+    "searchPlaceholder": "Buscar países...",
+    "sortBy": "Ordenar por:",
+    "loadingCountries": "Cargando países...",
+    "countriesFound": "{count} países encontrados",
+    "noCountriesFound": "No se encontraron países",
+    "noCountriesFoundTitle": "No se Encontraron Países",
+    "noMatchingCountries": "Ningún país coincide con \"{query}\". Intenta con otro término de búsqueda.",
+    "noCountriesAvailable": "No hay países disponibles en este momento.",
+    "az": "A-Z"
+  },
+  "releasePage": {
+    "backToProfile": "Volver al Perfil",
+    "listenOnSpotify": "Escuchar en Spotify",
+    "watchOnYouTube": "Ver en YouTube",
+    "aboutProducer": "Sobre el Productor",
+    "moreFrom": "Más de {name}"
+  },
+  "releasesPage": {
+    "backToProfile": "Volver al Perfil",
+    "allReleases": "Todos los Lanzamientos",
+    "noReleasesYet": "No hay lanzamientos aún",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "daysAgo": "Hace {count} días",
+    "weeksAgo": "Hace {count} semanas",
+    "backTo": "Volver al Perfil de {name}"
+  },
+  "organizerEvent": {
+    "back": "Volver",
+    "getTickets": "Obtener Entradas",
+    "price": "Precio:"
+  },
+  "eventDetail": {
+    "notFound": "Evento no encontrado",
+    "goBack": "Volver",
+    "back": "Volver",
+    "dj": "DJ",
+    "review": "reseña",
+    "reviews": "reseñas",
+    "leaveReview": "Dejar una Reseña",
+    "rating": "Calificación",
+    "comment": "Comentario",
+    "sharePlaceholder": "Comparte tu experiencia...",
+    "posting": "Publicando...",
+    "postReview": "Publicar Reseña",
+    "alreadyReviewed": "Ya has reseñado este evento",
+    "signInToReview": "Inicia sesión para dejar una reseña",
+    "reviewsTitle": "Reseñas",
+    "noReviews": "No hay reseñas aún. ¡Sé el primero en reseñar este evento!",
+    "signInToComment": "Inicia sesión para dejar un comentario",
+    "writeComment": "Por favor escribe un comentario",
+    "failedToPost": "Error al publicar comentario"
+  },
+  "activityFeed": {
+    "noActivity": "No hay actividad aún",
+    "discoverPeople": "Descubrir Personas",
+    "discoverMoreDancers": "Descubrir Más Bailarines"
+  },
+  "citySearch": {
+    "searching": "Buscando...",
+    "noCitiesFound": "No se encontraron ciudades",
+    "typeToSearch": "Escribe al menos 2 caracteres para buscar ciudades",
+    "noCitiesForTerm": "No se encontraron ciudades para \"{query}\"",
+    "searchingCities": "Buscando ciudades..."
+  },
+  "dancersFilter": {
+    "noDancersFound": "No se encontraron bailarines",
+    "noDancersMatchStyles": "No hay bailarines en {location} que coincidan con tus estilos de baile"
+  },
+  "profileSections": {
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "editOrganizerEvent": "Editar Evento de Organizador",
+    "addOrganizerEvent": "Agregar Evento de Organizador",
+    "saveEvent": "Guardar Evento",
+    "editDJEvent": "Editar Evento de DJ",
+    "addDJEvent": "Agregar Evento de DJ"
+  },
+  "friendsMap": {
+    "networkStartsHere": "Tu Red de Baile Comienza Aquí",
+    "friendsWillAppear": "Tus amigos aparecerán aquí una vez que agreguen su ubicación"
   }
 }

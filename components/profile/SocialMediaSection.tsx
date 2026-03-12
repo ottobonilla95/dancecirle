@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaEdit, FaSave, FaTimes, FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa";
+import { useTranslation } from "@/components/I18nProvider";
 
 interface SocialMedia {
   instagram?: string;
@@ -15,6 +16,7 @@ interface SocialMediaSectionProps {
 }
 
 export default function SocialMediaSection({ initialSocialMedia }: SocialMediaSectionProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [socialMedia, setSocialMedia] = useState<SocialMedia>(initialSocialMedia || {});
@@ -117,11 +119,11 @@ export default function SocialMediaSection({ initialSocialMedia }: SocialMediaSe
             {saving ? (
               <>
                 <span className="loading loading-spinner loading-xs"></span>
-                Saving...
+                {t('common.saving')}
               </>
             ) : (
               <>
-                <FaSave /> Save
+                <FaSave /> {t('common.save')}
               </>
             )}
           </button>

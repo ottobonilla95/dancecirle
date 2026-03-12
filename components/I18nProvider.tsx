@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import enMessages from '@/messages/en.json';
 import esMessages from '@/messages/es.json';
 
@@ -24,29 +25,33 @@ const messagesByLocale: Record<Locale, Messages> = {
 function getTranslation(messages: Messages, key: string): string {
   const keys = key.split('.');
   let value: any = messages;
-  
+
   for (const k of keys) {
     value = value?.[k];
     if (value === undefined) return key;
   }
-  
+
   return typeof value === 'string' ? value : key;
 }
 
 export function I18nProvider({ children, initialLocale = 'en' }: { children: React.ReactNode; initialLocale?: Locale }) {
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
   const [messages, setMessages] = useState<Messages>(messagesByLocale[initialLocale]);
+  const pathname = usePathname();
+  const router = useRouter();
 
-  // Update state if initialLocale changes (e.g., after user changes language)
+  // Update state if initialLocale changes
   useEffect(() => {
     setLocaleState(initialLocale);
     setMessages(messagesByLocale[initialLocale]);
   }, [initialLocale]);
 
   const setLocale = async (newLocale: Locale) => {
-    // Set cookie
-    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`; // 1 year
-    
+    if (newLocale === locale) return;
+
+    // Set cookie for middleware detection on non-prefixed URLs
+    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
+
     // Update state
     setLocaleState(newLocale);
     setMessages(messagesByLocale[newLocale]);
@@ -62,8 +67,11 @@ export function I18nProvider({ children, initialLocale = 'en' }: { children: Rea
       console.error('Failed to update language preference:', error);
     }
 
-    // Reload page to apply translations
-    window.location.reload();
+    // Navigate to the same page with new locale prefix
+    // Replace /en/... or /es/... with /newLocale/...
+    const newPathname = pathname.replace(/^\/(en|es)/, `/${newLocale}`);
+    router.push(newPathname);
+    router.refresh();
   };
 
   const t = (key: string) => getTranslation(messages, key);
@@ -82,4 +90,3 @@ export function useTranslation() {
   }
   return context;
 }
-

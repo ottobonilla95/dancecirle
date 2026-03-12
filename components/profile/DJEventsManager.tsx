@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { FaPlus, FaEdit, FaTrash, FaCalendar, FaMapMarkerAlt } from "react-icons/fa";
+import { useTranslation } from "@/components/I18nProvider";
 
 interface DJEvent {
   _id: string;
@@ -19,6 +20,7 @@ interface DJEvent {
 }
 
 export default function DJEventsManager() {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const [events, setEvents] = useState<DJEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -230,7 +232,7 @@ export default function DJEventsManager() {
         <dialog className="modal modal-open">
           <div className="modal-box max-w-2xl">
             <h3 className="font-bold text-lg mb-4">
-              {editingEvent ? "Edit Event" : "Add Event"}
+              {editingEvent ? t('profileSections.editDJEvent') : t('profileSections.addDJEvent')}
             </h3>
             
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -349,7 +351,7 @@ export default function DJEventsManager() {
                   className="btn btn-primary"
                   disabled={submitting}
                 >
-                  {submitting ? "Saving..." : "Save Event"}
+                  {submitting ? t('common.saving') : t('profileSections.saveEvent')}
                 </button>
               </div>
             </form>

@@ -1,14 +1,16 @@
 import { getRequestConfig } from 'next-intl/server';
-import { headers } from 'next/headers';
+import { routing } from './routing';
 
-export default getRequestConfig(async () => {
-  // Get locale from headers set by middleware, default to 'en'
-  const headersList = await headers();
-  const locale = headersList.get('x-locale') || 'en';
-  
+export default getRequestConfig(async ({ requestLocale }) => {
+  let locale = await requestLocale;
+
+  // Ensure locale is valid, fallback to default
+  if (!locale || !routing.locales.includes(locale as any)) {
+    locale = routing.defaultLocale;
+  }
+
   return {
     locale,
-    messages: (await import(`./messages/${locale}.json`)).default
+    messages: (await import(`./messages/${locale}.json`)).default,
   };
 });
-

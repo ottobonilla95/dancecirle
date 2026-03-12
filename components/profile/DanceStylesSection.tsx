@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FaEdit, FaSave, FaTimes } from "react-icons/fa";
+import { useTranslation } from "@/components/I18nProvider";
 
 interface DanceStyle {
   _id?: string;
@@ -30,6 +31,7 @@ const DANCE_LEVELS = [
 ];
 
 export default function DanceStylesSection({ initialDanceStyles }: DanceStylesSectionProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [danceStyles, setDanceStyles] = useState<any[]>([]);
@@ -172,11 +174,11 @@ export default function DanceStylesSection({ initialDanceStyles }: DanceStylesSe
             {saving ? (
               <>
                 <span className="loading loading-spinner loading-xs"></span>
-                Saving...
+                {t('common.saving')}
               </>
             ) : (
               <>
-                <FaSave /> Save
+                <FaSave /> {t('common.save')}
               </>
             )}
           </button>

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { FaPlus, FaTrash, FaPlane, FaMapMarkerAlt, FaCalendar } from "react-icons/fa";
-import Link from "next/link";
+import { Link } from "@/navigation";
+import { useTranslation } from "@/components/I18nProvider";
 import Flag from "./Flag";
 import CityDropdown from "./CityDropdown";
 
@@ -26,6 +27,7 @@ interface UpcomingTripsProps {
 }
 
 export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) {
+  const { t } = useTranslation();
   const [trips, setTrips] = useState<{ upcoming: Trip[]; past: Trip[] }>({ upcoming: [], past: [] });
   const [isAdding, setIsAdding] = useState(false);
   const [selectedCity, setSelectedCity] = useState<any>(null);
@@ -53,7 +55,7 @@ export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) 
 
   const handleAddTrip = async () => {
     if (!selectedCity || !startDate || !endDate) {
-      setError("Please fill in all fields");
+      setError(t('trips.fillAllFields'));
       return;
     }
 
@@ -84,10 +86,10 @@ export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) 
         setEndDate("");
       } else {
         const data = await res.json();
-        setError(data.error || "Failed to add trip");
+        setError(data.error || t('trips.failedToAdd'));
       }
     } catch (error) {
-      setError("Failed to add trip");
+      setError(t('trips.failedToAdd'));
     } finally {
       setIsLoading(false);
     }
@@ -128,7 +130,7 @@ export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) 
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold flex items-center gap-2">
             <FaPlane className="text-primary" />
-            Upcoming Trips
+            {t('trips.upcomingTrips')}
           </h3>
           {editable && (
             <button
@@ -136,7 +138,7 @@ export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) 
               className="btn btn-sm btn-primary gap-2"
             >
               <FaPlus />
-              Add Trip
+              {t('trips.addTrip')}
             </button>
           )}
         </div>
@@ -213,7 +215,7 @@ export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) 
                   disabled={isLoading}
                   className="btn btn-primary"
                 >
-                  {isLoading ? "Adding..." : "Add Trip"}
+                  {isLoading ? t('common.adding') : t('trips.addTrip')}
                 </button>
                 <button
                   onClick={() => {
@@ -222,7 +224,7 @@ export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) 
                   }}
                   className="btn btn-ghost"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
               </div>
             </div>
@@ -286,7 +288,7 @@ export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) 
           </div>
         ) : (
           <div className="text-center text-base-content/60 py-8">
-            {editable ? "No upcoming trips yet. Add your first trip!" : "No upcoming trips"}
+            {editable ? t('trips.noTripsYet') : t('trips.noTrips')}
           </div>
         )}
       </div>

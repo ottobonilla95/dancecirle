@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/components/I18nProvider";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import VerifiedBadge from "./VerifiedBadge";
 
 // Simple time ago function
@@ -367,14 +367,14 @@ export default function ActivityFeed({
         <div className="text-center py-12">
           <p className="text-2xl mb-2">👋</p>
           <p className="text-lg text-base-content/70 mb-2 font-semibold">
-            No activity yet
+            {t('activityFeed.noActivity')}
           </p>
           <p className="text-sm text-base-content/50 mb-6">
             Connect with dancers to see what&apos;s happening!
           </p>
           <Link href="/discover" className="btn btn-primary gap-2">
             <span className="text-lg">🌍</span>
-            Discover People
+            {t('activityFeed.discoverPeople')}
           </Link>
         </div>
       );
@@ -393,7 +393,7 @@ export default function ActivityFeed({
         {!isPreview && (
           <Link href="/discover" className="btn btn-outline gap-2">
             <span className="text-lg">🌍</span>
-            Discover More Dancers
+            {t('activityFeed.discoverMoreDancers')}
           </Link>
         )}
       </div>

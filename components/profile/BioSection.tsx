@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaEdit, FaSave, FaTimes } from "react-icons/fa";
+import { useTranslation } from "@/components/I18nProvider";
 
 interface BioSectionProps {
   initialBio?: string;
 }
 
 export default function BioSection({ initialBio }: BioSectionProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [bio, setBio] = useState(initialBio || "");
@@ -60,7 +62,7 @@ export default function BioSection({ initialBio }: BioSectionProps) {
             disabled={saving}
             className="btn btn-primary btn-sm"
           >
-            {saving ? "Saving..." : "Save"}
+            {saving ? t('common.saving') : t('common.save')}
           </button>
           <button onClick={handleCancel} className="btn btn-ghost btn-sm">
             Cancel

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { FaMapMarkerAlt, FaUsers, FaPlane } from "react-icons/fa";
 import { getMessages, getTranslation } from "@/lib/i18n";
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { FaBell, FaMusic, FaUserFriends, FaHeart, FaUserPlus, FaCheck, FaComment } from "react-icons/fa";
 import { useTranslation } from "./I18nProvider";
 
