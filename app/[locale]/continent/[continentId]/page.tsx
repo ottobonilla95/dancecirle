@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { getBreadcrumbJsonLd } from "@/libs/seo";
 import connectMongo from "@/libs/mongoose";
 import Continent from "@/models/Continent";
 import Country from "@/models/Country";
@@ -291,11 +292,20 @@ export default async function ContinentPage({ params }: Props) {
     url: `https://dancecircle.co/continent/${continentSlug}`,
   };
 
+  const breadcrumbItems = [
+    { name: "DanceCircle", url: `https://dancecircle.co` },
+    { name: continent.name, url: `https://dancecircle.co/continent/${continentSlug}` },
+  ];
+
   return (
     <div className="min-h-screen p-4 bg-base-100">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getBreadcrumbJsonLd(breadcrumbItems)) }}
       />
       <div className="max-w-6xl mx-auto">
         {/* Header */}

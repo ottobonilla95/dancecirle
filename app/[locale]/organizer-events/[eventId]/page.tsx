@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { Link } from "@/navigation";
 import { notFound } from "next/navigation";
+import { getBreadcrumbJsonLd } from "@/libs/seo";
 import { isValidObjectId } from "mongoose";
 import BackButton from "@/components/BackButton";
 import connectMongo from "@/libs/mongoose";
@@ -156,11 +157,20 @@ export default async function OrganizerEventPage({ params }: EventPageProps) {
     } : {}),
   };
 
+  const breadcrumbItems = [
+    { name: "DanceCircle", url: `https://dancecircle.co` },
+    { name: event.title, url: `https://dancecircle.co/organizer-events/${params.eventId}` },
+  ];
+
   return (
     <main className="min-h-screen bg-base-100 pb-24">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getBreadcrumbJsonLd(breadcrumbItems)) }}
       />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <BackButton label={t('organizerEvent.back')} className="mb-4" />

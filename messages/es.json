@@ -1,4 +1,9 @@
 {
+  "breadcrumb": {
+    "countries": "Países",
+    "danceStyles": "Estilos de Baile",
+    "music": "Música"
+  },
   "banner": {
     "incompleteProfileTitle": "Completa Tu Perfil",
     "incompleteProfileMessage": "Tu perfil aún no está activo. ¡Complétalo ahora para comenzar a conectar con bailarines!",
@@ -1077,6 +1082,18 @@
       "description": "Descubre este evento de baile social{city} en DanceCircle.",
       "notFound": "Evento No Encontrado | DanceCircle",
       "fallback": "Evento | DanceCircle"
+    },
+    "cities": {
+      "title": "Ciudades de Baile en el Mundo | Encuentra Bailarines Cerca | DanceCircle",
+      "description": "Explora ciudades de baile en todo el mundo. Encuentra bailarines de Bachata, Salsa, Kizomba y comunidades en tu ciudad. Ranking de ciudades por población de bailarines."
+    },
+    "countries": {
+      "title": "Países de Baile | Explora Comunidades de Baile en el Mundo | DanceCircle",
+      "description": "Descubre comunidades de baile por país. Encuentra bailarines de Bachata, Salsa, Kizomba y eventos en todo el mundo. Descubre los países con las escenas de baile más activas."
+    },
+    "leaderboards": {
+      "title": "Rankings de Baile | Mejores Bailarines, DJs y Profesores | DanceCircle",
+      "description": "Descubre los bailarines más populares, mejores DJs, profesores y campeones de Jack & Jill en DanceCircle. Encuentra los bailarines más destacados de la comunidad."
     }
   },
   "continent": {

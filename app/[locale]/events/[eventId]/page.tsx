@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { getBreadcrumbJsonLd } from "@/libs/seo";
 import connectMongo from "@/libs/mongoose";
 import DJEvent from "@/models/DJEvent";
 import EventDetailClient from "@/components/EventDetailClient";
@@ -72,5 +73,57 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
 }
 
 export default async function EventDetailPage({ params }: EventPageProps) {
-  return <EventDetailClient eventId={params.eventId} />;
+  await connectMongo();
+
+  const event = await DJEvent.findById(params.eventId)
+    .populate({
+      path: "djId",
+      select: "name username image",
+    })
+    .lean() as any;
+
+  const eventJsonLd = event ? {
+    "@context": "https://schema.org",
+    "@type": "DanceEvent",
+    name: event.eventName,
+    startDate: event.eventDate,
+    location: {
+      "@type": "Place",
+      ...(event.venue ? { name: event.venue } : {}),
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: event.city,
+      },
+    },
+    ...(event.description ? { description: event.description.slice(0, 200) } : {}),
+    ...(event.imageUrl ? { image: event.imageUrl } : {}),
+    ...(event.genres?.length > 0 ? { about: event.genres.map((g: string) => ({ "@type": "Thing", name: g })) } : {}),
+    performer: event.djId ? {
+      "@type": "Person",
+      name: event.djId.name,
+      url: `https://${config.domainName}/dancer/${event.djId._id}`,
+    } : undefined,
+    url: `https://${config.domainName}/events/${params.eventId}`,
+  } : null;
+
+  const breadcrumbItems = [
+    { name: "DanceCircle", url: `https://${config.domainName}` },
+    ...(event ? [{ name: event.eventName, url: `https://${config.domainName}/events/${params.eventId}` }] : []),
+  ];
+
+  return (
+    <>
+      {eventJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getBreadcrumbJsonLd(breadcrumbItems)) }}
+      />
+      <EventDetailClient eventId={params.eventId} />
+    </>
+  );
 }

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Link } from "@/navigation";
 import Image from "next/image";
 import { Metadata } from "next";
+import { getBreadcrumbJsonLd } from "@/libs/seo";
 import connectMongo from "@/libs/mongoose";
 import Release from "@/models/Release";
 import User from "@/models/User";
@@ -114,17 +115,36 @@ export default async function ReleasePage({ params }: ReleasePageProps) {
       "@type": "Person",
       name: producer.name,
       url: `https://${config.domainName}/${producer.username || producer._id}`,
+      ...(producer.image ? { image: producer.image } : {}),
     },
     ...(release.description ? { description: release.description } : {}),
     ...(release.createdAt ? { datePublished: release.createdAt } : {}),
+    ...(release.genres?.length > 0 ? { genre: release.genres } : {}),
+    ...(release.url ? {
+      subjectOf: {
+        "@type": "MediaObject",
+        contentUrl: release.url,
+        encodingFormat: release.platform === "spotify" ? "audio" : "video",
+      }
+    } : {}),
     url: `https://${config.domainName}/release/${params.releaseId}`,
   };
+
+  const breadcrumbItems = [
+    { name: "DanceCircle", url: `https://${config.domainName}` },
+    { name: t('breadcrumb.music'), url: `https://${config.domainName}/music` },
+    { name: release.title, url: `https://${config.domainName}/release/${params.releaseId}` },
+  ];
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(releaseJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getBreadcrumbJsonLd(breadcrumbItems)) }}
       />
       {/* Back Button */}
       <Link

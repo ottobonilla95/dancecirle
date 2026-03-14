@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getBreadcrumbJsonLd } from "@/libs/seo";
 import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
 import City from "@/models/City";
@@ -555,12 +556,23 @@ export default async function PublicProfile({ params }: Props) {
   if (userData.socialMedia?.youtube) sameAs.push(userData.socialMedia.youtube);
   if (sameAs.length > 0) jsonLd.sameAs = sameAs;
 
+  const breadcrumbItems = [
+    { name: "DanceCircle", url: `https://dancecircle.co` },
+    ...(userData.city?.country ? [{ name: userData.city.country.name, url: `https://dancecircle.co/country/${userData.city.country.slug || userData.city.country._id}` }] : []),
+    ...(userData.city ? [{ name: userData.city.name, url: `https://dancecircle.co/city/${userData.city.slug || userData.city._id}` }] : []),
+    { name: userData.name, url: `https://dancecircle.co${canonicalPath}` },
+  ];
+
   return (
     <LikesProvider>
       <div className="min-h-screen p-4 bg-base-100">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(getBreadcrumbJsonLd(breadcrumbItems)) }}
         />
         {/* Track profile views */}
         <ProfileViewTracker profileUserId={params.userId} />

@@ -1,6 +1,21 @@
 import type { Metadata } from "next";
 import config from "@/config";
 
+// BreadcrumbList JSON-LD schema for rich results
+// Usage: pass an array of { name, url } items (from root to current page)
+export function getBreadcrumbJsonLd(items: { name: string; url: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+}
+
 // These are all the SEO tags you can add to your pages.
 // It prefills data with default title/description/OG, etc.. and you can cusotmize it for each page.
 // It's already added in the root layout.js so you don't have to add it to every page.
@@ -65,43 +80,4 @@ export const getSEOTags = ({
     // If you want to add extra tags, you can pass them here
     ...extraTags,
   };
-};
-
-// Strctured Data for Rich Results on Google. Learn more: https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data
-// Find your type here (SoftwareApp, Book...): https://developers.google.com/search/docs/appearance/structured-data/search-gallery
-// Use this tool to check that the data is well structured: https://search.google.com/test/rich-results
-// You don't have to use this component, but it increases your chances of having a rich snippet on Google.
-// I recommend adding the one below to your /page.js for software apps: It tells Google that your AppName is a SoftwareApplication, and it has a rating of 4.8/5 from 12 reviews.
-// Fill in the fields with your own data.
-// See https://shipfa.st/docs/features/seo
-export const renderSchemaTags = () => {
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
-          "@context": "http://schema.org",
-          "@type": "WebApplication",
-          name: config.appName,
-          description: config.appDescription,
-          image: `https://${config.domainName}/icon.png`,
-          url: `https://${config.domainName}/`,
-          applicationCategory: "SocialNetworkingApplication",
-          operatingSystem: "Web, iOS, Android",
-          offers: {
-            "@type": "Offer",
-            price: "0",
-            priceCurrency: "USD",
-          },
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "4.9",
-            ratingCount: "250",
-            bestRating: "5",
-            worstRating: "1",
-          },
-        }),
-      }}
-    ></script>
-  );
 };

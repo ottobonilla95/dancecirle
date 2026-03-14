@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { getBreadcrumbJsonLd } from "@/libs/seo";
 import connectMongo from "@/libs/mongoose";
 import DanceStyle from "@/models/DanceStyle";
 import User from "@/models/User";
@@ -258,11 +259,21 @@ export default async function DanceStylePage({ params, searchParams }: Props) {
     ...(danceStyle.image ? { image: danceStyle.image } : {}),
   };
 
+  const breadcrumbItems = [
+    { name: "DanceCircle", url: `https://dancecircle.co` },
+    { name: t('breadcrumb.danceStyles'), url: `https://dancecircle.co/dance-style` },
+    { name: danceStyle.name, url: `https://dancecircle.co/dance-style/${styleSlug}` },
+  ];
+
   return (
     <div className="min-h-screen p-4 bg-base-100">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getBreadcrumbJsonLd(breadcrumbItems)) }}
       />
       <div className="max-w-6xl mx-auto">
         {/* Header */}

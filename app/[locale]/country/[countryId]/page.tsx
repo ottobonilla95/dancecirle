@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { getBreadcrumbJsonLd } from "@/libs/seo";
 import connectMongo from "@/libs/mongoose";
 import Country from "@/models/Country";
 import Continent from "@/models/Continent";
@@ -423,17 +424,41 @@ export default async function CountryPage({ params, searchParams }: Props) {
   const countrySlug = country.slug || country._id.toString();
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Country",
+    "@type": "Place",
     name: `${country.name} Dance Community`,
-    description: `Discover dancers across ${country.name}. Connect with Bachata, Salsa, Kizomba communities, find partners, teachers, and events.`,
+    description: `Discover ${totalDancers} dancers across ${country.name}. Connect with ${danceStylesInCountry.map((s: any) => s.name).join(', ')} communities, find partners, teachers, and events.`,
     url: `https://dancecircle.co/country/${countrySlug}`,
+    ...(country.continent ? {
+      containedInPlace: {
+        "@type": "Place",
+        name: country.continent.name,
+        url: `https://dancecircle.co/continent/${country.continent.slug || country.continent._id}`,
+      },
+    } : {}),
+    ...(topCities.length > 0 ? {
+      containsPlace: topCities.map((city: any) => ({
+        "@type": "Place",
+        name: city.name,
+        url: `https://dancecircle.co/city/${city.slug || city._id}`,
+      })),
+    } : {}),
   };
+
+  const breadcrumbItems = [
+    { name: "DanceCircle", url: `https://dancecircle.co` },
+    { name: t('breadcrumb.countries'), url: `https://dancecircle.co/countries` },
+    { name: country.name, url: `https://dancecircle.co/country/${countrySlug}` },
+  ];
 
   return (
     <div className="min-h-screen p-4 bg-base-100">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getBreadcrumbJsonLd(breadcrumbItems)) }}
       />
       <div className="max-w-6xl mx-auto">
         {/* Header */}

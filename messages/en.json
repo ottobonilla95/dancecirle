@@ -1,4 +1,9 @@
 {
+  "breadcrumb": {
+    "countries": "Countries",
+    "danceStyles": "Dance Styles",
+    "music": "Music"
+  },
   "banner": {
     "incompleteProfileTitle": "Complete Your Profile",
     "incompleteProfileMessage": "Your profile is not active yet. Complete it now to start connecting with dancers!",
@@ -1077,6 +1082,18 @@
       "description": "Discover this social dance event{city} on DanceCircle.",
       "notFound": "Event Not Found | DanceCircle",
       "fallback": "Event | DanceCircle"
+    },
+    "cities": {
+      "title": "Dance Cities Worldwide | Find Dancers Near You | DanceCircle",
+      "description": "Explore dance cities around the world. Find Bachata, Salsa, Kizomba dancers and communities in your city. See city rankings by dancer population."
+    },
+    "countries": {
+      "title": "Dance Countries | Explore Dance Communities Worldwide | DanceCircle",
+      "description": "Discover dance communities by country. Find Bachata, Salsa, Kizomba dancers and events across the globe. See which countries have the most active dance scenes."
+    },
+    "leaderboards": {
+      "title": "Dance Leaderboards | Top Dancers, DJs & Teachers | DanceCircle",
+      "description": "See the most popular dancers, top DJs, teachers, and Jack & Jill champions on DanceCircle. Discover trending dancers in the global dance community."
     }
   },
   "continent": {

@@ -1,14 +1,34 @@
+import { Metadata } from "next";
 import connectDB from "@/libs/mongoose";
 import User from "@/models/User";
+import config from "@/config";
 import { FaMusic, FaFire, FaUsers } from "react-icons/fa";
 import { getMessages, getTranslation } from "@/lib/i18n";
 import { unstable_cache } from "next/cache";
 import { Link } from "@/navigation";
 import Image from "next/image";
 
-export const metadata = {
-  title: "Trending Dance Music | DanceCircle",
-  description: "Discover the most popular dance anthems from our community",
+export const metadata: Metadata = {
+  title: "Trending Dance Music | Bachata, Salsa, Kizomba Songs | DanceCircle",
+  description: "Discover the most popular dance anthems from our community. Trending Bachata, Salsa, Kizomba, and Zouk music picked by dancers worldwide.",
+  keywords: "dance music, Bachata songs, Salsa music, Kizomba songs, Zouk music, dance anthems, trending dance songs",
+  alternates: {
+    canonical: `https://${config.domainName}/en/music`,
+    languages: {
+      en: `https://${config.domainName}/en/music`,
+      es: `https://${config.domainName}/es/music`,
+    },
+  },
+  openGraph: {
+    title: "Trending Dance Music | DanceCircle",
+    description: "Discover the most popular dance anthems from our community. Trending Bachata, Salsa, Kizomba, and Zouk music picked by dancers worldwide.",
+    url: `https://${config.domainName}/music`,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Trending Dance Music | DanceCircle",
+    description: "Discover the most popular dance anthems from our community.",
+  },
 };
 
 // Extract Spotify track ID from URL
