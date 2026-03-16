@@ -1,3 +1,4 @@
+import React from "react";
 import { Metadata } from "next";
 import config from "@/config";
 import { getMessages, getTranslation, type Locale } from "@/lib/i18n";
