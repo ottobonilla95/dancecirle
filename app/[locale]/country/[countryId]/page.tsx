@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { getBreadcrumbJsonLd } from "@/libs/seo";
 import connectMongo from "@/libs/mongoose";
 import Country from "@/models/Country";
@@ -104,16 +104,16 @@ export async function generateMetadata({ params }: Props) {
       description,
       keywords: `${country.name} dance, ${country.name} dancers, ${danceStylesText}, dance community ${country.name}, dance partners ${country.name}, ${country.name} dance scene, dance classes ${country.name}`,
       alternates: {
-        canonical: `https://dancecircle.co/${params.locale}/country/${countrySlug}`,
+        canonical: `https://www.dancecircle.co/${params.locale}/country/${countrySlug}`,
         languages: {
-          en: `https://dancecircle.co/en/country/${countrySlug}`,
-          es: `https://dancecircle.co/es/country/${countrySlug}`,
+          en: `https://www.dancecircle.co/en/country/${countrySlug}`,
+          es: `https://www.dancecircle.co/es/country/${countrySlug}`,
         },
       },
       openGraph: {
         title,
         description,
-        url: `https://dancecircle.co/country/${countrySlug}`,
+        url: `https://www.dancecircle.co/country/${countrySlug}`,
       },
       twitter: {
         card: "summary_large_image",
@@ -174,7 +174,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
     // Redirect ObjectId URLs to slug URLs
     if (/^[0-9a-fA-F]{24}$/.test(params.countryId) && country.slug) {
-      redirect(`/country/${country.slug}`);
+      permanentRedirect(`/${params.locale}/country/${country.slug}`);
     }
   } catch (error) {
     if ((error as any)?.digest?.startsWith("NEXT_REDIRECT")) {
@@ -428,27 +428,27 @@ export default async function CountryPage({ params, searchParams }: Props) {
     "@type": "Place",
     name: `${country.name} Dance Community`,
     description: `Discover ${totalDancers} dancers across ${country.name}. Connect with ${danceStylesInCountry.map((s: any) => s.name).join(', ')} communities, find partners, teachers, and events.`,
-    url: `https://dancecircle.co/country/${countrySlug}`,
+    url: `https://www.dancecircle.co/country/${countrySlug}`,
     ...(country.continent ? {
       containedInPlace: {
         "@type": "Place",
         name: country.continent.name,
-        url: `https://dancecircle.co/continent/${country.continent.slug || country.continent._id}`,
+        url: `https://www.dancecircle.co/continent/${country.continent.slug || country.continent._id}`,
       },
     } : {}),
     ...(topCities.length > 0 ? {
       containsPlace: topCities.map((city: any) => ({
         "@type": "Place",
         name: city.name,
-        url: `https://dancecircle.co/city/${city.slug || city._id}`,
+        url: `https://www.dancecircle.co/city/${city.slug || city._id}`,
       })),
     } : {}),
   };
 
   const breadcrumbItems = [
-    { name: "DanceCircle", url: `https://dancecircle.co` },
-    { name: t('breadcrumb.countries'), url: `https://dancecircle.co/countries` },
-    { name: country.name, url: `https://dancecircle.co/country/${countrySlug}` },
+    { name: "DanceCircle", url: `https://www.dancecircle.co` },
+    { name: t('breadcrumb.countries'), url: `https://www.dancecircle.co/countries` },
+    { name: country.name, url: `https://www.dancecircle.co/country/${countrySlug}` },
   ];
 
   return (

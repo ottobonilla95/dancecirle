@@ -12,7 +12,7 @@ const config = {
   // SEO Keywords for homepage
   keywords: "dance community, salsa dancers, bachata community, kizomba dancers, social dancing, dance partners, dance events, dance festivals, dance teachers, dance DJs, dance network, zouk dancing, tango community, swing dancing, lindy hop, west coast swing, dance travel, dance cities",
   // REQUIRED (no https://, not trailing slash at the end, just the naked domain)
-  domainName: "dancecircle.co",
+  domainName: "www.dancecircle.co",
   crisp: {
     // Crisp website ID. IF YOU DON'T USE CRISP: just remove this => Then add a support email in this config file (resend.supportEmail) otherwise customer support won't work.
     id: "",

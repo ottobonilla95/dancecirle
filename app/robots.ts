@@ -17,6 +17,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: "https://dancecircle.co/sitemap.xml",
+    sitemap: "https://www.dancecircle.co/sitemap.xml",
   };
 }

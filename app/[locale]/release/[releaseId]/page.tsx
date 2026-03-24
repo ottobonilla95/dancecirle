@@ -49,10 +49,10 @@ export async function generateMetadata({ params }: ReleasePageProps): Promise<Me
       title,
       description,
       alternates: {
-        canonical: `https://dancecircle.co/${params.locale}/release/${params.releaseId}`,
+        canonical: `https://www.dancecircle.co/${params.locale}/release/${params.releaseId}`,
         languages: {
-          en: `https://dancecircle.co/en/release/${params.releaseId}`,
-          es: `https://dancecircle.co/es/release/${params.releaseId}`,
+          en: `https://www.dancecircle.co/en/release/${params.releaseId}`,
+          es: `https://www.dancecircle.co/es/release/${params.releaseId}`,
         },
       },
       openGraph: {

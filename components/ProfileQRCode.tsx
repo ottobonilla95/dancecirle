@@ -19,7 +19,7 @@ export default function ProfileQRCode({
   const profileUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/dancer/${userId}`
-      : `https://dancecircle.co/dancer/${userId}`;
+      : `https://www.dancecircle.co/dancer/${userId}`;
 
   useEffect(() => {
     if (showModal && !qrCodeDataUrl) {

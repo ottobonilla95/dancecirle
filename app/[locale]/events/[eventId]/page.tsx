@@ -45,10 +45,10 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
       title,
       description,
       alternates: {
-        canonical: `https://dancecircle.co/${params.locale}/events/${params.eventId}`,
+        canonical: `https://www.dancecircle.co/${params.locale}/events/${params.eventId}`,
         languages: {
-          en: `https://dancecircle.co/en/events/${params.eventId}`,
-          es: `https://dancecircle.co/es/events/${params.eventId}`,
+          en: `https://www.dancecircle.co/en/events/${params.eventId}`,
+          es: `https://www.dancecircle.co/es/events/${params.eventId}`,
         },
       },
       openGraph: {

@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { getBreadcrumbJsonLd } from "@/libs/seo";
 import connectMongo from "@/libs/mongoose";
 import City from "@/models/City";
@@ -98,16 +98,16 @@ export async function generateMetadata({ params }: Props) {
       description,
       keywords: `${city.name} dance, ${city.name} dancers, ${danceStylesText}, dance community ${city.name}, ${city.name} ${city.country?.name} dance, dance partners ${city.name}, dance classes ${city.name}`,
       alternates: {
-        canonical: `https://dancecircle.co/${params.locale}/city/${citySlug}`,
+        canonical: `https://www.dancecircle.co/${params.locale}/city/${citySlug}`,
         languages: {
-          en: `https://dancecircle.co/en/city/${citySlug}`,
-          es: `https://dancecircle.co/es/city/${citySlug}`,
+          en: `https://www.dancecircle.co/en/city/${citySlug}`,
+          es: `https://www.dancecircle.co/es/city/${citySlug}`,
         },
       },
       openGraph: {
         title,
         description,
-        url: `https://dancecircle.co/city/${citySlug}`,
+        url: `https://www.dancecircle.co/city/${citySlug}`,
         images: city.image ? [city.image] : [],
       },
       twitter: {
@@ -175,7 +175,7 @@ export default async function CityPage({ params, searchParams }: Props) {
 
     // If accessed by ObjectId but city has a slug, redirect to slug URL (SEO)
     if (/^[0-9a-fA-F]{24}$/.test(params.cityId) && city.slug) {
-      redirect(`/city/${city.slug}`);
+      permanentRedirect(`/${params.locale}/city/${city.slug}`);
     }
   } catch (error) {
     // redirect() throws a special error in Next.js, let it propagate
@@ -390,7 +390,7 @@ export default async function CityPage({ params, searchParams }: Props) {
     "@type": "Place",
     name: `${city.name} Dance Community`,
     description: `Connect with ${totalDancers} dancers in ${city.name}, ${city.country?.name}. Find Bachata, Salsa, Kizomba partners, classes, and events.`,
-    url: `https://dancecircle.co/city/${citySlug}`,
+    url: `https://www.dancecircle.co/city/${citySlug}`,
     address: {
       "@type": "PostalAddress",
       addressLocality: city.name,
@@ -409,10 +409,10 @@ export default async function CityPage({ params, searchParams }: Props) {
   };
 
   const breadcrumbItems = [
-    { name: "DanceCircle", url: `https://dancecircle.co` },
-    { name: t('breadcrumb.countries'), url: `https://dancecircle.co/countries` },
-    ...(city.country ? [{ name: city.country.name, url: `https://dancecircle.co/country/${city.country.slug || city.country._id}` }] : []),
-    { name: city.name, url: `https://dancecircle.co/city/${citySlug}` },
+    { name: "DanceCircle", url: `https://www.dancecircle.co` },
+    { name: t('breadcrumb.countries'), url: `https://www.dancecircle.co/countries` },
+    ...(city.country ? [{ name: city.country.name, url: `https://www.dancecircle.co/country/${city.country.slug || city.country._id}` }] : []),
+    { name: city.name, url: `https://www.dancecircle.co/city/${citySlug}` },
   ];
 
   return (

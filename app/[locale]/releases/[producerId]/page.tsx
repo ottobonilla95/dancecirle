@@ -43,10 +43,10 @@ export async function generateMetadata({ params }: ReleasesPageProps): Promise<M
       title,
       description,
       alternates: {
-        canonical: `https://dancecircle.co/${params.locale}/releases/${params.producerId}`,
+        canonical: `https://www.dancecircle.co/${params.locale}/releases/${params.producerId}`,
         languages: {
-          en: `https://dancecircle.co/en/releases/${params.producerId}`,
-          es: `https://dancecircle.co/es/releases/${params.producerId}`,
+          en: `https://www.dancecircle.co/en/releases/${params.producerId}`,
+          es: `https://www.dancecircle.co/es/releases/${params.producerId}`,
         },
       },
       openGraph: {

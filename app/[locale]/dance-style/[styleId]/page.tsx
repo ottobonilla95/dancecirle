@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { getBreadcrumbJsonLd } from "@/libs/seo";
 import connectMongo from "@/libs/mongoose";
 import DanceStyle from "@/models/DanceStyle";
@@ -108,16 +108,16 @@ export async function generateMetadata({ params }: Props) {
       description,
       keywords: `${danceStyle.name}, ${danceStyle.name} dance, ${danceStyle.name} dancers, ${danceStyle.name} classes, ${danceStyle.name} partners, ${danceStyle.name} community, learn ${danceStyle.name}`,
       alternates: {
-        canonical: `https://dancecircle.co/${params.locale}/dance-style/${styleSlug}`,
+        canonical: `https://www.dancecircle.co/${params.locale}/dance-style/${styleSlug}`,
         languages: {
-          en: `https://dancecircle.co/en/dance-style/${styleSlug}`,
-          es: `https://dancecircle.co/es/dance-style/${styleSlug}`,
+          en: `https://www.dancecircle.co/en/dance-style/${styleSlug}`,
+          es: `https://www.dancecircle.co/es/dance-style/${styleSlug}`,
         },
       },
       openGraph: {
         title,
         description,
-        url: `https://dancecircle.co/dance-style/${styleSlug}`,
+        url: `https://www.dancecircle.co/dance-style/${styleSlug}`,
         images: danceStyle.image ? [danceStyle.image] : [],
       },
       twitter: {
@@ -159,7 +159,7 @@ export default async function DanceStylePage({ params, searchParams }: Props) {
 
     // Redirect ObjectId URLs to slug URLs
     if (/^[0-9a-fA-F]{24}$/.test(params.styleId) && danceStyle.slug) {
-      redirect(`/dance-style/${danceStyle.slug}`);
+      permanentRedirect(`/${params.locale}/dance-style/${danceStyle.slug}`);
     }
   } catch (error) {
     if ((error as any)?.digest?.startsWith("NEXT_REDIRECT")) {
@@ -256,14 +256,14 @@ export default async function DanceStylePage({ params, searchParams }: Props) {
     "@type": "Thing",
     name: danceStyle.name,
     description: danceStyle.description || `${danceStyle.name} dance community on DanceCircle`,
-    url: `https://dancecircle.co/dance-style/${styleSlug}`,
+    url: `https://www.dancecircle.co/dance-style/${styleSlug}`,
     ...(danceStyle.image ? { image: danceStyle.image } : {}),
   };
 
   const breadcrumbItems = [
-    { name: "DanceCircle", url: `https://dancecircle.co` },
-    { name: t('breadcrumb.danceStyles'), url: `https://dancecircle.co/dance-style` },
-    { name: danceStyle.name, url: `https://dancecircle.co/dance-style/${styleSlug}` },
+    { name: "DanceCircle", url: `https://www.dancecircle.co` },
+    { name: t('breadcrumb.danceStyles'), url: `https://www.dancecircle.co/dance-style` },
+    { name: danceStyle.name, url: `https://www.dancecircle.co/dance-style/${styleSlug}` },
   ];
 
   return (

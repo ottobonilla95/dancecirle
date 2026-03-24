@@ -32,7 +32,7 @@ export default function InviteFriendsBanner({ friendsCount }: InviteFriendsBanne
 
   const baseUrl = typeof window !== 'undefined' 
     ? window.location.origin 
-    : 'https://dancecircle.co';
+    : 'https://www.dancecircle.co';
 
   const whatsappMessage = `Hey! 👋 Found this amazing app for dancers - DanceCircle!\n\n✨ Find dancers in any city\n🌍 Connect globally\n🎯 Plan trips together\n\nIt's FREE and the community is growing fast!\n\nJoin me: ${baseUrl}`;
 

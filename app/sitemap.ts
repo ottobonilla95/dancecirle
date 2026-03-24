@@ -9,7 +9,7 @@ import Release from '@/models/Release';
 import DJEvent from '@/models/DJEvent';
 import OrganizerEvent from '@/models/OrganizerEvent';
 
-const baseUrl = 'https://dancecircle.co';
+const baseUrl = 'https://www.dancecircle.co';
 const LOCALES = ['en', 'es'] as const;
 
 function localizedEntries(path: string, opts: { lastModified: Date; changeFrequency: 'daily' | 'weekly' | 'monthly'; priority: number }) {

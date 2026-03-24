@@ -15,7 +15,7 @@ export default function InviteFriends({ userName = "A friend" }: InviteFriendsPr
   // Simple URL - no referral codes
   const baseUrl = typeof window !== 'undefined' 
     ? window.location.origin 
-    : 'https://dancecircle.co';
+    : 'https://www.dancecircle.co';
   
   const shareUrl = baseUrl;
 

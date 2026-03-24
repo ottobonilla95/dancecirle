@@ -73,10 +73,10 @@ export async function generateMetadata({
       title,
       description,
       alternates: {
-        canonical: `https://dancecircle.co/${params.locale}/organizer-events/${params.eventId}`,
+        canonical: `https://www.dancecircle.co/${params.locale}/organizer-events/${params.eventId}`,
         languages: {
-          en: `https://dancecircle.co/en/organizer-events/${params.eventId}`,
-          es: `https://dancecircle.co/es/organizer-events/${params.eventId}`,
+          en: `https://www.dancecircle.co/en/organizer-events/${params.eventId}`,
+          es: `https://www.dancecircle.co/es/organizer-events/${params.eventId}`,
         },
       },
       openGraph: {
@@ -158,8 +158,8 @@ export default async function OrganizerEventPage({ params }: EventPageProps) {
   };
 
   const breadcrumbItems = [
-    { name: "DanceCircle", url: `https://dancecircle.co` },
-    { name: event.title, url: `https://dancecircle.co/organizer-events/${params.eventId}` },
+    { name: "DanceCircle", url: `https://www.dancecircle.co` },
+    { name: event.title, url: `https://www.dancecircle.co/organizer-events/${params.eventId}` },
   ];
 
   return (

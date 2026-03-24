@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { getBreadcrumbJsonLd } from "@/libs/seo";
 import connectMongo from "@/libs/mongoose";
 import Continent from "@/models/Continent";
@@ -66,16 +66,16 @@ export async function generateMetadata({ params }: Props) {
       description,
       keywords: `${continent.name} dance, ${continent.name} dancers, dance community ${continent.name}, Bachata ${continent.name}, Salsa ${continent.name}, Kizomba ${continent.name}`,
       alternates: {
-        canonical: `https://dancecircle.co/${params.locale}/continent/${continentSlug}`,
+        canonical: `https://www.dancecircle.co/${params.locale}/continent/${continentSlug}`,
         languages: {
-          en: `https://dancecircle.co/en/continent/${continentSlug}`,
-          es: `https://dancecircle.co/es/continent/${continentSlug}`,
+          en: `https://www.dancecircle.co/en/continent/${continentSlug}`,
+          es: `https://www.dancecircle.co/es/continent/${continentSlug}`,
         },
       },
       openGraph: {
         title,
         description,
-        url: `https://dancecircle.co/continent/${continentSlug}`,
+        url: `https://www.dancecircle.co/continent/${continentSlug}`,
       },
       twitter: {
         card: "summary_large_image",
@@ -123,7 +123,7 @@ export default async function ContinentPage({ params }: Props) {
 
     // Redirect ObjectId URLs to slug URLs
     if (/^[0-9a-fA-F]{24}$/.test(params.continentId) && continent.slug) {
-      redirect(`/continent/${continent.slug}`);
+      permanentRedirect(`/${params.locale}/continent/${continent.slug}`);
     }
   } catch (error) {
     if ((error as any)?.digest?.startsWith("NEXT_REDIRECT")) {
@@ -290,12 +290,12 @@ export default async function ContinentPage({ params }: Props) {
     "@type": "Place",
     name: `${continent.name} Dance Community`,
     description: `Discover dancers across ${continent.name}. Connect with Bachata, Salsa, Kizomba communities and events.`,
-    url: `https://dancecircle.co/continent/${continentSlug}`,
+    url: `https://www.dancecircle.co/continent/${continentSlug}`,
   };
 
   const breadcrumbItems = [
-    { name: "DanceCircle", url: `https://dancecircle.co` },
-    { name: continent.name, url: `https://dancecircle.co/continent/${continentSlug}` },
+    { name: "DanceCircle", url: `https://www.dancecircle.co` },
+    { name: continent.name, url: `https://www.dancecircle.co/continent/${continentSlug}` },
   ];
 
   return (

@@ -153,17 +153,17 @@ export const metadata: Metadata = {
   keywords:
     "dance styles, Bachata, Salsa, Kizomba, Zouk, Urban Kiz, Bachazouk, Latin dance, partner dance, dance community",
   alternates: {
-    canonical: "https://dancecircle.co/en/dance-style",
+    canonical: "https://www.dancecircle.co/en/dance-style",
     languages: {
-      en: "https://dancecircle.co/en/dance-style",
-      es: "https://dancecircle.co/es/dance-style",
+      en: "https://www.dancecircle.co/en/dance-style",
+      es: "https://www.dancecircle.co/es/dance-style",
     },
   },
   openGraph: {
     title: "Dance Styles | DanceCircle",
     description:
       "Explore all dance styles on DanceCircle. Find dancers, classes, and communities for every style.",
-    url: "https://dancecircle.co/dance-style",
+    url: "https://www.dancecircle.co/dance-style",
   },
   twitter: {
     card: "summary_large_image",

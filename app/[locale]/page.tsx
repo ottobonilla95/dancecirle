@@ -401,10 +401,10 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     keywords:
       "dance community, Bachata, Salsa, Kizomba, Zouk, dance partners, dance events, dance cities, dance teachers, dance festivals",
     alternates: {
-      canonical: `https://dancecircle.co/${locale}`,
+      canonical: `https://www.dancecircle.co/${locale}`,
       languages: {
-        en: 'https://dancecircle.co/en',
-        es: 'https://dancecircle.co/es',
+        en: 'https://www.dancecircle.co/en',
+        es: 'https://www.dancecircle.co/es',
       },
     },
     openGraph: {
