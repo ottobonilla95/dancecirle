@@ -8,8 +8,9 @@ import { isValidObjectId } from "mongoose";
 import mongoose from "mongoose";
 
 // Helper: find dance style by slug or ObjectId
+// Note: isValidObjectId treats any 12-char string as valid, so check for 24-char hex instead
 function findDanceStyleByParam(styleId: string) {
-  if (isValidObjectId(styleId)) {
+  if (/^[0-9a-fA-F]{24}$/.test(styleId)) {
     return DanceStyle.findById(styleId);
   }
   return DanceStyle.findOne({ slug: styleId });
@@ -157,7 +158,7 @@ export default async function DanceStylePage({ params, searchParams }: Props) {
     }
 
     // Redirect ObjectId URLs to slug URLs
-    if (isValidObjectId(params.styleId) && danceStyle.slug) {
+    if (/^[0-9a-fA-F]{24}$/.test(params.styleId) && danceStyle.slug) {
       redirect(`/dance-style/${danceStyle.slug}`);
     }
   } catch (error) {

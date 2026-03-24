@@ -30,8 +30,9 @@ import {
 import { SiLine, SiTelegram } from "react-icons/si";
 
 // Helper: find country by slug or ObjectId
+// Note: isValidObjectId treats any 12-char string as valid, so check for 24-char hex instead
 function findCountryByParam(countryId: string) {
-  if (isValidObjectId(countryId)) {
+  if (/^[0-9a-fA-F]{24}$/.test(countryId)) {
     return Country.findById(countryId);
   }
   return Country.findOne({ slug: countryId });
@@ -172,7 +173,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
     }
 
     // Redirect ObjectId URLs to slug URLs
-    if (isValidObjectId(params.countryId) && country.slug) {
+    if (/^[0-9a-fA-F]{24}$/.test(params.countryId) && country.slug) {
       redirect(`/country/${country.slug}`);
     }
   } catch (error) {

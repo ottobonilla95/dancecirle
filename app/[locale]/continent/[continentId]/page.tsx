@@ -24,8 +24,9 @@ import {
 import { getMessages, getTranslation, tReplace, type Locale } from "@/lib/i18n";
 
 // Helper: find continent by slug or ObjectId
+// Note: isValidObjectId treats any 12-char string as valid, so check for 24-char hex instead
 function findContinentByParam(continentId: string) {
-  if (isValidObjectId(continentId)) {
+  if (/^[0-9a-fA-F]{24}$/.test(continentId)) {
     return Continent.findById(continentId);
   }
   return Continent.findOne({ slug: continentId });
@@ -121,7 +122,7 @@ export default async function ContinentPage({ params }: Props) {
     }
 
     // Redirect ObjectId URLs to slug URLs
-    if (isValidObjectId(params.continentId) && continent.slug) {
+    if (/^[0-9a-fA-F]{24}$/.test(params.continentId) && continent.slug) {
       redirect(`/continent/${continent.slug}`);
     }
   } catch (error) {

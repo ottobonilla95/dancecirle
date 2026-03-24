@@ -30,8 +30,10 @@ import {
 import { SiLine, SiTelegram } from "react-icons/si";
 
 // Helper: find city by slug or ObjectId
+// Note: isValidObjectId treats any 12-char string as valid (e.g. "paris-france"),
+// so we check for 24-char hex strings which are actual MongoDB ObjectId strings.
 function findCityByParam(cityId: string) {
-  if (isValidObjectId(cityId)) {
+  if (/^[0-9a-fA-F]{24}$/.test(cityId)) {
     return City.findById(cityId);
   }
   // Try slug lookup
@@ -172,7 +174,7 @@ export default async function CityPage({ params, searchParams }: Props) {
     }
 
     // If accessed by ObjectId but city has a slug, redirect to slug URL (SEO)
-    if (isValidObjectId(params.cityId) && city.slug) {
+    if (/^[0-9a-fA-F]{24}$/.test(params.cityId) && city.slug) {
       redirect(`/city/${city.slug}`);
     }
   } catch (error) {
