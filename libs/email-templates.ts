@@ -58,6 +58,11 @@ const emailTranslations = {
       footer1: "Reply to continue the conversation! 💬",
       footer2: (appName: string) => `You're receiving this because someone sent you a message on ${appName}.`,
       managePrefs: 'Manage notification preferences'
+    },
+    campaign: {
+      defaultButton: 'Learn More',
+      footer: (appName: string) => `You're receiving this because you're part of the ${appName} community.`,
+      managePrefs: 'Manage notification preferences'
     }
   },
   es: {
@@ -100,6 +105,11 @@ const emailTranslations = {
       viewButton: 'Ver Mensaje',
       footer1: '¡Responde para continuar la conversación! 💬',
       footer2: (appName: string) => `Recibes esto porque alguien te envió un mensaje en ${appName}.`,
+      managePrefs: 'Gestionar preferencias de notificaciones'
+    },
+    campaign: {
+      defaultButton: 'Ver Más',
+      footer: (appName: string) => `Recibes esto porque eres parte de la comunidad ${appName}.`,
       managePrefs: 'Gestionar preferencias de notificaciones'
     }
   }
@@ -318,6 +328,72 @@ export function messageReceivedEmail(
             <div class="footer">
               <p>${t.footer2(config.appName)}</p>
               <p style="margin-top: 10px;">${recipientId ? getUnsubscribeFooter(recipientId, 'message', locale) : `<a href="https://${config.domainName}/settings" style="color: #667eea;">${t.managePrefs}</a>`}</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `
+  };
+}
+
+/**
+ * Campaign / Promotional Email
+ */
+export function campaignEmail(
+  { subject, bodyText, imageUrl, ctaLink, ctaText }: {
+    subject: string;
+    bodyText: string;
+    imageUrl?: string;
+    ctaLink?: string;
+    ctaText?: string;
+  },
+  recipientId: string,
+  locale: Locale = 'en'
+) {
+  const t = emailTranslations[locale].campaign;
+  const buttonText = ctaText || t.defaultButton;
+
+  return {
+    subject,
+    text: bodyText,
+    headers: recipientId ? {
+      'List-Unsubscribe': `<https://${config.domainName}/api/unsubscribe?userId=${recipientId}&type=all>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    } : undefined,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+            .container { max-width: 600px; margin: 0 auto; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }
+            .content { background: #f9f9f9; padding: 40px 30px; }
+            .event-image { width: 100%; max-width: 560px; border-radius: 10px; margin: 20px 0; }
+            .body-text { font-size: 16px; color: #333; white-space: pre-line; margin: 20px 0; }
+            .button { display: inline-block; background: #667eea; color: white !important; padding: 14px 30px; text-decoration: none; border-radius: 6px; margin-top: 20px; font-weight: bold; }
+            .button:hover { background: #5568d3; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1 style="margin: 0; font-size: 28px;">${subject}</h1>
+            </div>
+            <div class="content">
+              ${imageUrl ? `<img src="${imageUrl}" alt="Event" class="event-image" />` : ''}
+              <div class="body-text">${bodyText.replace(/\n/g, '<br/>')}</div>
+              ${ctaLink ? `
+              <div style="text-align: center; margin-top: 30px;">
+                <a href="${ctaLink}" class="button">${buttonText}</a>
+              </div>
+              ` : ''}
+            </div>
+            <div class="footer">
+              <p>${t.footer(config.appName)}</p>
+              <p style="margin-top: 10px;">${recipientId ? getUnsubscribeFooter(recipientId, 'all', locale) : `<a href="https://${config.domainName}/settings" style="color: #667eea;">${t.managePrefs}</a>`}</p>
             </div>
           </div>
         </body>
