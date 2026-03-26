@@ -113,7 +113,7 @@ export async function generateMetadata({ params }: Props) {
       openGraph: {
         title,
         description,
-        url: `https://www.dancecircle.co/country/${countrySlug}`,
+        url: `https://www.dancecircle.co/${params.locale}/country/${countrySlug}`,
       },
       twitter: {
         card: "summary_large_image",

@@ -42,28 +42,51 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .select('_id slug updatedAt')
       .lean();
 
-    // Fetch all active countries
-    const countries = await Country.find({ isActive: true })
+    // Get IDs of cities that have dancers, to filter countries/continents
+    const cityIdsWithDancers = cities.map((c: any) => c._id);
+
+    // Fetch countries that have at least one city with dancers
+    const countriesWithDancers = await City.distinct('country', {
+      _id: { $in: cityIdsWithDancers },
+    });
+    const countries = await Country.find({
+      isActive: true,
+      _id: { $in: countriesWithDancers },
+    })
       .select('_id slug updatedAt')
       .lean();
 
-    // Fetch all active continents
-    const continents = await Continent.find({ isActive: true })
+    // Fetch continents that have at least one country with dancers
+    const continentIdsWithDancers = await Country.distinct('continent', {
+      _id: { $in: countriesWithDancers },
+    });
+    const continents = await Continent.find({
+      isActive: true,
+      _id: { $in: continentIdsWithDancers },
+    })
       .select('_id slug updatedAt')
       .lean();
 
-    // Fetch all dance styles
-    const danceStyles = await DanceStyle.find({ isActive: true })
+    // Fetch dance styles that have at least one dancer
+    const styleIdsWithDancers = await User.distinct('danceStyles.danceStyle', {
+      isProfileComplete: true,
+    });
+    const danceStyles = await DanceStyle.find({
+      isActive: true,
+      _id: { $in: styleIdsWithDancers },
+    })
       .select('_id slug updatedAt')
       .lean();
 
-    // Fetch all releases (public music releases)
-    const releases = await Release.find({})
+    // Fetch releases that have an existing producer
+    const activeProducerIds = await User.distinct('_id', { isProfileComplete: true, isProducer: true });
+    const releases = await Release.find({ producer: { $in: activeProducerIds } })
       .select('_id createdAt')
       .lean();
 
-    // Fetch all DJ events (public events)
-    const djEvents = await DJEvent.find({})
+    // Fetch DJ events that have an existing DJ
+    const activeDjIds = await User.distinct('_id', { isProfileComplete: true, isDJ: true });
+    const djEvents = await DJEvent.find({ djId: { $in: activeDjIds } })
       .select('_id updatedAt')
       .lean();
 
@@ -106,7 +129,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })
     );
 
-    // Country pages (public) - use slug for SEO-friendly URLs
+    // Country pages (public) - only countries with dancers
     const countryPages = countries.flatMap((country: any) =>
       localizedEntries(`/country/${country.slug || country._id.toString()}`, {
         lastModified: country.updatedAt || new Date(),
@@ -115,7 +138,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })
     );
 
-    // Continent pages (public) - use slug for SEO-friendly URLs
+    // Continent pages (public) - only continents with dancers
     const continentPages = continents.flatMap((continent: any) =>
       localizedEntries(`/continent/${continent.slug || continent._id.toString()}`, {
         lastModified: continent.updatedAt || new Date(),
@@ -124,7 +147,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })
     );
 
-    // Dance style pages (public) - use slug for SEO-friendly URLs
+    // Dance style pages (public) - only styles with dancers
     const danceStylePages = danceStyles.flatMap((style: any) =>
       localizedEntries(`/dance-style/${style.slug || style._id.toString()}`, {
         lastModified: style.updatedAt || new Date(),
@@ -133,7 +156,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })
     );
 
-    // Release pages (public - music releases by producers)
+    // Release pages (public - only releases with active producers)
     const releasePages = releases.flatMap((release: any) =>
       localizedEntries(`/release/${release._id.toString()}`, {
         lastModified: release.createdAt || new Date(),
@@ -142,7 +165,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })
     );
 
-    // DJ event pages (public - events played by DJs)
+    // DJ event pages (public - only events with active DJs)
     const eventPages = djEvents.flatMap((event: any) =>
       localizedEntries(`/events/${event._id.toString()}`, {
         lastModified: event.updatedAt || new Date(),

@@ -117,7 +117,7 @@ export async function generateMetadata({ params }: Props) {
       openGraph: {
         title,
         description,
-        url: `https://www.dancecircle.co/dance-style/${styleSlug}`,
+        url: `https://www.dancecircle.co/${params.locale}/dance-style/${styleSlug}`,
         images: danceStyle.image ? [danceStyle.image] : [],
       },
       twitter: {
@@ -256,14 +256,14 @@ export default async function DanceStylePage({ params, searchParams }: Props) {
     "@type": "Thing",
     name: danceStyle.name,
     description: danceStyle.description || `${danceStyle.name} dance community on DanceCircle`,
-    url: `https://www.dancecircle.co/dance-style/${styleSlug}`,
+    url: `https://www.dancecircle.co/${params.locale}/dance-style/${styleSlug}`,
     ...(danceStyle.image ? { image: danceStyle.image } : {}),
   };
 
   const breadcrumbItems = [
     { name: "DanceCircle", url: `https://www.dancecircle.co` },
-    { name: t('breadcrumb.danceStyles'), url: `https://www.dancecircle.co/dance-style` },
-    { name: danceStyle.name, url: `https://www.dancecircle.co/dance-style/${styleSlug}` },
+    { name: t('breadcrumb.danceStyles'), url: `https://www.dancecircle.co/${params.locale}/dance-style` },
+    { name: danceStyle.name, url: `https://www.dancecircle.co/${params.locale}/dance-style/${styleSlug}` },
   ];
 
   return (

@@ -75,7 +75,7 @@ export async function generateMetadata({ params }: Props) {
       openGraph: {
         title,
         description,
-        url: `https://www.dancecircle.co/continent/${continentSlug}`,
+        url: `https://www.dancecircle.co/${params.locale}/continent/${continentSlug}`,
       },
       twitter: {
         card: "summary_large_image",
@@ -290,12 +290,12 @@ export default async function ContinentPage({ params }: Props) {
     "@type": "Place",
     name: `${continent.name} Dance Community`,
     description: `Discover dancers across ${continent.name}. Connect with Bachata, Salsa, Kizomba communities and events.`,
-    url: `https://www.dancecircle.co/continent/${continentSlug}`,
+    url: `https://www.dancecircle.co/${params.locale}/continent/${continentSlug}`,
   };
 
   const breadcrumbItems = [
     { name: "DanceCircle", url: `https://www.dancecircle.co` },
-    { name: continent.name, url: `https://www.dancecircle.co/continent/${continentSlug}` },
+    { name: continent.name, url: `https://www.dancecircle.co/${params.locale}/continent/${continentSlug}` },
   ];
 
   return (

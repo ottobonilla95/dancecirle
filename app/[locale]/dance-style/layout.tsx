@@ -1,26 +1,26 @@
 import { ReactNode, Suspense } from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/libs/next-auth";
-import { redirect } from "next/navigation";
 import Header from "@/components/Header";
 
-// Layout for dance style pages - Requires authentication
+// Layout for dance style pages
+// Shows Header only for authenticated users
 export default async function DanceStyleLayout({
   children,
 }: {
   children: ReactNode;
 }) {
   const session = await getServerSession(authOptions);
-
-  if (!session) {
-    redirect("/api/auth/signin");
-  }
+  const isLoggedIn = !!session;
 
   return (
     <>
-      <Suspense>
-        <Header />
-      </Suspense>
+      {/* Show Header only for authenticated users */}
+      {isLoggedIn && (
+        <Suspense>
+          <Header />
+        </Suspense>
+      )}
       {children}
     </>
   );
