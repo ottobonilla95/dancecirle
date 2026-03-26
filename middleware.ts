@@ -28,7 +28,8 @@ const publicRoutes = [
   '/music',
   '/stats',
   '/discover',
-  '/invite'
+  '/invite',
+  '/blog'
 ]
 
 // Routes that require authentication but allow incomplete profiles

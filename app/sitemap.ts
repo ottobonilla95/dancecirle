@@ -8,6 +8,7 @@ import DanceStyle from '@/models/DanceStyle';
 import Release from '@/models/Release';
 import DJEvent from '@/models/DJEvent';
 import OrganizerEvent from '@/models/OrganizerEvent';
+import BlogPost from '@/models/BlogPost';
 
 const baseUrl = 'https://www.dancecircle.co';
 const LOCALES = ['en', 'es'] as const;
@@ -71,12 +72,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .select('_id updatedAt')
       .lean();
 
+    // Fetch all published blog posts
+    const blogPosts = await BlogPost.find({ isPublished: true })
+      .select('slug locale publishedAt updatedAt')
+      .lean();
+
     // Static pages (public pages only)
     const staticPages = [
       ...localizedEntries('', { lastModified: new Date(), changeFrequency: 'daily', priority: 1 }),
       ...localizedEntries('/cities', { lastModified: new Date(), changeFrequency: 'daily', priority: 0.7 }),
       ...localizedEntries('/countries', { lastModified: new Date(), changeFrequency: 'daily', priority: 0.7 }),
       ...localizedEntries('/dance-style', { lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 }),
+      ...localizedEntries('/blog', { lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 }),
       ...localizedEntries('/privacy-policy', { lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 }),
       ...localizedEntries('/tos', { lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 }),
     ];
@@ -153,6 +160,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })
     );
 
+    // Blog post pages (locale-specific, not localized pairs)
+    const blogPages = blogPosts.map((post: any) => ({
+      url: `${baseUrl}/${post.locale}/blog/${post.slug}`,
+      lastModified: post.updatedAt || post.publishedAt || new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    }));
+
     return [
       ...staticPages,
       ...userPages,
@@ -163,6 +178,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...eventPages,
       ...danceStylePages,
       ...organizerEventPages,
+      ...blogPages,
     ];
   } catch (error) {
     console.error('Error generating sitemap:', error);
