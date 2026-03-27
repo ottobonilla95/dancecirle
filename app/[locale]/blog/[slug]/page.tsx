@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import { getBreadcrumbJsonLd } from "@/libs/seo";
 import connectMongo from "@/libs/mongoose";
 import BlogPost from "@/models/BlogPost";
+import BlogBlockRenderer from "@/components/blog/BlogBlockRenderer";
 import { Link } from "@/navigation";
 import { getMessages, getTranslation, type Locale } from "@/lib/i18n";
 import { FaCalendar, FaTag, FaArrowLeft } from "react-icons/fa";
@@ -190,12 +191,24 @@ export default async function BlogArticlePage({ params }: Props) {
           {post.title}
         </h1>
 
-        {/* Markdown Body */}
-        <div className="prose prose-invert max-w-none">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {post.body}
-          </ReactMarkdown>
-        </div>
+        {/* Body Content */}
+        {(() => {
+          try {
+            const blocks = JSON.parse(post.body);
+            if (Array.isArray(blocks)) {
+              return <BlogBlockRenderer blocks={blocks} />;
+            }
+          } catch {
+            // Legacy markdown body — render directly
+          }
+          return (
+            <div className="prose prose-invert max-w-none">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {post.body}
+              </ReactMarkdown>
+            </div>
+          );
+        })()}
 
         {/* DanceCircle CTA Promo Section */}
         <div className="mt-16 rounded-2xl bg-gradient-to-r from-primary/90 to-secondary/90 p-8 sm:p-12 text-center">

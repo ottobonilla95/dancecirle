@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "@/navigation";
 import { FaNewspaper, FaPlus, FaEdit, FaSearch, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
 
 interface BlogPost {
@@ -13,54 +14,21 @@ interface BlogPost {
   coverImage: string;
   body: string;
   isPublished: boolean;
-  metaTitle: string;
-  metaDescription: string;
-  keywords: string;
   createdAt: string;
   updatedAt: string;
 }
 
-const CATEGORIES = [
-  { value: "guides", label: "Guides" },
-  { value: "travel", label: "Travel" },
-  { value: "dance-tips", label: "Dance Tips" },
-  { value: "culture", label: "Culture" },
-];
-
-const LOCALES = [
-  { value: "en", label: "English" },
-  { value: "es", label: "Spanish" },
-];
-
-const defaultFormData = {
-  title: "",
-  locale: "en",
-  category: "guides",
-  excerpt: "",
-  coverImage: "",
-  body: "",
-  isPublished: false,
-  metaTitle: "",
-  metaDescription: "",
-  keywords: "",
-};
-
 export default function AdminBlogPage() {
+  const router = useRouter();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [showModal, setShowModal] = useState(false);
-  const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
-  const [saving, setSaving] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [postToDelete, setPostToDelete] = useState<BlogPost | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
-
-  // Form state
-  const [formData, setFormData] = useState(defaultFormData);
 
   useEffect(() => {
     fetchPosts();
@@ -85,58 +53,6 @@ export default function AdminBlogPage() {
       console.error("Error fetching posts:", error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleAddPost = () => {
-    setEditingPost(null);
-    setFormData({ ...defaultFormData });
-    setShowModal(true);
-  };
-
-  const handleEditPost = (post: BlogPost) => {
-    setEditingPost(post);
-    setFormData({
-      title: post.title,
-      locale: post.locale,
-      category: post.category,
-      excerpt: post.excerpt || "",
-      coverImage: post.coverImage || "",
-      body: post.body || "",
-      isPublished: post.isPublished,
-      metaTitle: post.metaTitle || "",
-      metaDescription: post.metaDescription || "",
-      keywords: post.keywords || "",
-    });
-    setShowModal(true);
-  };
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const url = editingPost
-        ? `/api/admin/blog/${editingPost._id}`
-        : "/api/admin/blog";
-
-      const method = editingPost ? "PUT" : "POST";
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (res.ok) {
-        setShowModal(false);
-        fetchPosts();
-      } else {
-        alert("Failed to save post");
-      }
-    } catch (error) {
-      console.error("Error saving post:", error);
-      alert("Error saving post");
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -185,7 +101,10 @@ export default function AdminBlogPage() {
             Create and manage blog posts
           </p>
         </div>
-        <button onClick={handleAddPost} className="btn btn-primary gap-2">
+        <button
+          onClick={() => router.push("/admin/blog/new")}
+          className="btn btn-primary gap-2"
+        >
           <FaPlus />
           Add Post
         </button>
@@ -268,7 +187,7 @@ export default function AdminBlogPage() {
                     <td>
                       <div className="flex gap-2">
                         <button
-                          onClick={() => handleEditPost(post)}
+                          onClick={() => router.push(`/admin/blog/${post._id}/edit`)}
                           className="btn btn-ghost btn-sm gap-1"
                         >
                           <FaEdit /> Edit
@@ -312,177 +231,6 @@ export default function AdminBlogPage() {
         )}
       </div>
 
-      {/* Add/Edit Modal */}
-      {showModal && (
-        <div className="modal modal-open">
-          <div className="modal-box max-w-3xl max-h-[90vh] overflow-y-auto">
-            <h3 className="font-bold text-lg mb-4">
-              {editingPost ? "Edit Post" : "Add New Post"}
-            </h3>
-
-            <div className="space-y-4">
-              {/* Title */}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Title *</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Post title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="input input-bordered"
-                />
-              </div>
-
-              {/* Locale & Category */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Locale *</span>
-                  </label>
-                  <select
-                    value={formData.locale}
-                    onChange={(e) => setFormData({ ...formData, locale: e.target.value })}
-                    className="select select-bordered"
-                  >
-                    {LOCALES.map((loc) => (
-                      <option key={loc.value} value={loc.value}>
-                        {loc.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Category *</span>
-                  </label>
-                  <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="select select-bordered"
-                  >
-                    {CATEGORIES.map((cat) => (
-                      <option key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Excerpt */}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Excerpt</span>
-                </label>
-                <textarea
-                  placeholder="Short summary of the post..."
-                  value={formData.excerpt}
-                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                  className="textarea textarea-bordered"
-                  rows={2}
-                />
-              </div>
-
-              {/* Cover Image */}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Cover Image URL</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="https://..."
-                  value={formData.coverImage}
-                  onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                  className="input input-bordered"
-                />
-              </div>
-
-              {/* Body (Markdown) */}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Body (Markdown)</span>
-                </label>
-                <textarea
-                  placeholder="Write your post content in markdown..."
-                  value={formData.body}
-                  onChange={(e) => setFormData({ ...formData, body: e.target.value })}
-                  className="textarea textarea-bordered font-mono text-sm"
-                  rows={12}
-                />
-              </div>
-
-              {/* Published */}
-              <div className="form-control">
-                <label className="label cursor-pointer justify-start gap-2">
-                  <input
-                    type="checkbox"
-                    checked={formData.isPublished}
-                    onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
-                    className="checkbox checkbox-primary"
-                  />
-                  <span className="label-text">Published</span>
-                </label>
-              </div>
-
-              {/* SEO Section */}
-              <div className="divider">SEO</div>
-
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Meta Title</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="SEO title (defaults to post title)"
-                  value={formData.metaTitle}
-                  onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
-                  className="input input-bordered"
-                />
-              </div>
-
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Meta Description</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="SEO description"
-                  value={formData.metaDescription}
-                  onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
-                  className="input input-bordered"
-                />
-              </div>
-
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Keywords</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="comma, separated, keywords"
-                  value={formData.keywords}
-                  onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
-                  className="input input-bordered"
-                />
-              </div>
-            </div>
-
-            <div className="modal-action">
-              <button onClick={() => setShowModal(false)} className="btn btn-ghost">
-                Cancel
-              </button>
-              <button onClick={handleSave} className="btn btn-primary" disabled={saving}>
-                {saving ? <span className="loading loading-spinner"></span> : "Save"}
-              </button>
-            </div>
-          </div>
-          <div className="modal-backdrop" onClick={() => setShowModal(false)} />
-        </div>
-      )}
-
       {/* Delete Confirmation Modal */}
       {showDeleteModal && postToDelete && (
         <div className="modal modal-open">
@@ -500,17 +248,6 @@ export default function AdminBlogPage() {
                     This will permanently delete the post &quot;{postToDelete.title}&quot;.
                   </p>
                 </div>
-              </div>
-
-              <div className="bg-base-200 p-4 rounded-lg">
-                <p className="text-sm mb-2">
-                  <strong>Post Details:</strong>
-                </p>
-                <ul className="text-sm space-y-1">
-                  <li>• Locale: {postToDelete.locale.toUpperCase()}</li>
-                  <li>• Category: {postToDelete.category}</li>
-                  <li>• Status: {postToDelete.isPublished ? "Published" : "Draft"}</li>
-                </ul>
               </div>
 
               <div className="form-control">
