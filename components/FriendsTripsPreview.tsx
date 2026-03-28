@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { Link } from "@/navigation";
-import { FaPlane, FaCalendar, FaMapMarkerAlt } from "react-icons/fa";
+import { FaPlane, FaCalendar, FaMapMarkerAlt, FaPlus } from "react-icons/fa";
 import { useTranslation } from "./I18nProvider";
+import AddTripModal from "./AddTripModal";
 
 interface FriendTrip {
   _id: string;
@@ -31,6 +33,7 @@ interface FriendsTripsPreviewProps {
 
 export default function FriendsTripsPreview({ trips = [] }: FriendsTripsPreviewProps) {
   const { t } = useTranslation();
+  const [showTripModal, setShowTripModal] = useState(false);
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -63,9 +66,17 @@ export default function FriendsTripsPreview({ trips = [] }: FriendsTripsPreviewP
           <FaPlane className="text-primary" />
           {t('dashboard.friendActivity')}
         </h2>
-        <Link href="/friends/trips" className="btn btn-outline btn-sm">
-          {t('common.viewAll')}
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowTripModal(true)}
+            className="btn btn-primary btn-sm gap-2"
+          >
+            <FaPlus /> {t('trips.addTrip')}
+          </button>
+          <Link href="/friends/trips" className="btn btn-outline btn-sm">
+            {t('common.viewAll')}
+          </Link>
+        </div>
       </div>
 
       <div className="space-y-3">
@@ -131,6 +142,11 @@ export default function FriendsTripsPreview({ trips = [] }: FriendsTripsPreviewP
           </div>
         ))}
       </div>
+
+      <AddTripModal
+        isOpen={showTripModal}
+        onClose={() => setShowTripModal(false)}
+      />
     </section>
   );
 }

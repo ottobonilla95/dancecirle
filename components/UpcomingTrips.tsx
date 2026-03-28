@@ -5,7 +5,7 @@ import { FaPlus, FaTrash, FaPlane, FaMapMarkerAlt, FaCalendar } from "react-icon
 import { Link } from "@/navigation";
 import { useTranslation } from "@/components/I18nProvider";
 import Flag from "./Flag";
-import CityDropdown from "./CityDropdown";
+import AddTripModal from "./AddTripModal";
 
 interface Trip {
   _id: string;
@@ -29,13 +29,7 @@ interface UpcomingTripsProps {
 export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) {
   const { t } = useTranslation();
   const [trips, setTrips] = useState<{ upcoming: Trip[]; past: Trip[] }>({ upcoming: [], past: [] });
-  const [isAdding, setIsAdding] = useState(false);
-  const [selectedCity, setSelectedCity] = useState<any>(null);
-  const [citySearch, setCitySearch] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetchTrips();
@@ -50,48 +44,6 @@ export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) 
       }
     } catch (error) {
       console.error("Error fetching trips:", error);
-    }
-  };
-
-  const handleAddTrip = async () => {
-    if (!selectedCity || !startDate || !endDate) {
-      setError(t('trips.fillAllFields'));
-      return;
-    }
-
-    if (new Date(endDate) <= new Date(startDate)) {
-      setError("End date must be after start date");
-      return;
-    }
-
-    setIsLoading(true);
-    setError("");
-
-    try {
-      const res = await fetch("/api/user/trips", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cityId: selectedCity._id,
-          startDate,
-          endDate,
-        }),
-      });
-
-      if (res.ok) {
-        await fetchTrips();
-        setIsAdding(false);
-        setSelectedCity(null);
-        setStartDate("");
-        setEndDate("");
-      } else {
-        const data = await res.json();
-        setError(data.error || t('trips.failedToAdd'));
-      }
-    } catch (error) {
-      setError(t('trips.failedToAdd'));
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -134,7 +86,7 @@ export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) 
           </h3>
           {editable && (
             <button
-              onClick={() => setIsAdding(!isAdding)}
+              onClick={() => setShowModal(true)}
               className="btn btn-sm btn-primary gap-2"
             >
               <FaPlus />
@@ -142,94 +94,6 @@ export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) 
             </button>
           )}
         </div>
-
-        {/* Add Trip Form */}
-        {isAdding && (
-          <div className="card bg-base-200 p-4 mb-4">
-            <div className="space-y-4">
-              <div>
-                <label className="label">
-                  <span className="label-text">Destination</span>
-                </label>
-                {!selectedCity ? (
-                  <CityDropdown
-                    searchTerm={citySearch}
-                    onSearchChange={setCitySearch}
-                    onCitySelect={setSelectedCity}
-                    placeholder="Search for a city..."
-                    selectedCities={[]}
-                  />
-                ) : (
-                  <div className="flex items-center gap-2 p-3 bg-base-200 rounded-lg">
-                    <Flag countryCode={selectedCity.country.code} size="sm" />
-                    <span className="flex-1">
-                      {selectedCity.name}, {selectedCity.country.name}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedCity(null)}
-                      className="btn btn-ghost btn-sm btn-circle"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="label">
-                    <span className="label-text">Start Date</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="input input-bordered w-full"
-                    min={new Date().toISOString().split("T")[0]}
-                  />
-                </div>
-                <div>
-                  <label className="label">
-                    <span className="label-text">End Date</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="input input-bordered w-full"
-                    min={startDate || new Date().toISOString().split("T")[0]}
-                  />
-                </div>
-              </div>
-
-              {error && (
-                <div className="alert alert-error">
-                  <span>{error}</span>
-                </div>
-              )}
-
-              <div className="flex gap-2">
-                <button
-                  onClick={handleAddTrip}
-                  disabled={isLoading}
-                  className="btn btn-primary"
-                >
-                  {isLoading ? t('common.adding') : t('trips.addTrip')}
-                </button>
-                <button
-                  onClick={() => {
-                    setIsAdding(false);
-                    setError("");
-                  }}
-                  className="btn btn-ghost"
-                >
-                  {t('common.cancel')}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Trips List */}
         {trips.upcoming.length > 0 ? (
@@ -301,8 +165,8 @@ export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) 
           </h3>
           <div className="space-y-2">
             {trips.past.slice(0, 5).map((trip) => (
-              <Link 
-                key={trip._id} 
+              <Link
+                key={trip._id}
                 href={`/city/${trip.city._id}`}
                 className="flex items-center gap-3 text-sm opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
               >
@@ -315,7 +179,13 @@ export default function UpcomingTrips({ editable = false }: UpcomingTripsProps) 
           </div>
         </div>
       )}
+
+      {/* Add Trip Modal */}
+      <AddTripModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onTripAdded={fetchTrips}
+      />
     </div>
   );
 }
-
