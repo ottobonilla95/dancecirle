@@ -160,16 +160,16 @@ export async function generateMetadata({ params }: Props) {
       description,
       keywords,
       alternates: {
-        canonical: `https://www.dancecircle.co/${params.locale}/dancer/${params.userId}`,
+        canonical: `https://www.dancecircle.co/${params.locale}${canonicalPath}`,
         languages: {
-          en: `https://www.dancecircle.co/en/dancer/${params.userId}`,
-          es: `https://www.dancecircle.co/es/dancer/${params.userId}`,
+          en: `https://www.dancecircle.co/en${canonicalPath}`,
+          es: `https://www.dancecircle.co/es${canonicalPath}`,
         },
       },
       openGraph: {
         title,
         description,
-        url: `https://www.dancecircle.co${canonicalPath}`,
+        url: `https://www.dancecircle.co/${params.locale}${canonicalPath}`,
         images: user.image ? [user.image] : [],
         type: "profile",
       },
@@ -535,7 +535,7 @@ export default async function PublicProfile({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "Person",
     name: userData.name,
-    url: `https://www.dancecircle.co${canonicalPath}`,
+    url: `https://www.dancecircle.co/${params.locale}${canonicalPath}`,
     ...(userData.image ? { image: userData.image } : {}),
     ...(userData.bio ? { description: userData.bio.substring(0, 200) } : {}),
     ...(profileRoles.length > 0 ? { jobTitle: profileRoles.join(", ") } : {}),
@@ -558,9 +558,9 @@ export default async function PublicProfile({ params }: Props) {
 
   const breadcrumbItems = [
     { name: "DanceCircle", url: `https://www.dancecircle.co` },
-    ...(userData.city?.country ? [{ name: userData.city.country.name, url: `https://www.dancecircle.co/country/${userData.city.country.slug || userData.city.country._id}` }] : []),
-    ...(userData.city ? [{ name: userData.city.name, url: `https://www.dancecircle.co/city/${userData.city.slug || userData.city._id}` }] : []),
-    { name: userData.name, url: `https://www.dancecircle.co${canonicalPath}` },
+    ...(userData.city?.country ? [{ name: userData.city.country.name, url: `https://www.dancecircle.co/${params.locale}/country/${userData.city.country.slug || userData.city.country._id}` }] : []),
+    ...(userData.city ? [{ name: userData.city.name, url: `https://www.dancecircle.co/${params.locale}/city/${userData.city.slug || userData.city._id}` }] : []),
+    { name: userData.name, url: `https://www.dancecircle.co/${params.locale}${canonicalPath}` },
   ];
 
   return (
