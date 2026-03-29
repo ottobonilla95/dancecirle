@@ -188,13 +188,14 @@ export default function AdminBlogPage() {
                     <td>
                       <div className="flex gap-2">
                         {post.slug && (
-                          <Link
-                            href={`/blog/${post.slug}`}
+                          <a
+                            href={`/${post.locale}/blog/${post.slug}`}
                             target="_blank"
+                            rel="noopener noreferrer"
                             className="btn btn-ghost btn-sm gap-1"
                           >
                             <FaExternalLinkAlt /> View
-                          </Link>
+                          </a>
                         )}
                         <button
                           onClick={() => router.push(`/admin/blog/${post._id}/edit`)}
