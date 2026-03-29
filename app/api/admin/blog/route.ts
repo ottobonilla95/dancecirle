@@ -28,6 +28,8 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const skip = (page - 1) * limit;
 
+    const slug = searchParams.get("slug") || "";
+
     // Build search query
     const query: any = {};
     if (search) {
@@ -35,6 +37,9 @@ export async function GET(req: Request) {
     }
     if (locale) {
       query.locale = locale;
+    }
+    if (slug) {
+      query.slug = slug;
     }
 
     const [posts, total] = await Promise.all([

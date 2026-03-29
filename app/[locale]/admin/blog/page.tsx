@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "@/navigation";
 import { FaNewspaper, FaPlus, FaEdit, FaSearch, FaTrash, FaCheck, FaTimes, FaExternalLinkAlt } from "react-icons/fa";
-import { Link } from "@/navigation";
 
 interface BlogPost {
   _id: string;
@@ -11,12 +10,34 @@ interface BlogPost {
   slug: string;
   locale: string;
   category: string;
-  excerpt: string;
-  coverImage: string;
-  body: string;
   isPublished: boolean;
   createdAt: string;
-  updatedAt: string;
+}
+
+interface BlogGroup {
+  slug: string;
+  category: string;
+  createdAt: string;
+  posts: BlogPost[];
+}
+
+function groupBySlug(posts: BlogPost[]): BlogGroup[] {
+  const groups: Record<string, BlogGroup> = {};
+  for (const post of posts) {
+    const key = post.slug || post._id;
+    if (!groups[key]) {
+      groups[key] = {
+        slug: post.slug,
+        category: post.category,
+        createdAt: post.createdAt,
+        posts: [],
+      };
+    }
+    groups[key].posts.push(post);
+  }
+  return Object.values(groups).sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 }
 
 export default function AdminBlogPage() {
@@ -40,7 +61,7 @@ export default function AdminBlogPage() {
     try {
       const params = new URLSearchParams({
         page: page.toString(),
-        limit: "20",
+        limit: "50",
         search: searchTerm,
       });
 
@@ -89,6 +110,8 @@ export default function AdminBlogPage() {
     }
   };
 
+  const groups = groupBySlug(posts);
+
   return (
     <div className="p-6">
       {/* Header */}
@@ -135,9 +158,9 @@ export default function AdminBlogPage() {
             <thead>
               <tr>
                 <th>Title</th>
-                <th>Locale</th>
+                <th>Locales</th>
                 <th>Category</th>
-                <th>Published</th>
+                <th>Status</th>
                 <th>Date</th>
                 <th>Actions</th>
               </tr>
@@ -149,70 +172,88 @@ export default function AdminBlogPage() {
                     <span className="loading loading-spinner loading-lg"></span>
                   </td>
                 </tr>
-              ) : posts.length === 0 ? (
+              ) : groups.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-8 text-base-content/60">
                     No posts found
                   </td>
                 </tr>
               ) : (
-                posts.map((post) => (
-                  <tr key={post._id}>
-                    <td>
-                      <span className="font-semibold">{post.title}</span>
-                    </td>
-                    <td>
-                      <span className="badge badge-outline badge-sm">
-                        {post.locale.toUpperCase()}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="badge badge-ghost badge-sm capitalize">
-                        {post.category}
-                      </span>
-                    </td>
-                    <td>
-                      {post.isPublished ? (
-                        <span className="badge badge-success gap-1">
-                          <FaCheck className="text-xs" /> Published
+                groups.map((group) => {
+                  const primaryPost = group.posts.find((p) => p.locale === "en") || group.posts[0];
+                  const allPublished = group.posts.every((p) => p.isPublished);
+                  const somePublished = group.posts.some((p) => p.isPublished);
+
+                  return (
+                    <tr key={group.slug}>
+                      <td>
+                        <span className="font-semibold">{primaryPost.title}</span>
+                        <div className="text-xs text-base-content/40 mt-1">/blog/{group.slug}</div>
+                      </td>
+                      <td>
+                        <div className="flex gap-1">
+                          {group.posts.map((p) => (
+                            <span
+                              key={p._id}
+                              className={`badge badge-sm ${p.isPublished ? "badge-success" : "badge-warning"}`}
+                            >
+                              {p.locale.toUpperCase()}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td>
+                        <span className="badge badge-ghost badge-sm capitalize">
+                          {group.category}
                         </span>
-                      ) : (
-                        <span className="badge badge-warning gap-1">
-                          <FaTimes className="text-xs" /> Draft
-                        </span>
-                      )}
-                    </td>
-                    <td className="text-sm">
-                      {new Date(post.createdAt).toLocaleDateString()}
-                    </td>
-                    <td>
-                      <div className="flex gap-2">
-                        {post.slug && (
-                          <a
-                            href={`/${post.locale}/blog/${post.slug}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                      </td>
+                      <td>
+                        {allPublished ? (
+                          <span className="badge badge-success gap-1">
+                            <FaCheck className="text-xs" /> Published
+                          </span>
+                        ) : somePublished ? (
+                          <span className="badge badge-warning gap-1">
+                            Partial
+                          </span>
+                        ) : (
+                          <span className="badge badge-warning gap-1">
+                            <FaTimes className="text-xs" /> Draft
+                          </span>
+                        )}
+                      </td>
+                      <td className="text-sm">
+                        {new Date(group.createdAt).toLocaleDateString()}
+                      </td>
+                      <td>
+                        <div className="flex gap-2">
+                          {primaryPost.slug && (
+                            <a
+                              href={`/${primaryPost.locale}/blog/${primaryPost.slug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn btn-ghost btn-sm gap-1"
+                            >
+                              <FaExternalLinkAlt /> View
+                            </a>
+                          )}
+                          <button
+                            onClick={() => router.push(`/admin/blog/${primaryPost._id}/edit`)}
                             className="btn btn-ghost btn-sm gap-1"
                           >
-                            <FaExternalLinkAlt /> View
-                          </a>
-                        )}
-                        <button
-                          onClick={() => router.push(`/admin/blog/${post._id}/edit`)}
-                          className="btn btn-ghost btn-sm gap-1"
-                        >
-                          <FaEdit /> Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(post)}
-                          className="btn btn-ghost btn-sm gap-1 text-error hover:bg-error hover:text-error-content"
-                        >
-                          <FaTrash /> Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                            <FaEdit /> Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(primaryPost)}
+                            className="btn btn-ghost btn-sm gap-1 text-error hover:bg-error hover:text-error-content"
+                          >
+                            <FaTrash /> Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -254,9 +295,9 @@ export default function AdminBlogPage() {
               <div className="alert alert-warning">
                 <FaTrash />
                 <div>
-                  <p className="font-semibold">This action cannot be undone!</p>
+                  <p className="font-semibold">This will delete ALL locale versions of this post!</p>
                   <p className="text-sm">
-                    This will permanently delete the post &quot;{postToDelete.title}&quot;.
+                    This action cannot be undone.
                   </p>
                 </div>
               </div>
