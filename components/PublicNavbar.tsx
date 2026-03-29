@@ -5,8 +5,11 @@ import Image from "next/image";
 import logo from "@/app/icon.png";
 import config from "@/config";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { useTranslation } from "./I18nProvider";
 
 export default function PublicNavbar() {
+  const { t } = useTranslation();
+
   return (
     <header className="bg-base-100 border-b border-base-300">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -32,7 +35,7 @@ export default function PublicNavbar() {
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
             <Link href="/api/auth/signin" className="btn btn-primary btn-sm">
-              Join / Log In
+              {t('publicNavbar.joinLogIn')}
             </Link>
           </div>
         </div>
