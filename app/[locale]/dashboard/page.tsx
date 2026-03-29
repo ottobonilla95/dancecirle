@@ -985,11 +985,6 @@ export default async function Dashboard({ params }: { params: { locale: string }
           </div>
         )}
 
-        {/* Community Stats & World Map */}
-        <div className="sm:mt-12 mt-6">
-          <StatsPreview stats={communityStats} countryData={communityStats.countryData} />
-        </div>
-
         {/* Activity Feed Preview */}
         <div className="sm:mt-16 mt-6">
           <DashboardPostSection initialPosts={feedPosts} friendsCount={friendsCount} />
@@ -1015,6 +1010,11 @@ export default async function Dashboard({ params }: { params: { locale: string }
               📊 {t("dashboard.exploreStats")}
             </Link>
           </div>
+        </div>
+
+        {/* Community Stats & World Map */}
+        <div className="mt-12">
+          <StatsPreview stats={communityStats} countryData={communityStats.countryData} />
         </div>
 
         {/* Discovery Feed */}
