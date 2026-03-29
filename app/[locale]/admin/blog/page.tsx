@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "@/navigation";
-import { FaNewspaper, FaPlus, FaEdit, FaSearch, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
+import { FaNewspaper, FaPlus, FaEdit, FaSearch, FaTrash, FaCheck, FaTimes, FaExternalLinkAlt } from "react-icons/fa";
+import { Link } from "@/navigation";
 
 interface BlogPost {
   _id: string;
@@ -186,6 +187,15 @@ export default function AdminBlogPage() {
                     </td>
                     <td>
                       <div className="flex gap-2">
+                        {post.slug && (
+                          <Link
+                            href={`/blog/${post.slug}`}
+                            target="_blank"
+                            className="btn btn-ghost btn-sm gap-1"
+                          >
+                            <FaExternalLinkAlt /> View
+                          </Link>
+                        )}
                         <button
                           onClick={() => router.push(`/admin/blog/${post._id}/edit`)}
                           className="btn btn-ghost btn-sm gap-1"
