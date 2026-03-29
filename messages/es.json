@@ -1211,5 +1211,11 @@
   "friendsMap": {
     "networkStartsHere": "Tu Red de Baile Comienza Aquí",
     "friendsWillAppear": "Tus amigos aparecerán aquí una vez que agreguen su ubicación"
+  },
+  "blogCta": {
+    "title": "Únete a DanceCircle",
+    "description": "Conecta con bailarines de todo el mundo. Descubre ciudades, eventos, música y comunidades de baile.",
+    "signUp": "Regístrate Gratis",
+    "exploreCities": "Explorar Ciudades"
   }
 }

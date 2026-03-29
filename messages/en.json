@@ -1211,5 +1211,11 @@
   "friendsMap": {
     "networkStartsHere": "Your Dance Network Starts Here",
     "friendsWillAppear": "Your friends will appear here once they add their city location"
+  },
+  "blogCta": {
+    "title": "Join DanceCircle",
+    "description": "Connect with dancers worldwide. Discover dance cities, events, music, and communities.",
+    "signUp": "Sign Up Free",
+    "exploreCities": "Explore Cities"
   }
 }

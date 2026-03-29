@@ -77,6 +77,8 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function BlogArticlePage({ params }: Props) {
   const locale = (params.locale || "en") as Locale;
+  const messages = await getMessages(locale);
+  const t = (key: string) => getTranslation(messages, key);
 
   await connectMongo();
 
@@ -213,24 +215,23 @@ export default async function BlogArticlePage({ params }: Props) {
         {/* DanceCircle CTA Promo Section */}
         <div className="mt-16 rounded-2xl bg-gradient-to-r from-primary/90 to-secondary/90 p-8 sm:p-12 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-primary-content mb-3">
-            Join DanceCircle
+            {t('blogCta.title')}
           </h2>
           <p className="text-primary-content/80 max-w-lg mx-auto mb-8 text-lg">
-            Connect with dancers worldwide. Discover dance cities, events,
-            music, and communities.
+            {t('blogCta.description')}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/"
               className="btn btn-lg bg-white text-primary hover:bg-white/90 border-none"
             >
-              Sign Up Free
+              {t('blogCta.signUp')}
             </Link>
             <Link
               href="/cities"
               className="btn btn-lg btn-outline border-white text-white hover:bg-white/10 hover:border-white"
             >
-              Explore Cities
+              {t('blogCta.exploreCities')}
             </Link>
           </div>
         </div>
