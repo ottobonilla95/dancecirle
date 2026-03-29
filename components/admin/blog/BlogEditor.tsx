@@ -33,6 +33,7 @@ interface Block {
 
 interface BlogPost {
   _id: string;
+  slug: string;
   title: string;
   body: string;
   excerpt: string;
@@ -126,6 +127,7 @@ function AutoResizeTextarea({
 export default function BlogEditor({ initialPost }: BlogEditorProps) {
   const router = useRouter();
   const [title, setTitle] = useState(initialPost?.title || "");
+  const [slug, setSlug] = useState(initialPost?.slug || "");
   const [locale, setLocale] = useState(initialPost?.locale || "en");
   const [category, setCategory] = useState(initialPost?.category || "guides");
   const [excerpt, setExcerpt] = useState(initialPost?.excerpt || "");
@@ -195,6 +197,7 @@ export default function BlogEditor({ initialPost }: BlogEditorProps) {
     try {
       const payload = {
         title,
+        ...(slug && { slug }),
         body: blocksToJson(blocks),
         excerpt,
         coverImage,
@@ -301,6 +304,18 @@ export default function BlogEditor({ initialPost }: BlogEditorProps) {
           placeholder="Post title..."
           className="w-full text-4xl font-bold bg-transparent outline-none border-none placeholder-base-content/30 mb-6"
         />
+
+        {/* Slug */}
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-sm text-base-content/40 shrink-0">/blog/</span>
+          <input
+            type="text"
+            value={slug}
+            onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-"))}
+            placeholder="auto-generated-from-title"
+            className="w-full text-sm text-base-content/50 bg-transparent outline-none border-none placeholder-base-content/20"
+          />
+        </div>
 
         {/* Excerpt */}
         <textarea

@@ -63,9 +63,11 @@ export async function PUT(
 
     const body = await req.json();
 
-    // Regenerate slug if title changes
+    // Use custom slug if provided, otherwise regenerate from title
     let slug: string | undefined;
-    if (body.title) {
+    if (body.slug) {
+      slug = body.slug;
+    } else if (body.title) {
       slug = generateSlug(body.title);
     }
 

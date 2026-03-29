@@ -81,8 +81,8 @@ export async function POST(req: Request) {
 
     const body = await req.json();
 
-    // Generate slug from title
-    const slug = body.title ? generateSlug(body.title) : "";
+    // Use custom slug if provided, otherwise generate from title
+    const slug = body.slug || (body.title ? generateSlug(body.title) : "");
 
     // Create new blog post
     const post = await BlogPost.create({
