@@ -999,10 +999,7 @@ export default async function Dashboard({ params }: { params: { locale: string }
             <Link href="/cities" className="btn btn-outline btn-sm md:btn-md gap-1.5">
               🏙️ {t("dashboard.viewAllCities")}
             </Link>
-            <Link href="/countries" className="btn btn-outline btn-sm md:btn-md gap-1.5">
-              🌍 {t("dashboard.exploreCountries")}
-            </Link>
-            <Link href="/dance-style" className="btn btn-outline btn-sm md:btn-md gap-1.5">
+<Link href="/dance-style" className="btn btn-outline btn-sm md:btn-md gap-1.5">
               💃 {t("dashboard.exploreStyles")}
             </Link>
             <Link href="/music" className="btn btn-outline btn-sm md:btn-md gap-1.5">
