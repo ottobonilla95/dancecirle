@@ -15,6 +15,7 @@ import CityList from "@/components/organisims/CityList";
 import FriendsTripsPreview from "@/components/FriendsTripsPreview";
 import TripOverlaps from "@/components/TripOverlaps";
 import YourCityPreview from "@/components/YourCityPreview";
+import StatsPreview from "@/components/StatsPreview";
 import InstallAppDashboardBanner from "@/components/InstallAppDashboardBanner";
 import { Link } from "@/navigation";
 import { getMessages, getTranslation } from "@/lib/i18n";
@@ -983,6 +984,11 @@ export default async function Dashboard({ params }: { params: { locale: string }
             <FriendsTripsPreview trips={friendsTrips} />
           </div>
         )}
+
+        {/* Community Stats & World Map */}
+        <div className="sm:mt-12 mt-6">
+          <StatsPreview stats={communityStats} countryData={communityStats.countryData} />
+        </div>
 
         {/* Activity Feed Preview */}
         <div className="sm:mt-16 mt-6">
