@@ -377,7 +377,7 @@ export default function DancersMap({
           
           // Click to view profile
           dancerDiv.addEventListener('click', () => {
-            window.location.href = `/dancer/${dancer._id}`;
+            window.location.href = `/${dancer.username || `dancer/${dancer._id}`}`;
           });
           
           dancersList.appendChild(dancerDiv);

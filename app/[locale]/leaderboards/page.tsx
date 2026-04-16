@@ -191,7 +191,7 @@ export default function LeaderboardsPage() {
               return (
                 <Link
                   key={user._id}
-                  href={`/dancer/${user._id}`}
+                  href={`/${user.username || `dancer/${user._id}`}`}
                   className={`flex items-center gap-4 p-4 rounded-lg border-2 transition-all hover:scale-[1.02] ${rankClass} ${
                     isCurrentUser ? "ring-2 ring-primary" : ""
                   }`}

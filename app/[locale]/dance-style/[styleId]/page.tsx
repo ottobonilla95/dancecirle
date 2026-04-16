@@ -450,7 +450,7 @@ export default async function DanceStylePage({ params, searchParams }: Props) {
                         return (
                           <Link
                             key={dancer._id}
-                            href={`/dancer/${dancer._id}`}
+                            href={`/${dancer.username || `dancer/${dancer._id}`}`}
                             className="group"
                           >
                             <div className="card bg-base-100 shadow-sm hover:shadow-md transition-all duration-200 group-hover:scale-105">

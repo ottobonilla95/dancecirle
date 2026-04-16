@@ -91,7 +91,7 @@ export default function DancerCard({ dancer, showLikeButton = true, showFlag = f
         </div>
       )}
       
-      <Link href={`/dancer/${dancer._id}`} className="block">
+      <Link href={`/${dancer.username || `dancer/${dancer._id}`}`} className="block">
         <div className="card-body p-3 sm:p-4">
           {/* Header with Avatar and Basic Info */}
           <div className="flex items-start gap-3 mb-2">

@@ -217,7 +217,7 @@ export default function FriendsTripsPage() {
                 <div className="card-body">
                   <div className="flex items-start gap-4">
                     {/* Friend Info */}
-                    <Link href={`/dancer/${trip.dancer._id}`} className="flex-shrink-0">
+                    <Link href={`/${trip.dancer.username || `dancer/${trip.dancer._id}`}`} className="flex-shrink-0">
                       <div className="avatar">
                         <div className="w-16 h-16 rounded-full">
                           {trip.dancer.image ? (
@@ -241,7 +241,7 @@ export default function FriendsTripsPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <Link
-                          href={`/dancer/${trip.dancer._id}`}
+                          href={`/${trip.dancer.username || `dancer/${trip.dancer._id}`}`}
                           className="font-bold text-lg hover:text-primary transition-colors"
                         >
                           {trip.dancer.name}
@@ -295,7 +295,7 @@ export default function FriendsTripsPage() {
                           View City
                         </Link>
                         <Link
-                          href={`/dancer/${trip.dancer._id}`}
+                          href={`/${trip.dancer.username || `dancer/${trip.dancer._id}`}`}
                           className="btn btn-outline btn-sm"
                         >
                           View Profile

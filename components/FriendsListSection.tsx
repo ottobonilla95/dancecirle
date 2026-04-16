@@ -43,7 +43,7 @@ export default function FriendsListSection({ friends, totalCount }: FriendsListS
             {displayedFriends.map((friend) => (
               <Link
                 key={friend._id || friend.id}
-                href={`/dancer/${friend._id || friend.id}`}
+                href={`/${friend.username || `dancer/${friend._id || friend.id}`}`}
                 className="group"
               >
                 <div className="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-base-300 transition-colors">
@@ -119,7 +119,7 @@ export default function FriendsListSection({ friends, totalCount }: FriendsListS
                   {friends.map((friend) => (
                     <Link
                       key={friend._id || friend.id}
-                      href={`/dancer/${friend._id || friend.id}`}
+                      href={`/${friend.username || `dancer/${friend._id || friend.id}`}`}
                       className="group"
                       onClick={() => setIsModalOpen(false)}
                     >

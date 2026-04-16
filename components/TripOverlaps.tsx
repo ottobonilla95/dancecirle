@@ -103,7 +103,7 @@ export default function TripOverlaps({ overlaps = [], isPreview = false }: TripO
               <div className="flex gap-3">
                 {/* Friend Avatar */}
                 <Link
-                  href={`/dancer/${overlap.friend._id}`}
+                  href={`/${overlap.friend.username || `dancer/${overlap.friend._id}`}`}
                   className="avatar flex-shrink-0"
                 >
                   {overlap.friend.image ? (
@@ -123,7 +123,7 @@ export default function TripOverlaps({ overlaps = [], isPreview = false }: TripO
                     {overlap.type === 'visiting_home' ? (
                       <>
                         <Link
-                          href={`/dancer/${overlap.friend._id}`}
+                          href={`/${overlap.friend.username || `dancer/${overlap.friend._id}`}`}
                           className="font-semibold text-primary hover:underline"
                         >
                           {overlap.friend.name}
@@ -142,7 +142,7 @@ export default function TripOverlaps({ overlaps = [], isPreview = false }: TripO
                       <>
                         <span className="font-medium">{t('trips.youAnd') || 'You and'}</span>
                         <Link
-                          href={`/dancer/${overlap.friend._id}`}
+                          href={`/${overlap.friend.username || `dancer/${overlap.friend._id}`}`}
                           className="font-semibold text-primary hover:underline"
                         >
                           {overlap.friend.name}

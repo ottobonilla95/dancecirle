@@ -588,7 +588,7 @@ export default async function CityPage({ params, searchParams }: Props) {
                       {teachers.map((teacher: any) => (
                         <Link
                           key={teacher._id}
-                          href={`/dancer/${teacher._id}`}
+                          href={`/${teacher.username || `dancer/${teacher._id}`}`}
                           className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
@@ -637,7 +637,7 @@ export default async function CityPage({ params, searchParams }: Props) {
                       {djs.map((dj: any) => (
                         <Link
                           key={dj._id}
-                          href={`/dancer/${dj._id}`}
+                          href={`/${dj.username || `dancer/${dj._id}`}`}
                           className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
@@ -685,7 +685,7 @@ export default async function CityPage({ params, searchParams }: Props) {
                       {photographers.map((photographer: any) => (
                         <Link
                           key={photographer._id}
-                          href={`/dancer/${photographer._id}`}
+                          href={`/${photographer.username || `dancer/${photographer._id}`}`}
                           className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
@@ -733,7 +733,7 @@ export default async function CityPage({ params, searchParams }: Props) {
                       {eventOrganizers.map((organizer: any) => (
                         <Link
                           key={organizer._id}
-                          href={`/dancer/${organizer._id}`}
+                          href={`/${organizer.username || `dancer/${organizer._id}`}`}
                           className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
@@ -781,7 +781,7 @@ export default async function CityPage({ params, searchParams }: Props) {
                       {producers.map((producer: any) => (
                         <Link
                           key={producer._id}
-                          href={`/dancer/${producer._id}`}
+                          href={`/${producer.username || `dancer/${producer._id}`}`}
                           className="flex items-center gap-2 sm:gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                         >
                           <div className="avatar">
@@ -897,7 +897,7 @@ export default async function CityPage({ params, searchParams }: Props) {
                   {mostLikedDancers.map((dancer: any, index: number) => (
                     <Link
                       key={dancer._id}
-                      href={`/dancer/${dancer._id}`}
+                      href={`/${dancer.username || `dancer/${dancer._id}`}`}
                       className="flex items-center gap-3 hover:bg-base-300 rounded p-2 transition-colors"
                     >
                       <div className="flex items-center gap-3 flex-1">

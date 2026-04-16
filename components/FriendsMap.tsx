@@ -246,7 +246,7 @@ export default function FriendsMap({ friends, mapboxToken }: FriendsMapProps) {
           
           // Click to view profile
           friendDiv.addEventListener('click', () => {
-            window.location.href = `/dancer/${friend._id}`;
+            window.location.href = `/${friend.username || `dancer/${friend._id}`}`;
           });
           
           friendsList.appendChild(friendDiv);

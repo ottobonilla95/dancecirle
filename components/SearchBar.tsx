@@ -188,7 +188,7 @@ export default function SearchBar({
                   {users.map((user) => (
                     <Link
                       key={user._id}
-                      href={`/dancer/${user._id}`}
+                      href={`/${user.username || `dancer/${user._id}`}`}
                       onClick={() => handleUserClick(user)}
                       className="block px-6 py-3 hover:bg-base-200 transition-colors"
                     >

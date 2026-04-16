@@ -223,7 +223,7 @@ export default async function OrganizerEventPage({ params }: EventPageProps) {
 
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <Link
-                href={`/dancer/${event.organizerId?._id}`}
+                href={`/${event.organizerId?.username || `dancer/${event.organizerId?._id}`}`}
                 className="flex items-center gap-3 hover:bg-base-300 rounded-lg p-2 transition-colors"
               >
                 <div className="avatar">

@@ -218,7 +218,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
             {/* DJ Info */}
             <div className="divider">{t('eventDetail.dj')}</div>
             <Link
-              href={`/dancer/${event.djId._id}`}
+              href={`/${event.djId.username || `dancer/${event.djId._id}`}`}
               className="flex items-center gap-3 hover:bg-base-300 p-3 rounded-lg transition-all"
             >
               {event.djId.image && (

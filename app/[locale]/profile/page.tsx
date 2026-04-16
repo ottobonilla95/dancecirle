@@ -626,7 +626,7 @@ export default async function Profile({ searchParams, params }: ProfileProps & {
                   </Link>
 
                   <Link
-                    href={`/dancer/${userData._id}`}
+                    href={`/${userData.username || `dancer/${userData._id}`}`}
                     className="btn btn-primary btn-sm w-full gap-2"
                   >
                     👁️ {t("profile.viewMyProfile")}

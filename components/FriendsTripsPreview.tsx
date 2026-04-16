@@ -88,7 +88,7 @@ export default function FriendsTripsPreview({ trips = [] }: FriendsTripsPreviewP
             <div className="flex items-start gap-3">
               {/* Friend Avatar */}
               <Link
-                href={`/dancer/${trip.friend._id}`}
+                href={`/${trip.friend.username || `dancer/${trip.friend._id}`}`}
                 className="avatar flex-shrink-0"
               >
                 <div className="w-10 h-10 rounded-full">

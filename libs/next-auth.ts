@@ -117,12 +117,13 @@ export const authOptions: NextAuthOptionsExtended = {
           await new Promise(resolve => setTimeout(resolve, 200));
         }
         
-        const userData = await User.findById(userId).select('isProfileComplete image name preferredLanguage email');
-        
+        const userData = await User.findById(userId).select('isProfileComplete image name username preferredLanguage email');
+
         token.isProfileComplete = userData?.isProfileComplete === true ? true : false;
-        
+
         if (userData?.image) token.picture = userData.image;
         if (userData?.name) token.name = userData.name;
+        if (userData?.username) (token as any).username = userData.username;
         if (userData?.preferredLanguage) token.preferredLanguage = userData.preferredLanguage;
       } catch (error) {
         console.error('JWT callback error:', error);
@@ -141,6 +142,9 @@ export const authOptions: NextAuthOptionsExtended = {
         }
         if (token.name) {
           session.user.name = token.name;
+        }
+        if ((token as any).username) {
+          (session.user as any).username = (token as any).username;
         }
       }
       return session;

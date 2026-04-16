@@ -54,7 +54,7 @@ export default function ActiveUsersCounter() {
                   {onlineUsers.map((user) => (
                     <Link
                       key={user.userId}
-                      href={`/dancer/${user.userId}`}
+                      href={`/${user.username || `dancer/${user.userId}`}`}
                       onClick={() => setIsModalOpen(false)}
                       className="flex items-center gap-3 p-3 rounded-lg hover:bg-base-200 transition-colors"
                     >

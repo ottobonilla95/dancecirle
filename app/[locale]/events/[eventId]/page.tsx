@@ -138,7 +138,7 @@ export default async function EventDetailPage({ params }: EventPageProps) {
     performer: event.djId ? {
       "@type": "Person",
       name: event.djId.name,
-      url: `https://${config.domainName}/dancer/${event.djId._id}`,
+      url: `https://${config.domainName}/${event.djId.username || `dancer/${event.djId._id}`}`,
     } : undefined,
     url: `https://${config.domainName}/${params.locale}/events/${params.eventId}`,
   };
@@ -220,7 +220,7 @@ export default async function EventDetailPage({ params }: EventPageProps) {
               <>
                 <div className="divider">{t('eventDetail.dj')}</div>
                 <Link
-                  href={`/dancer/${event.djId._id}`}
+                  href={`/${event.djId.username || `dancer/${event.djId._id}`}`}
                   className="flex items-center gap-3 hover:bg-base-300 p-3 rounded-lg transition-all"
                 >
                   {event.djId.image && (

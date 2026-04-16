@@ -50,7 +50,7 @@ export default function MutualFriends({
             {displayedFriends.map((friend) => (
               <Link
                 key={friend._id || friend.id}
-                href={`/dancer/${friend._id || friend.id}`}
+                href={`/${friend.username || `dancer/${friend._id || friend.id}`}`}
                 className="group"
               >
                 <div className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-base-200/50 transition-colors">
@@ -130,7 +130,7 @@ export default function MutualFriends({
                   {mutualFriends.map((friend) => (
                     <Link
                       key={friend._id || friend.id}
-                      href={`/dancer/${friend._id || friend.id}`}
+                      href={`/${friend.username || `dancer/${friend._id || friend.id}`}`}
                       className="group"
                       onClick={() => setIsModalOpen(false)}
                     >

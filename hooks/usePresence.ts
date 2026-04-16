@@ -8,6 +8,7 @@ import { database } from '@/libs/firebase';
 export interface OnlineUser {
   userId: string;
   name: string;
+  username?: string;
   lastChanged: number;
 }
 
@@ -32,6 +33,7 @@ export function usePresence() {
           lastChanged: serverTimestamp(),
           userId: userId,
           name: session.user.name || 'Anonymous',
+          username: (session.user as any).username || null,
         });
 
         // Remove user from active list when they disconnect
@@ -65,6 +67,7 @@ export function usePresence() {
           users.push({
             userId: status.userId || childSnapshot.key || 'unknown',
             name: status.name || 'Anonymous',
+            username: status.username || undefined,
             lastChanged: status.lastChanged || Date.now(),
           });
         }

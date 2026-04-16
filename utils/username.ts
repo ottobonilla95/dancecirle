@@ -1,8 +1,13 @@
 // Reserved words that cannot be used as usernames (locale prefixes, route names, etc.)
+// Must include every static route segment under app/[locale]/* plus infra paths.
 const RESERVED_USERNAMES = [
   "en", "es", "admin", "api", "dashboard", "settings", "onboarding",
   "feed", "friends", "discover", "cities", "countries", "music",
   "stats", "blog", "signin", "invite", "messages", "leaderboards",
+  "city", "continent", "country", "dancer", "dj", "events",
+  "organizer-events", "release", "releases", "profile",
+  "privacy-policy", "tos", "unsubscribe-success", "dance-style",
+  "auth", "sitemap.xml", "robots.txt", "manifest.json", "favicon.ico",
 ];
 
 /**

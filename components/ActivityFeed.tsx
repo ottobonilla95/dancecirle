@@ -412,7 +412,7 @@ export default function ActivityFeed({
             <div className="card-body p-4">
               {/* Post Header */}
               <div className="flex items-start gap-3">
-                <Link href={`/dancer/${post.author._id}`}>
+                <Link href={`/${post.author.username || `dancer/${post.author._id}`}`}>
                   <div className="avatar">
                     <div className="w-12 h-12 rounded-full">
                       {post.author.image ? (
@@ -429,7 +429,7 @@ export default function ActivityFeed({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/dancer/${post.author._id}`}
+                      href={`/${post.author.username || `dancer/${post.author._id}`}`}
                       className="font-bold hover:underline"
                     >
                       {post.author.name}

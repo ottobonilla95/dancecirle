@@ -74,7 +74,7 @@ export default function FriendsContent({ userData }: FriendsContentProps) {
     <div key={user._id} className="card bg-base-200 shadow-lg">
       <div className="card-body p-4">
         <div className="flex items-center gap-4">
-          <Link href={`/dancer/${user._id}`}>
+          <Link href={`/${user.username || `dancer/${user._id}`}`}>
             <div className="avatar cursor-pointer">
               <div className="w-16 h-16 rounded-full">
                 {user.image ? (
@@ -95,7 +95,7 @@ export default function FriendsContent({ userData }: FriendsContentProps) {
           </Link>
 
           <div className="flex-1">
-            <Link href={`/dancer/${user._id}`} className="hover:text-primary">
+            <Link href={`/${user.username || `dancer/${user._id}`}`} className="hover:text-primary">
               <h3 className="font-bold text-lg">{user.name}</h3>
               {user.username && (
                 <p className="text-sm text-base-content/60">@{user.username}</p>
@@ -228,7 +228,7 @@ export default function FriendsContent({ userData }: FriendsContentProps) {
                   renderUserCard(
                     friend,
                     <Link
-                      href={`/dancer/${friend._id}`}
+                      href={`/${friend.username || `dancer/${friend._id}`}`}
                       className="btn btn-primary btn-sm"
                     >
                       <FaEye /> {t('friends.viewProfile')}
@@ -286,7 +286,7 @@ export default function FriendsContent({ userData }: FriendsContentProps) {
                   renderUserCard(
                     user,
                     <Link
-                      href={`/dancer/${user._id}`}
+                      href={`/${user.username || `dancer/${user._id}`}`}
                       className="btn btn-secondary btn-sm"
                     >
                       <FaEye /> {t('friends.viewProfile')}
