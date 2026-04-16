@@ -13,6 +13,8 @@ import BlogPost from '@/models/BlogPost';
 const baseUrl = 'https://www.dancecircle.co';
 const LOCALES = ['en', 'es'] as const;
 
+export const revalidate = 3600;
+
 function localizedEntries(path: string, opts: { lastModified: Date; changeFrequency: 'daily' | 'weekly' | 'monthly'; priority: number }) {
   return LOCALES.map(locale => ({
     url: `${baseUrl}/${locale}${path}`,
