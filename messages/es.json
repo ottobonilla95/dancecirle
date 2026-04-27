@@ -727,6 +727,8 @@
     "travelersOpenToMeet": "Viajeros Abiertos a Conectar",
     "activeProfessionals": "Profesionales Activos",
     "likedProfiles": "Perfiles con Likes",
+    "seeMore": "Ver más",
+    "seeLess": "Ver menos",
     "noOtherCitiesInCountry": "Actualmente esta es la única ciudad activa de DanceCircle en {country}."
   },
   "country": {

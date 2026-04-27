@@ -14,6 +14,7 @@ import { authOptions } from "@/libs/next-auth";
 import { Link } from "@/navigation";
 import Pagination from "@/components/Pagination";
 import DancersFilter from "@/components/DancersFilter";
+import ExpandableText from "@/components/ExpandableText";
 import { getMessages, getTranslation, tReplace, type Locale } from "@/lib/i18n";
 import {
   FaMapMarkerAlt,
@@ -447,6 +448,13 @@ export default async function CityPage({ params, searchParams }: Props) {
       : null,
   ].filter(Boolean);
 
+  const citySummaryText = [
+    city.description,
+    communitySummaryParts.join(" "),
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   // Pagination calculations
   const totalPages = Math.ceil(totalDancers / dancersPerPage);
 
@@ -551,17 +559,12 @@ export default async function CityPage({ params, searchParams }: Props) {
             </div>
           </div>
 
-          <div className="max-w-4xl space-y-3">
-            {city.description && (
-              <p className="text-lg text-base-content/80">
-                {city.description}
-              </p>
-            )}
-            {communitySummaryParts.map((part, index) => (
-              <p key={index} className="text-base text-base-content/75 leading-relaxed">
-                {part}
-              </p>
-            ))}
+          <div className="max-w-4xl">
+            <ExpandableText
+              text={citySummaryText}
+              collapsedLabel={t("city.seeMore")}
+              expandedLabel={t("city.seeLess")}
+            />
           </div>
         </div>
 
