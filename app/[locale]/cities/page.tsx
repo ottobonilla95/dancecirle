@@ -1,238 +1,61 @@
-"use client";
-
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import connectMongo from "@/libs/mongoose";
+import CityModel from "@/models/City";
+import Country from "@/models/Country";
+import Continent from "@/models/Continent";
+import CitiesPageClient from "@/components/CitiesPageClient";
 import { City } from "@/types";
-import CityCard from "@/components/molecules/CityCard";
-import { FaSort, FaSpinner, FaSearch, FaFilter } from "react-icons/fa";
-import { useTranslation } from "@/components/I18nProvider";
-import { tReplace } from "@/lib/t-replace";
 
-type SortOption = "rank" | "totalDancers" | "name" | "population";
+const INITIAL_LIMIT = 12;
 
-export default function CitiesPage() {
-  const { t } = useTranslation();
-  const [cities, setCities] = useState<City[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [sortBy, setSortBy] = useState<SortOption>("totalDancers");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const lastCityRef = useRef<HTMLDivElement | null>(null);
+async function getInitialCities(): Promise<{
+  cities: City[];
+  totalCount: number;
+  hasMore: boolean;
+}> {
+  await connectMongo();
 
-  const fetchCities = async (pageNum: number, reset = false) => {
-    if (loading || loadingMore) return;
-    
-    if (reset) {
-      setLoading(true);
-      setPage(1);
-    } else {
-      setLoadingMore(true);
-    }
-
-    try {
-      const params = new URLSearchParams({
-        sortBy,
-        page: pageNum.toString(),
-        limit: "12",
-        ...(searchQuery && { search: searchQuery })
-      });
-
-      const response = await fetch(`/api/cities?${params}`);
-      if (response.ok) {
-        const data = await response.json();
-        
-        if (reset) {
-          setCities(data.cities || []);
-        } else {
-          setCities(prev => [...prev, ...(data.cities || [])]);
-        }
-        
-        setHasMore(data.hasMore || false);
-        setTotalCount(data.totalCount || 0);
-      }
-    } catch (error) {
-      console.error("Error fetching cities:", error);
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
+  const searchCriteria = {
+    isActive: true,
+    totalDancers: { $gt: 0 },
   };
 
-  // Initial load and when sort/search changes
-  useEffect(() => {
-    setPage(1);
-    setHasMore(true);
-    fetchCities(1, true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortBy, searchQuery]);
+  const totalCount = await CityModel.countDocuments(searchCriteria);
 
-  // Load more when page changes (except initial load)
-  useEffect(() => {
-    if (page > 1) {
-      fetchCities(page, false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  const cities = await CityModel.find(searchCriteria)
+    .populate({ path: "country", model: Country, select: "name code" })
+    .populate({ path: "continent", model: Continent, select: "name" })
+    .sort({ totalDancers: -1, name: 1 })
+    .limit(INITIAL_LIMIT)
+    .lean();
 
-  // Infinite scroll setup
-  useEffect(() => {
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-    }
+  const transformedCities = cities.map((city: any) => ({
+    ...city,
+    _id: city._id.toString(),
+    id: city._id.toString(),
+    country: {
+      name: city.country?.name || "",
+      code: city.country?.code || "",
+    },
+    continent: {
+      name: city.continent?.name || "",
+    },
+  }));
 
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
-          setPage(prev => prev + 1);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (lastCityRef.current) {
-      observerRef.current.observe(lastCityRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [hasMore, loadingMore, loading]);
-
-  const handleSortChange = (newSort: SortOption) => {
-    setSortBy(newSort);
+  return {
+    cities: transformedCities,
+    totalCount,
+    hasMore: INITIAL_LIMIT < totalCount,
   };
+}
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M';
-    }
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'k';
-    }
-    return num.toString();
-  };
-
-  const getSortLabel = (sort: SortOption) => {
-    switch (sort) {
-      case "totalDancers": return t('common.mostDancers');
-      case "rank": return t('common.mostPopular');
-      case "name": return t('common.az');
-      case "population": return t('citiesPage.largestCities');
-      default: return t('common.mostDancers');
-    }
-  };
+export default async function CitiesPage() {
+  const { cities, totalCount, hasMore } = await getInitialCities();
 
   return (
-    <div className="min-h-screen p-4 bg-base-100">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-500 to-pink-400 bg-clip-text text-transparent">
-            {t('citiesPage.title')}
-          </h1>
-          <p className="text-lg text-base-content/70 max-w-2xl mx-auto">
-            {t('citiesPage.subtitle')}
-          </p>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="mb-8 space-y-4">
-          {/* Search Bar */}
-          <div className="relative max-w-md mx-auto">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FaSearch className="h-4 w-4 text-base-content/50" />
-            </div>
-            <input
-              type="text"
-              className="input input-bordered w-full pl-10"
-              placeholder={t('citiesPage.searchPlaceholder')}
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-          </div>
-
-          {/* Sort Controls */}
-          <div className="flex items-center justify-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2">
-              <FaSort className="text-sm text-base-content/60" />
-              <span className="text-sm text-base-content/60">{t('citiesPage.sortBy')}</span>
-            </div>
-            <div className="flex gap-2 flex-wrap justify-center">
-              {(["totalDancers", "rank", "name", "population"] as SortOption[]).map((option) => (
-                <button
-                  key={option}
-                  onClick={() => handleSortChange(option)}
-                  className={`btn btn-sm ${
-                    sortBy === option ? 'btn-primary' : 'btn-outline'
-                  }`}
-                  disabled={loading}
-                >
-                  {getSortLabel(option)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Results Count */}
-          <div className="text-center text-sm text-base-content/60">
-            {loading ? (
-              <div className="flex items-center justify-center gap-2">
-                <FaSpinner className="animate-spin" />
-                <span>{t('citiesPage.loadingCities')}</span>
-              </div>
-            ) : (
-              <span>
-                {totalCount > 0 ? tReplace(t('citiesPage.citiesFound'), { count: totalCount }) : t('citiesPage.noCitiesFound')}
-                {searchQuery && ` for "${searchQuery}"`}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Cities Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-          {cities.map((city, index) => (
-            <CityCard key={city._id} city={city} index={index + 1} />
-          ))}
-        </div>
-
-        {/* Loading More Indicator */}
-        {loadingMore && (
-          <div className="flex justify-center py-8">
-            <div className="flex items-center gap-2 text-base-content/60">
-              <FaSpinner className="animate-spin" />
-              <span>Loading more cities...</span>
-            </div>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {cities.length === 0 && !loading && (
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">🏙️</div>
-            <h3 className="text-2xl font-bold mb-2">{t('citiesPage.noCitiesFoundTitle')}</h3>
-            <p className="text-base-content/70">
-              {searchQuery
-                ? tReplace(t('citiesPage.noMatchingCities'), { query: searchQuery })
-                : t('citiesPage.noCitiesAvailable')
-              }
-            </p>
-          </div>
-        )}
-
-        {/* Intersection Observer Target */}
-        <div ref={lastCityRef} className="h-4" />
-      </div>
-    </div>
+    <CitiesPageClient
+      initialCities={cities}
+      initialTotalCount={totalCount}
+      initialHasMore={hasMore}
+    />
   );
 }
