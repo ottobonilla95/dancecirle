@@ -712,7 +712,22 @@
     "website": "Sitio Web",
     "connectCTA": "¡Conecta con {count} bailarines y descubre la increíble escena de baile en tu ciudad!",
     "joinDanceCircle": "Únete a DanceCircle",
-    "setAsLocation": "establecer como tu ubicación"
+    "setAsLocation": "establecer como tu ubicación",
+    "sceneSnapshot": "Resumen de la Escena",
+    "communitySummary": "{name} actualmente tiene {count} bailarines en DanceCircle en {country}.",
+    "communitySummaryStyles": "Los estilos más fuertes ahora mismo son {styles}.",
+    "communitySummaryVisitors": "{count} bailarines también han marcado {name} como una ciudad donde han bailado.",
+    "communitySummaryTravelers": "{count} bailarines también están abiertos a conocer gente mientras viajan aquí.",
+    "communitySummaryProfessionals": "{count} profesionales del baile están activos aquí, incluyendo {roles}.",
+    "communitySummaryLikes": "{count} bailarines locales ya han recibido likes de la comunidad.",
+    "exploreMoreInCountry": "Más Ciudades de Baile en {country}",
+    "otherCitiesInCountry": "Explora otras comunidades activas de baile en {country}.",
+    "communityHighlights": "Aspectos Destacados de la Comunidad",
+    "topStyles": "Estilos Principales",
+    "travelersOpenToMeet": "Viajeros Abiertos a Conectar",
+    "activeProfessionals": "Profesionales Activos",
+    "likedProfiles": "Perfiles con Likes",
+    "noOtherCitiesInCountry": "Actualmente esta es la única ciudad activa de DanceCircle en {country}."
   },
   "country": {
     "totalDancers": "Total de Bailarines",

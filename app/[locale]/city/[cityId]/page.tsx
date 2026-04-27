@@ -50,9 +50,6 @@ interface Props {
   };
 }
 
-// Hardcoded most popular dance styles for SEO
-const SEO_DANCE_STYLES = ["Bachata", "Salsa", "Kizomba", "Zouk", "Urban Kiz", "Bachazouk"];
-
 // Cache this page for 1 hour (3600 seconds) - reduces function invocations significantly!
 export const revalidate = 3600;
 
@@ -85,9 +82,28 @@ export async function generateMetadata({ params }: Props) {
       isProfileComplete: true,
     });
 
-    // Use hardcoded popular dance styles for SEO
-    const danceStylesText = SEO_DANCE_STYLES.join(", ");
-    const topStyles = SEO_DANCE_STYLES.slice(0, 3).join(", ");
+    const topStylesInCity = await User.aggregate([
+      { $match: { city: cityObjectId, isProfileComplete: true } },
+      { $unwind: "$danceStyles" },
+      { $group: { _id: "$danceStyles.danceStyle", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 6 },
+      {
+        $lookup: {
+          from: "dancestyles",
+          localField: "_id",
+          foreignField: "_id",
+          as: "style",
+        },
+      },
+      { $unwind: "$style" },
+      { $project: { name: "$style.name" } },
+    ]);
+
+    const styleNames = topStylesInCity.map((style: any) => style.name).filter(Boolean);
+    const fallbackStyles = ["Bachata", "Salsa", "Kizomba"];
+    const topStyles = (styleNames.slice(0, 3).length > 0 ? styleNames.slice(0, 3) : fallbackStyles).join(", ");
+    const danceStylesText = (styleNames.length > 0 ? styleNames : fallbackStyles).join(", ");
 
     const citySlug = city.slug || city._id.toString();
     const title = tReplace(mt('meta.city.title'), { cityName: city.name, topStyles });
@@ -242,6 +258,8 @@ export default async function CityPage({ params, searchParams }: Props) {
     { $project: { name: "$style.name", slug: "$style.slug", count: 1 } },
   ]);
 
+  const styleNames = danceStylesInCity.map((style: any) => style.name).filter(Boolean);
+
   // Calculate some stats
   const totalDancers = await User.countDocuments({
     city: cityObjectId,
@@ -250,6 +268,12 @@ export default async function CityPage({ params, searchParams }: Props) {
 
   const totalDancersWhoVisited = await User.countDocuments({
     citiesVisited: cityObjectId,
+    isProfileComplete: true,
+  });
+
+  const travelersOpenToMeet = await User.countDocuments({
+    activeCity: cityObjectId,
+    openToMeetTravelers: true,
     isProfileComplete: true,
   });
 
@@ -324,6 +348,17 @@ export default async function CityPage({ params, searchParams }: Props) {
     .limit(10)
     .lean();
 
+  const topCitiesInCountry = await City.find({
+    country: city.country?._id || city.country,
+    isActive: true,
+    totalDancers: { $gt: 0 },
+    _id: { $ne: cityObjectId },
+  })
+    .select("name slug totalDancers image")
+    .sort({ totalDancers: -1, name: 1 })
+    .limit(6)
+    .lean();
+
   const upcomingEvents = await OrganizerEvent.find({
     city: cityObjectId,
     startsAt: { $gte: new Date() },
@@ -366,6 +401,51 @@ export default async function CityPage({ params, searchParams }: Props) {
       }
     }
   ]);
+
+  const activeProfessionalCount =
+    teachers.length + djs.length + photographers.length + eventOrganizers.length + producers.length;
+  const highlightedRoles = [
+    teachers.length > 0 ? t("city.teachers") : null,
+    djs.length > 0 ? t("city.djs") : null,
+    photographers.length > 0 ? t("city.photographers") : null,
+    eventOrganizers.length > 0 ? t("city.eventOrganizers") : null,
+    producers.length > 0 ? t("city.producers") : null,
+  ].filter(Boolean);
+
+  const communitySummaryParts = [
+    tReplace(t("city.communitySummary"), {
+      name: city.name,
+      count: totalDancers,
+      country: city.country?.name || "",
+    }),
+    styleNames.length > 0
+      ? tReplace(t("city.communitySummaryStyles"), {
+          styles: styleNames.slice(0, 3).join(", "),
+        })
+      : null,
+    totalDancersWhoVisited > 0
+      ? tReplace(t("city.communitySummaryVisitors"), {
+          count: totalDancersWhoVisited,
+          name: city.name,
+        })
+      : null,
+    travelersOpenToMeet > 0
+      ? tReplace(t("city.communitySummaryTravelers"), {
+          count: travelersOpenToMeet,
+        })
+      : null,
+    activeProfessionalCount > 0
+      ? tReplace(t("city.communitySummaryProfessionals"), {
+          count: activeProfessionalCount,
+          roles: highlightedRoles.slice(0, 3).join(", "),
+        })
+      : null,
+    mostLikedDancers.length > 0
+      ? tReplace(t("city.communitySummaryLikes"), {
+          count: mostLikedDancers.length,
+        })
+      : null,
+  ].filter(Boolean);
 
   // Pagination calculations
   const totalPages = Math.ceil(totalDancers / dancersPerPage);
@@ -471,11 +551,18 @@ export default async function CityPage({ params, searchParams }: Props) {
             </div>
           </div>
 
-          {city.description && (
-            <p className="text-lg text-base-content/80 max-w-3xl">
-              {city.description}
-            </p>
-          )}
+          <div className="max-w-4xl space-y-3">
+            {city.description && (
+              <p className="text-lg text-base-content/80">
+                {city.description}
+              </p>
+            )}
+            {communitySummaryParts.map((part, index) => (
+              <p key={index} className="text-base text-base-content/75 leading-relaxed">
+                {part}
+              </p>
+            ))}
+          </div>
         </div>
 
         {/* Stats Grid */}
@@ -515,6 +602,48 @@ export default async function CityPage({ params, searchParams }: Props) {
               {roleLabel}
             </div>
             <div className="stat-desc hidden sm:block">{rolePercentage}% {t('city.ofDancers')}</div>
+          </div>
+        </div>
+
+        <div className="mb-6 sm:mb-8">
+          <div className="card bg-base-200 shadow-xl">
+            <div className="card-body p-4 sm:p-6">
+              <h2 className="card-title mb-3 sm:mb-4">{t("city.sceneSnapshot")}</h2>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div className="rounded-xl bg-base-300 p-3">
+                  <div className="text-xs uppercase tracking-wide text-base-content/60">
+                    {t("city.topStyles")}
+                  </div>
+                  <div className="mt-2 text-sm font-medium text-base-content">
+                    {styleNames.length > 0 ? styleNames.slice(0, 3).join(", ") : t("city.noDanceStylesYet")}
+                  </div>
+                </div>
+                <div className="rounded-xl bg-base-300 p-3">
+                  <div className="text-xs uppercase tracking-wide text-base-content/60">
+                    {t("city.travelersOpenToMeet")}
+                  </div>
+                  <div className="mt-2 text-2xl font-semibold text-primary">
+                    {travelersOpenToMeet}
+                  </div>
+                </div>
+                <div className="rounded-xl bg-base-300 p-3">
+                  <div className="text-xs uppercase tracking-wide text-base-content/60">
+                    {t("city.activeProfessionals")}
+                  </div>
+                  <div className="mt-2 text-2xl font-semibold text-secondary">
+                    {activeProfessionalCount}
+                  </div>
+                </div>
+                <div className="rounded-xl bg-base-300 p-3">
+                  <div className="text-xs uppercase tracking-wide text-base-content/60">
+                    {t("city.likedProfiles")}
+                  </div>
+                  <div className="mt-2 text-2xl font-semibold text-accent">
+                    {mostLikedDancers.length}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -881,6 +1010,53 @@ export default async function CityPage({ params, searchParams }: Props) {
                 <p className="text-base-content/60 text-center py-3 sm:py-4">
                   {t('city.noDanceStylesYet')}
                 </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-6 sm:mb-8">
+          <div className="card bg-base-200 shadow-xl">
+            <div className="card-body p-4 sm:p-6">
+              <h2 className="card-title mb-2 sm:mb-3">
+                {tReplace(t("city.exploreMoreInCountry"), { country: city.country?.name || "" })}
+              </h2>
+              <p className="text-sm text-base-content/70 mb-3 sm:mb-4">
+                {topCitiesInCountry.length > 0
+                  ? tReplace(t("city.otherCitiesInCountry"), { country: city.country?.name || "" })
+                  : tReplace(t("city.noOtherCitiesInCountry"), { country: city.country?.name || "" })}
+              </p>
+              {topCitiesInCountry.length > 0 && (
+                <div className="space-y-2 sm:space-y-3">
+                  {topCitiesInCountry.map((relatedCity: any, index: number) => (
+                    <Link
+                      key={relatedCity._id}
+                      href={`/city/${relatedCity.slug || relatedCity._id}`}
+                      className="flex items-center justify-between hover:bg-base-300 rounded p-2 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        {relatedCity.image && (
+                          <img
+                            src={relatedCity.image}
+                            alt={relatedCity.name}
+                            className="w-10 h-10 rounded object-cover"
+                          />
+                        )}
+                        <span className="text-sm font-medium hover:text-primary transition-colors">
+                          {relatedCity.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-base-content/60">
+                          {relatedCity.totalDancers} {t("city.dancersShort")}
+                        </span>
+                        <div className="badge badge-primary badge-sm">
+                          #{index + 1}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               )}
             </div>
           </div>

@@ -712,7 +712,22 @@
     "website": "Website",
     "connectCTA": "Connect with {count} dancers and discover the amazing dance scene in your city!",
     "joinDanceCircle": "Join DanceCircle",
-    "setAsLocation": "set this as your location"
+    "setAsLocation": "set this as your location",
+    "sceneSnapshot": "Scene Snapshot",
+    "communitySummary": "{name} currently has {count} dancers on DanceCircle in {country}.",
+    "communitySummaryStyles": "The strongest styles right now are {styles}.",
+    "communitySummaryVisitors": "{count} dancers have also marked {name} as a city they have danced in.",
+    "communitySummaryTravelers": "{count} dancers are also open to meeting while traveling here.",
+    "communitySummaryProfessionals": "{count} dance professionals are active here, including {roles}.",
+    "communitySummaryLikes": "{count} local dancers have already received likes from the community.",
+    "exploreMoreInCountry": "More Dance Cities in {country}",
+    "otherCitiesInCountry": "Explore other active dance communities across {country}.",
+    "communityHighlights": "Community Highlights",
+    "topStyles": "Top Styles",
+    "travelersOpenToMeet": "Travelers Open to Meet",
+    "activeProfessionals": "Active Professionals",
+    "likedProfiles": "Liked Profiles",
+    "noOtherCitiesInCountry": "This is currently the only active DanceCircle city in {country}."
   },
   "country": {
     "totalDancers": "Total Dancers",
